@@ -1,0 +1,369 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    input[type=checkbox] {
+        width: 100% !important;
+        height: 17px !important;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        // BL DROPDOWN
+        $scope.BLNumberlist = null;
+        $scope.fillBlNumber = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/BookingApi/ConfirmBookingBLList/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data[0].AlertMessageID == "1")
+                        $scope.BLNumberlist = result.data;
+                    else
+                        ShowPopup(result.data[0].AlertMessage);
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillBlNumber();
+
+        //onchange BL DROPDOWN grid
+        $("#ddlBLNo").change(function ()
+        {
+            $scope.SplitBLRec = null;
+            var Datavalue = {};
+            Datavalue.BLID = $("#ddlBLNo").val();
+           
+            $http({
+                method: 'POST',
+                url: '/api/BookingApi/ViewSplitBLGrid/',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SplitBLRec = result.data;
+                     $scope.BindVslVoy($("#ddlBLNo").val());
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        //vslvoy dropdown
+        $scope.BindVslVoy = function (BLID) {
+            $scope.VslVoyagelist = null;
+            var Datavalue = {};
+            Datavalue.BLID = BLID;
+            $http({
+                method: 'POST',
+                url: '/api/BookingApi/VslVoyByBL/',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.txtVslVoy = result.data[0].VesVoy;
+                    // $scope.VslVoyagelist = result.data;
+                   // $scope.ddlVslVoy = { ID: result.data[0].ID}
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+
+        $scope.SplitBL = function () {
+
+            var validation = "";
+
+            var ddlBLNo1 = $('#ddlBLNo').val();
+            if (ddlBLNo1 == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Booking/BL</span></br>"
+            }
+
+            //var ddlVslVoy = $('#ddlVslVoy').val();
+            //if (ddlBLNo2 == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Vessel/Voyage</span></br>"
+            //}
+            //var chkflag = $scope.chkflag;
+
+            //if (chkflag == false || chkflag == undefined || || chkflag == "") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Check Flag</span></br>"
+            // }
+
+
+            var BussData = {}
+            var Items = []
+         
+            var CountCntr = 0;
+            for (var i = 0; i < $scope.SplitBLRec.length; i++) {
+                if ($scope.SplitBLRec[i].isTrue == 1) {
+                    var Id = $scope.SplitBLRec[i].BCNID;
+                    var TypeID = $scope.SplitBLRec[i].TypeID;
+                    Items.push("Insert:" + Id, TypeID);
+                    CountCntr++;
+                }
+            }
+            if ($scope.SplitBLRec.length == CountCntr) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Un-Check any one containers</span></br>"
+            }
+           
+            BussData.GridBCNID = Items.toString();
+            BussData.BLID = $("#ddlBLNo").val();
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.CountCntrNo = CountCntr;
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').show();
+            $http({
+                method: 'POST',
+                url: "/api/BookingApi/SplitBL",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $('#overlay').hide();
+                    if (result.data.length > 0) {
+                        ShowPopup("BL Details Splitted");
+                    } 
+                    $scope.ExistingValues();
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result)
+            {
+                $('#overlay').hide();
+                ShowPopup("BL Details Splitted");
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                $('#overlay').hide();
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.ExistingValues = function () {
+
+
+            $scope.SplitBLRec = null;
+            var Datavalue = {};
+            Datavalue.BLID = $("#ddlBLNo").val();
+            $scope.BindVslVoy($("#ddlBLNo").val());
+            $http({
+                method: 'POST',
+                url: '/api/BookingApi/ViewSplitBLGrid/',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SplitBLRec = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        function ShowPopup(message) {
+            swal(message);
+        };
+    });
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        @*<div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons" style="color:#fff;">reply</i> Back
+                </a>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Split BL</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Booking Number</label>
+                                            <select class="form-control my-select" ng-model="ddlBLNo" id="ddlBLNo" ng-options="item.BLNumber for item in BLNumberlist track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vessel/Voyage</label>
+                                            <label ng-bind="lblBindVesselVoyage"></label>
+                                            <input class="form-control" type="text"  ng-model="txtVslVoy" id="txtVslVoy" disabled />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-10">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No.</th>
+                                                <th>Size Type</th>
+                                                <th>Container Number</th>
+                                                <th>Commodity</th>
+                                                <th>Flag</th>
+
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr ng-repeat="i in SplitBLRec | filter : paginate | orderBy:'-Statusv'">
+                                                <td>{{$index+1}}</td>
+                                                <td>{{i.Size}}</td>
+                                                <td>{{i.CntrNo}}</td>
+                                                <td>{{i.CommodityTypes}}</td>
+                                                <td> <input type="checkbox" id="chkflag" value="{{i.BCNID}}" ng-false-value="0" ng-true-value="1" ng-model="i.isTrue" /></td>
+
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                            <div class="col-md-2" style="border-left:1px solid #ccc;">
+                                <div class="row">
+                                    <div class="col-md-12" style="text-align:center;">
+                                        <h5 style="font-size:15px;margin-bottom:0; font-weight:500;">Split Container</h5>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom:0px; padding-bottom:0;">
+                                        <div class="col-md-12" style="text-align:center;">
+                                            <label>20'</label>
+                                            <input type="text" class="form-control" id="txt20ft" ng-model="txt20ft" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-12" style="text-align:center;">
+                                            <label>40'</label>
+                                            <input type="text" class="form-control" id="txt40ft" ng-model="txt40ft" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" class="btn btn-fill btn-danger">Cancel</button>
+                            <button type="submit" class="btn btn-fill btn-success"
+                                    ng-click="SplitBL();">
+                                Split
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

@@ -1,0 +1,408 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+
+        $(document).ready(function () {
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            //if (queryString["BkgRegID"] != null) {
+
+            //    //$scope.RegId = queryString["BkgRegID"].toString();
+            //    //$scope.HDBLID = queryString["BLIDReg"].toString();
+            //    //$scope.ModuleID = queryString["Module"].toString();
+            //    //$scope.fillBLInvoiceDetails($scope.RegId, $scope.HDBLID);
+            //}
+
+
+        });
+
+
+
+        $scope.BLInvoiceDetails = null;
+        $scope.fillBLInvoiceDetails = function ()
+        {
+
+            var BussData = {};
+            BussData.BkgID =0;
+            BussData.BLID = 0;
+            BussData.BLTypes = 3;
+            BussData.PartyName = $("#txtParty").val();
+            BussData.InvoiceNo = $("#txtinvoice").val();
+            BussData.FromDate = $("#txtFdate").val();
+            BussData.ToDate = $("#txtTodate").val();
+            BussData.AgentId = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/StandalonInvoice/ExistingInvoiceDetails/',
+                data: JSON.stringify(BussData),
+            }).then(function (result)
+            {
+                $timeout(function () {
+                    $scope.BLInvoiceDetails = result.data;
+                    $scope.totalItems = $scope.BLInvoiceDetails.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.BLInvoiceDetails.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillBLInvoiceDetails();
+
+        $scope.OnclickExistingInvoice = function (InvID, IntInvTypes) {
+
+            var BkgID = $scope.RegId;
+            var BLID = $scope.HDBLID;
+            var url = "";
+            if  (IntInvTypes == "1") {
+                url = "/StandaloneBilling/StandaloneBilling?BkgRegID=" + encodeURIComponent(BkgID) + "&InvID=" + encodeURIComponent(InvID) + "&BLTypes=" + encodeURIComponent("EXP") + "&Module=" + encodeURIComponent($scope.ModuleID) + "&BLIDReg=" + BLID;
+            }
+            else if (IntInvTypes == "2")
+            {
+                url = "/StandaloneBilling/CRStandaloneBilling?BkgRegID=" + encodeURIComponent(BkgID) + "&InvID=" + encodeURIComponent(InvID) + "&BLTypes=" + encodeURIComponent("EXP") + "&Module=" + encodeURIComponent($scope.ModuleID) + "&BLIDReg=" + BLID;
+            }
+
+
+
+
+            window.location.href = url;
+        }
+
+
+        $scope.AccountPagingDR = function () {
+           
+            var url = "/StandaloneBilling/StandaloneBilling?BLTypes=" + encodeURIComponent("OTH");
+            window.location.href = url;
+
+        }
+
+        $scope.AccountPagingCR = function ()
+        {
+            var url = "/StandaloneBilling/CRStandaloneBilling?BLTypes=" + encodeURIComponent("OTH");
+            window.location.href = url;
+
+        }
+
+        $scope.btnPrint = function (IDv)
+        {
+
+            window.open('@Url.Action("InvoicePDFOT", "InvoicePDF")?idv=' + IDv + '&AgencyID=' + localStorage.getItem("AgencyID"));
+           // window.location.href = '@Url.Action("InvoicePDF", "InvoicePDF")';
+        }
+
+        $scope.btnFinal = function (ID, InvTypes)
+        {
+            var BussData = {};
+            BussData.ID = ID;
+            BussData.GeoLocID = localStorage.getItem("GeoLocationID");
+            BussData.SessionFinYear = localStorage.getItem("SessionFinYear");
+            BussData.AgentCode = localStorage.getItem("DocumentSuffix");
+            BussData.ShipmentTypeID = 1;//"EXP";
+            BussData.BLTypes = 3; // "BlTypes";
+            BussData.InvTypes = InvTypes; // "InvoiceTypes";
+
+            $http({
+                method: 'POST',
+                url: '/api/GSTIRNNumber/FinalInvoiceChargeGLMaster/',
+               // url: '/api/InvoiceApi/FinalInvoiceChargeGLMaster/',
+                data: JSON.stringify(BussData),
+            }).then(function (result)
+            {
+                $timeout(function ()
+                {
+                    if (result.data[0].AlertSuccess == "Success")
+                    {
+                        $scope.fillBLInvoiceDetails($scope.RegId);
+                        ShowPopup("Invoice has been finalized");
+                    }
+                    else {
+
+                        var ChargeCodev = "";
+                        angular.forEach(result.data, function (value, key) {
+                            ChargeCodev += result.data[key].ChargeCode + ",";
+
+                        });
+                        if (ChargeCodev != "") {
+                            ShowPopup("Charge Code not mapped in GLMaster(" + ChargeCodev + ")");
+                        }
+                    }
+
+
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.btnReject = function (ID) {
+            var BussData = {};
+            BussData.ID = ID;
+
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/InvoiceReject/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    $scope.fillBLInvoiceDetails($scope.RegId);
+                    ShowPopup(result.data[0].AlertSuccess);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.back = function () {
+            var url = "";
+            url = "/StandaloneBilling/StandaloneBillingView?&Module=" + encodeURIComponent($scope.ModuleID);
+            window.location.href = url;
+        }
+
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<style>
+    .invoicedash .fa-plus {
+        width: 22px;
+        padding: 3px 3px;
+        text-align: center;
+        border: 1px solid #03ad3f;
+        font-size: 15px;
+        border-radius: 50%;
+        color: #03ad3f;
+        height: 22px;
+    }
+
+        .invoicedash .fa-plus.bg {
+            width: 22px;
+            padding: 3px 3px;
+            text-align: center;
+            background-color: #03ad3f;
+            border: 1px solid #03ad3f;
+            font-size: 15px;
+            border-radius: 50%;
+            color: #fff;
+            height: 22px;
+        }
+
+    .invoicedash a {
+        font-size: 16px;
+        color: #5d5c5c;
+        margin-left: 12px;
+    }
+
+    .h4, h4 {
+        font-size: 16px;
+        font-weight: 500;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="#" ng-click="back();" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Invoice Dashboard
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6"><h4>Customer Invoice(s) and Credit Note(s)</h4></div>
+                        <div class="col-md-6 invoicedash" style="text-align:right;">
+                            <a href="#" ng-click="AccountPagingDR();"><i class="fa fa-plus"></i> Invoice</a>
+                            <a href="#" ng-click="AccountPagingCR();"><i class="fa fa-plus bg"></i> Credit Note</a>
+                        </div>
+                    </div>
+                    <div class="material-datatables">
+                        <table class="table table-striped table-no-bordered table-hover tblinvoice" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>DOC Type</th>
+                                    <th>Document No</th>
+                                    <th>Date</th>
+                                    <th>Party Name</th>
+                                    <th>Invoice Amount</th>
+                                    <th>Credit Note Amount</th>
+                                    <th>Doc Status</th>
+                                    <th>Action</th>
+                                    <th>Print</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="gRow in BLInvoiceDetails | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{gRow.InvTypes}}</td>
+                                    <td><a href="#" ng-click="OnclickExistingInvoice(gRow.ID,gRow.IntInvTypes)">{{gRow.InvoiceNo}}</a></td>
+                                    <td>{{gRow.InvDate}}</td>
+                                    <td>{{gRow.PartyName}}</td>
+                                    <td>{{gRow.InvTotal}}</td>
+                                    <td>{{gRow.InvCRTotal}}</td>
+                                    <td>{{gRow.InvStatus}}</td>
+
+                                    <td>
+                                        <button type="button" rel="tooltip" ng-model="btnFinal" ng-disabled="gRow.IsFinal" ng-click="btnFinal(gRow.ID,gRow.InvTypes)" class="btn btn-success btn-round btnfinal" title="">
+                                            Final
+                                        </button>
+                                        <button type="button" rel="tooltip" ng-show="gRow.IsFinal==false" ng-model="btnReject" ng-disabled="gRow.IsFinal" ng-click="btnReject(gRow.ID,gRow.InvTypes)" class="btn btn-danger btn-round btnreject" title="">
+                                            Reject
+                                        </button>
+
+                                    </td>
+                                    <td>
+                                        <button type="button" ng-click="btnPrint(gRow.ID);" rel="tooltip" class="btn btn-default btn-round btnprint" title="">
+                                            <i class="material-icons">print</i>
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <input type="hidden" id="RegId" ng-model="RegId" />
+                <input type="hidden" id="ModuleID" ng-model="ModuleID" />
+                <input type="hidden" id="HDBLID" ng-model="HDBLID" />
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtParty" ng-model="txtParty" class="form-control" placeholder="PARTY">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtinvoice" ng-model="txtinvoice" class="form-control" placeholder="FINAL INVOICE">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="date" id="txtFdate" ng-model="txtFdate" class="form-control" placeholder="FROM DATE">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="date" id="txtTodate" ng-model="txtTodate" class="form-control" placeholder="TO DATE">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="fillBLInvoiceDetails();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

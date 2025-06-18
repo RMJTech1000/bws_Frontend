@@ -1,0 +1,790 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+
+    .topbox .col, .topbox .col-1, .topbox .col-2, .topbox .col-3, .topbox .col-4, .topbox .col-5, .topbox .topbox .col-6, .topbox .col-7, .topbox .col-8, .topbox .col-9, .topbox .col-10, .topbox .col-11, .topbox .col-12, .topbox .col-auto, .topbox .col-lg, .topbox .col-lg-1, .topbox .col-lg-2, .topbox .col-lg-3, .topbox .col-lg-4, .topbox .col-lg-5, .topbox .col-lg-6, .topbox .col-lg-7, .topbox .col-lg-8, .topbox .col-lg-9, .topbox .col-lg-10, .topbox .col-lg-11, .topbox .col-lg-12, .topbox .col-lg-auto, .topbox .col-md, .topbox .col-md-1, .topbox .col-md-2, .topbox .col-md-3, .topbox .col-md-4, .topbox .col-md-5, .topbox .col-md-6, .topbox .col-md-7, .topbox .col-md-8, .topbox .col-md-9, .topbox .col-md-10, .topbox .col-md-11, .topbox .col-md-12, .topbox .col-md-auto, .topbox .col-sm, .topbox .col-sm-1, .topbox .col-sm-2, .topbox .col-sm-3, .topbox .col-sm-4, .topbox .col-sm-5, .topbox .col-sm-6, .topbox .col-sm-7, .topbox .col-sm-8, .topbox .col-sm-9, .topbox .col-sm-10, .topbox .col-sm-11, .topbox .col-sm-12, .topbox .col-sm-auto, .topbox .col-xl, .topbox .col-xl-1, .topbox .col-xl-2, .topbox .col-xl-3, .topbox .col-xl-4, .topbox .col-xl-5, .topbox .col-xl-6, .topbox .col-xl-7, .topbox .col-xl-8, .topbox .col-xl-9, .topbox .col-xl-10, .topbox .col-xl-11, .topbox .col-xl-12, .topbox .col-xl-auto {
+        width: 210px !important;
+    }
+
+    .topbox .col-lg-2 {
+        max-width: initial !important;
+    }
+
+    .topbox .col-md-2 {
+        max-width: initial !important;
+    }
+
+    .topbox .col-sm-2 {
+        max-width: initial !important;
+    }
+
+    .select2-container {
+        width: 326px !important;
+    }
+
+    .form-control {
+        /* width: 326px !important;*/
+    }
+
+    .boxsmall.overdueAR img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.overdueAR .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.overdueAR .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.overdueAR .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.overdueAR .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+
+    .boxsmall.overdueAP img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.overdueAP .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.overdueAP .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.overdueAP .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.overdueAP .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .boxsmall.CashInFlow img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.CashInFlow .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.CashInFlow .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.CashInFlow .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.CashInFlow .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .boxsmall.CashOutFlow img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.CashOutFlow .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.CashOutFlow .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.CashOutFlow .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.CashOutFlow .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .boxsmall.pending img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.pending .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.pending .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.pending .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.pending .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .cntpopup .form-group {
+        margin-bottom: 4px !important;
+    }
+
+    .boxsmall.overdueAR {
+        /*background-color: #8892d6 !important;*/
+        background-color: #0088e9;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.overdueAP {
+        /*background-color: #8892d6 !important;*/
+        background-color: #8b8b8b;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.CashInFlow {
+        /*background-color: #8892d6 !important;*/
+        background-color: #e96a6c;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.CashOutFlow {
+        /*background-color: #8892d6 !important;*/
+        background-color: #bfbbbb;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.pending {
+        /*background-color: #8892d6 !important;*/
+        background-color: #3dbfc5;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall {
+        height: 113px;
+        /*background-color: #5bbc6b;*/
+        padding-top: 0px;
+        /*border: 1px solid #faf9f9;*/
+        border-radius: .25rem;
+        box-shadow: 0 2px 7px 0 rgba(0,0,0,.14);
+    }
+
+        .boxsmall i {
+            position: absolute;
+            color: #ffffff6b;
+            top: 21px;
+            right: 13px;
+            font-size: 49px;
+        }
+
+        .boxsmall h4 {
+            color: #fff;
+            text-align: left;
+            font-size: 16px !important;
+        }
+
+        .boxsmall p {
+            color: #fff;
+            text-align: left;
+            font-size: 13px !important;
+            /*text-transform:uppercase;*/
+        }
+
+    .modal-dialog .modal-content.divsurvey .close {
+        margin: 1px 15px !important;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+        $scope.MNRDateWiseList = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'Empty-In Date', 'ID': 1 },
+            { 'name': 'Survey Date', 'ID': 2 },
+            { 'name': 'Estimate Date', 'ID': 3 },
+            { 'name': 'Approved Date', 'ID': 4 },
+            { 'name': 'Complete Date', 'ID': 5 }
+        ]
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrNo();
+
+        $scope.MNRStatusList = null;
+        $scope.fillMNRStatusList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRNewStatus/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRStatusList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRStatusList();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+
+        $scope.AgencyMaster = null;
+        $scope.FillAgencyMaster = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMaster = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillAgencyMaster();
+
+
+        $scope.MNRHistoryView = null;
+
+        $scope.MNRRepairecords = function () {
+
+
+            var validation = "";
+
+            var ddlDateType = $('#ddlDateType').val();
+            if (ddlDateType != "0" && ddlDateType != "?" && ddlDateType != undefined && ddlDateType != null) {
+
+                var txtDateType = $('#txtDateType').val();
+                if (txtDateType.length == 0) {
+                        validation += "<span style='color:red;'>*</span> <span>Please Enter Date Input</span></br>"
+
+                }
+            }
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {}
+
+
+            BussData.MNRRefNo = $("#txtMNRNo").val();
+            BussData.CntrID = $("#ddlCntrNo").val();
+           // BussData.DepotID = $("#ddlDepot").val();
+            BussData.CntrTypeID = $("#ddlSizeType").val();
+            BussData.MNRStatusID = $("#ddlMNRStatus").val();
+            BussData.DateTypeID = $("#ddlDateType").val();
+            BussData.DateType = $("#txtDateType").val();
+            BussData.UserID = localStorage.getItem("UserID");
+
+           
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRNewApi/MNRDepotHistoryView",
+                data: JSON.stringify(BussData),
+                // data: {},
+            }).then(function (result) {
+                $scope.MNRHistoryView = result.data;
+
+                $scope.totalItems = $scope.MNRHistoryView.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.MNRHistoryView.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+
+        $scope.MNRRepairViewRecords = function () {
+
+            $scope.MNRRepairecords();
+        }
+        $scope.ClearRecords = function () {
+
+
+            $("#ddlMNRStatus").val(null).trigger("change");
+            $("#ddlCntrNo").val(null).trigger("change");
+           // $("#ddlDepot").val(null).trigger("change");
+            $("#ddlSizeType").val(null).trigger("change");
+            $("#ddlAgency").val(null).trigger("change");
+            $("#ddlDateType").val(null).trigger("change");
+
+            $scope.txtMNRNo = "";
+            $scope.txtDateType = "";
+            $scope.MNRRepairecords();
+        }
+        $scope.MNRRepairecords();
+
+        $scope.MNREdit = function (urlv) {
+
+            //var url = "/Home/GeoLocation?GeoLocID=" + encodeURIComponent(url);
+            //window.location.href = url;
+            var ParameterValue = "MNRID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/MNRNew/MNRDepotHistory?" + ciphertext;
+
+            window.location.href = url;
+        }
+
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 createnew" style="text-align:right;">
+            @*//  Create New*@
+            @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">add</i>
+
+                </button>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        MAINTENANCE & REPAIR HISTORY
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="row inventry">
+                        <div class="col-md-12 padlr0" style="padding-top:7px; padding-bottom:7px;">
+
+                            <div class="col-md-12">
+                                <div class="row">
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">MNR No</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <input type="text" autocomplete="off" id="txtMNRNo" ng-model="txtMNRNo" placeholder="MNR No" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Container</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Container Type</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @*<div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond">Agency</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+
+                                                    <select class="form-control my-select" id="ddlAgency" ng-model="ddlAgency" ng-options="item.AgencyName for item in AgencyMaster track by item.ID">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    @*<div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond">Depot</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select id="ddlDepot" ng-model="ddlDepot" class="form-control my-select" ng-options="item.DepName for item in DepotValue  track by item.ID"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond">Status</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlMNRStatus" id="ddlMNRStatus" ng-options="item.GeneralName for item in MNRStatusList track by item.ID" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond"> Date Type</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select id="ddlDateType" class="form-control my-select" ng-model="ddlDateType" ng-options="item.name for item in MNRDateWiseList track by item.ID"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Date Input</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <input type="date" autocomplete="off" id="txtDateType" ng-model="txtDateType" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12" style="text-align:right;">
+                                    <button type="submit" class="btn btn-primary btn-raised btn-default cntbtn mb-0" ng-click="MNRRepairViewRecords()">Search<div class="ripple-container"></div></button>
+                                    <button type="submit" class="btn btn-danger btn-raised cntbtn mb-0" ng-click="ClearRecords()">Clear<div class="ripple-container"></div></button>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row alogtop">
+
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                S.No
+                                            </th>
+                                            <th>
+                                                MNR No
+                                            </th>
+                                            <th>
+                                                Location
+                                            </th>
+                                            <th>
+                                                Depot
+                                            </th>
+                                            <th>
+                                                Agency
+                                            </th>
+                                            <th>
+                                                Container No
+                                            </th>
+                                            <th>
+                                                Container Type
+                                            </th>
+
+                                            <th>
+                                                Empty In
+                                            </th>
+                                            <th>
+                                                MNR Status
+                                            </th>
+
+                                            <th class="disabled-sorting text-right">Actions</th>
+
+
+                                        </tr>
+
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="dataItem in MNRHistoryView | filter : paginate | orderBy:'-Statusv'">
+                                            <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                            <td>{{dataItem.MNRRefNo}}</td>
+                                            <td>{{dataItem.Location}}</td>
+                                            <td>{{dataItem.Depot}}</td>
+                                            <td>{{dataItem.Agency}}</td>
+                                            <td>{{dataItem.CntrNo}}</td>
+                                            <td>{{dataItem.CntrType}}</td>
+                                            <td>{{dataItem.EmptyGateDate}}</td>
+                                            <td>{{dataItem.MNRStatus}}</td>
+                                            <td class="td-actions text-right">
+
+                                                <button type="button" ng-click="MNREdit(dataItem.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                                        </div>
+                                        <div class="col-md-7" style="text-align:right;">
+                                            <pagination total-items="totalItems" ng-model="currentPage"
+                                                        max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                            </pagination>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

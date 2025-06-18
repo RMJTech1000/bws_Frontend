@@ -1,0 +1,768 @@
+﻿.Modal {
+    background-color: Gray;
+    filter: alpha(opacity=40);
+    opacity: 0.7;
+}
+
+.disabledStyle {
+    background-color: #EBEBE4;
+}
+
+.EnableStyle {
+    background-color: white;
+}
+.table > tbody > tr > td.charge label
+{
+    font-size:11px!important;
+}
+.table > tbody > tr > td .form-check, label {
+    font-size: 11px !important;
+}
+label {
+    font-weight: normal;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+input[type=file] {
+    display: inline;
+}
+
+.form-inline .title {
+    width: 300px !important;
+}
+.bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+    width: 110px !important;
+    text-align: left;
+    font-size: 13px !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+.lable-fond {
+    width: 110px !important;
+    text-align: left;
+    font-size: 13px !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.invoicetbl.table > thead > tr > td, .invoicetbl.table > tbody > tr > td, .invoicetbl.table > tfoot > tr > td {
+    background-color: transparent;
+    border: none;
+    width: 100px;
+}
+
+.ui-autocomplete-loading {
+    background: white url(http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/images/ui-anim_basic_16x16.gif) right center no-repeat;
+}
+
+.CssDelete {
+    display: none;
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+    background-color: #216fb7 !important;
+    color: #fff;
+}
+
+.table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    text-align: left;
+    background-color: #f9f9f9;
+    color: #4f4e4e;
+    border: 1px solid #ccc;
+    padding: 5px 4px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.item-input {
+    float: left;
+    width: 65%;
+    margin-left: 10px;
+}
+
+.item-select {
+    float: left;
+    margin: 4px;
+}
+
+.delete-row {
+    float: left;
+    margin-top: 4px;
+}
+
+.panel.grid {
+    margin-bottom: 42px;
+    margin-top: -58px;
+}
+
+.panel.tax {
+    padding-bottom: 52px;
+}
+
+.panel-default > .panel-heading {
+    color: #fff;
+    background-color: #69b8d6;
+    border-color: #ddd;
+}
+
+.panel.panel-default .panel-body {
+    margin-bottom: -64px !important;
+    padding: 0px 14px;
+}
+
+    .panel.panel-default .panel-body .col-md-12 {
+        margin-bottom: -19px;
+    }
+
+.input-group-addon {
+    padding: 4px 12px;
+}
+
+.text:after {
+    font-family: 'FontAwesome';
+    content: '\f274';
+    position: absolute;
+    right: 6px;
+}
+
+.no-padding-right {
+    padding-right: 0;
+}
+
+.inventry .form-control {
+    height: 24px;
+    padding: 0px 12px;
+    width: 180px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 5px;
+    border: 1px solid #a9a9a9;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+    font-size: 13px;
+}
+.material-datatables .form-control {
+    height: 24px;
+    padding: 0px 12px;
+    width:100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 5px;
+    border: 1px solid #a9a9a9;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+    font-size: 13px;
+}
+.material-datatables .form-control.txtdes {
+    height: 24px;
+    padding: 0px 12px;
+    width: 180px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 5px;
+    border: 1px solid #a9a9a9;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+    font-size: 13px;
+}
+.form-control.txtcrncy .select2-container--default .select2-selection--single
+{
+    width:97px!important;
+}
+/*.form-control
+                {
+                    border-radius:0;
+                }*/
+.amountloc {
+    text-align: right;
+}
+
+.col-md-5.lbl {
+    width: 77px;
+}
+
+.col-md-5.lbl2 {
+    width: 79px;
+}
+
+.col-md-5.lbl3 {
+    width: 114px;
+}
+
+.col-md-5.lbl4 {
+    width: 80px;
+}
+/*.col-md-5 .txtbox
+                {
+                    height: 17px;
+                    font-size: 12px;
+                    width: 150px;
+                }*/
+.select2-container {
+    width:180px !important;
+}
+select.form-control {
+    height: 24px!important;
+    padding: 0px 12px;
+    width: 180px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 5px;
+    border: 1px solid #a9a9a9;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+    font-size: 13px;
+}
+.table > tbody > tr > td.chargecode .select2-container
+{
+    width:180px!important;
+}
+.table > tbody > tr > td.currency .select2-container {
+    width: 97px !important;
+}
+.material-datatables .form-control.chgcodedes
+{
+    width:180px!important;
+}
+.material-datatables .form-control.txtboxes {
+    width: 86px !important;
+}
+.form-group-sm .form-control {
+    height: 24px !important;
+    padding: 0px 10px;
+}
+
+    .form-group-sm .form-control.txtroe {
+        width: 60px !important;
+    }
+
+    .form-group-sm .form-control.txtrate {
+        width: 60px !important;
+    }
+
+    .form-group-sm .form-control.txtamt {
+        width: 60px !important;
+    }
+
+    .form-group-sm .form-control.txtlocamt {
+        width: 60px !important;
+    }
+
+.form-group-sm select.form-control {
+    width: 100px !important;
+}
+
+.table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    padding:0px 4px !important;
+    vertical-align: inherit;
+    font-size: 11px;
+}
+
+.select2-container--default .select2-selection--single {
+    /*width:150px!important;
+                    border: 1px solid #000!important;
+                    height:18px!important;
+                    border-radius:0!important;*/
+    border-radius: 5px !important;
+    border: 1px solid #a9a9a9 !important;
+    display: block !important;
+    /*width:200px;*/
+    height: 24px !important;
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    line-height: 1.42857143 !important;
+    color: #555 !important;
+    background-color: #fff !important;
+    background-image: none !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075) !important;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075) !important;
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s !important;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s !important;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s !important;
+}
+
+.select2-results__option[aria-selected] {
+    font-size: 12px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 10px !important;
+    font-size: 11px !important;
+    text-align: left !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    margin-top: 0 !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    display: none !important;
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+    padding: 2px 4px;
+    font-size: 12px!important;
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td {
+    background-color: #87acc81a;
+}
+
+.table-striped > tbody > tr:nth-child(even) > td {
+    background-color: fef9f4;
+}
+
+.panel.entry .form-group {
+    margin-bottom: 32px;
+}
+
+.panel.entry .form-control {
+    margin-bottom: 0;
+}
+/*.panel .tax  .form-control.txtdes
+{
+    width:100px!important;
+}
+.panel .tax  .form-control.txtcharge
+{
+    width:180px!important;
+}
+.panel .tax  .form-control
+{
+    width:60px!important;
+}*/
+
+.panel .tax .txtcrncy {
+    width: 97px;
+}
+
+.panel .tax .txtroe {
+    width: 60px;
+}
+
+.panel .tax .txtrate {
+    width: 60px;
+}
+
+.panel .tax .txtamt {
+    width: 60px;
+}
+
+.panel .tax .txtlocamt {
+    width: 60px;
+}
+
+.panel .tax .txtunit {
+    width: 97px;
+}
+
+.panel .tax .table {
+    margin-bottom: 0;
+}
+
+.panel.entry > .panel-heading {
+    color: #fff;
+    background-color: #69b8d6;
+    border-color: #ddd;
+}
+
+.panel.entry .panel-body {
+    padding: 0px 15px;
+}
+/*Responsive*/
+@media(max-width:1080px) {
+    .panel.entry .form-control {
+        width: 119px !important;
+    }
+
+        .panel.entry .form-control.address {
+            width: 386px !important;
+            height: 70px !important;
+        }
+
+    .select2-container {
+        width: 119px !important;
+    }
+
+    .select2-results__option[aria-selected] {
+        width: 170px !important;
+    }
+
+    .select2-container--open .select2-dropdown--below {
+        width: 170px !important;
+    }
+
+    .panel .tax .txtcrncy {
+        width: 94px;
+    }
+
+    .panel .tax .txtroe {
+        width: 50px !important;
+    }
+
+    .panel .tax .txtrate {
+        width: 50px !important;
+    }
+
+    .panel .tax .txtamt {
+        width: 50px !important;
+    }
+
+    .panel .tax .txtlocamt {
+        width: 50px !important;
+    }
+
+    .panel .tax .txtunit {
+        width: 94px !important;
+    }
+
+    .panel .tax .txtdes {
+        width: 110px !important;
+    }
+}
+
+@media(max-width:1280px) {
+    .panel.entry .form-control.address {
+        /*width:630px!important;*/
+    }
+
+    .panel.entry .bank.form-control {
+        width: 130px !important;
+    }
+
+
+    .panel.entry .form-control {
+        width: 175px !important;
+    }
+
+        .panel.entry .form-control.address {
+            width: 507px !important;
+            height: 70px !important;
+        }
+
+    .panel .tax .txtcrncy {
+        width: 94px !important;
+    }
+
+    .panel .tax .txtroe {
+        width: 70px !important;
+    }
+
+    .panel .tax .txtrate {
+        width: 70px !important;
+    }
+
+    .panel .tax .txtamt {
+        width: 70px !important;
+    }
+
+    .panel .tax .txtlocamt {
+        width: 70px !important;
+    }
+
+    .panel .tax .txtunit {
+        width: 94px !important;
+    }
+
+    .panel .tax .txtdes {
+        width: 157px !important;
+    }
+
+    .select2-container {
+        width: 175px !important;
+    }
+}
+
+@media(max-width:1300px) {
+    .card .form-control.address {
+        width: 613px !important;
+        height: 70px !important;
+    }
+}
+
+@media(max-width:1600px) {
+    .panel .bank.form-control {
+        width: 145px !important;
+    }
+.card .form-control.address {
+    width: 536px!important;
+    height: 70px!important;
+}
+}
+@media(max-width:1280px) {
+    .panel.entry .form-control.address {
+        width: 613px !important;
+        height: 70px !important;
+    }
+}
+
+
+.cusjob {
+    margin-top: -48px;
+    margin-left: 216px;
+    color: #fff;
+}
+
+    .cusjob .lblcus {
+        margin-left: -11px;
+    }
+
+
+
+.checkbox td, th {
+    padding: 8px 20px;
+}
+
+input[type=checkbox] {
+    margin: 4px 2px;
+}
+.table > tbody > tr > td.chk {
+    padding: 0px 0px !important;
+}
+.table > tbody > tr > td.qty {
+    padding: 0px 2px !important;
+    width:0;
+}
+    .table > tbody > tr > td.qty .form-control
+    {
+        width:32px;
+    }
+.table > tbody > tr > td.amount {
+    padding: 0px 2px !important;
+    width: 0;
+}
+    .table > tbody > tr > td.amount .form-control
+    {
+        padding:0px 0px;
+    }
+    .table > tbody > tr > td.amountlocal {
+        padding: 0px 2px !important;
+        width: 0;
+    }
+.table > tbody > tr > td.peramt {
+    padding: 0px 2px !important;
+    width: 0;
+}
+.table > tbody > tr > td.roe {
+    padding: 0px 2px !important;
+    width:45px;
+}
+.table > tbody > tr > td.charge{
+    padding: 0px 2px !important;
+    width: 180px;
+}
+.material-datatables select.form-control
+{
+    background-color:#fff;
+}
+.material-datatables .form-control {
+    background-color: #fff;
+}
+.checkbox {
+    padding-left: 20px;
+}
+
+    .checkbox label {
+        display: inline-block;
+        position: relative;
+        padding-left: 46px;
+    }
+
+        .checkbox label::before {
+            content: "";
+            display: inline-block;
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            left: 0;
+            margin-left: 20px;
+            border: 1px solid #cccccc;
+            border-radius: 3px;
+            background-color: #fff;
+            -webkit-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+            -o-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+            transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
+        }
+
+        .checkbox label::after {
+            display: inline-block;
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 0;
+            top: 0;
+            margin-left: 20px;
+            padding-left: 3px;
+            padding-top: 1px;
+            font-size: 11px;
+            color: #555555;
+        }
+
+    .checkbox input[type="checkbox"] {
+        opacity: 0;
+    }
+
+        .checkbox input[type="checkbox"]:focus + label::before {
+            outline: thin dotted;
+            outline: 5px auto -webkit-focus-ring-color;
+            outline-offset: -2px;
+        }
+
+        .checkbox input[type="checkbox"]:checked + label::after {
+            font-family: 'FontAwesome';
+            content: "\f00c";
+        }
+
+        .checkbox input[type="checkbox"]:disabled + label {
+            opacity: 0.65;
+        }
+
+            .checkbox input[type="checkbox"]:disabled + label::before {
+                background-color: #eeeeee;
+                cursor: not-allowed;
+            }
+
+    .checkbox.checkbox-circle label::before {
+        border-radius: 50%;
+    }
+
+    .checkbox.checkbox-inline {
+        margin-top: 0;
+    }
+
+.checkbox-primary input[type="checkbox"]:checked + label::before {
+    background-color: #428bca;
+    border-color: #428bca;
+}
+
+.checkbox-primary input[type="checkbox"]:checked + label::after {
+    color: #fff;
+}
+
+.checkbox-danger input[type="checkbox"]:checked + label::before {
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+
+.checkbox-danger input[type="checkbox"]:checked + label::after {
+    color: #fff;
+}
+
+.checkbox-info input[type="checkbox"]:checked + label::before {
+    background-color: #5bc0de;
+    border-color: #5bc0de;
+}
+
+.checkbox-info input[type="checkbox"]:checked + label::after {
+    color: #fff;
+}
+
+.checkbox-warning input[type="checkbox"]:checked + label::before {
+    background-color: #f0ad4e;
+    border-color: #f0ad4e;
+}
+
+.checkbox-warning input[type="checkbox"]:checked + label::after {
+    color: #fff;
+}
+
+.checkbox-success input[type="checkbox"]:checked + label::before {
+    background-color: #5cb85c;
+    border-color: #5cb85c;
+}
+
+.checkbox-success input[type="checkbox"]:checked + label::after {
+    color: #fff;
+}
+
+@media(max-width:1600px) {
+
+    .roundoff input[type=checkbox] {
+        margin: 0;
+    }
+}
+
+@media(max-width:1280px) {
+
+    .roundoff input[type=checkbox] {
+        margin: 0;
+    }
+}
+
+.table > tbody > tr > td.rightalign {
+    text-align: right;
+    width: 74px;
+}
+
+.table > tbody > tr > td.taxwidth {
+    text-align: right;
+    width: 10px;
+}
+
+.table > tbody > tr > td.unitwidth {
+    width: 10px;
+}
+
+.table > tbody > tr > td.chargewidth {
+    width: 165px;
+}
+
+.table > tbody > tr > td.unitswidth {
+    width: 10px;
+}
+
+
+
+.PopupBG_Medium {
+    width: 650px;
+    height: 300px;
+    background: #ffffff;
+    color: #000;
+    border: none;
+    border-right: 2px solid #012C4C;
+    border-left: 2px solid #012C4C;
+    border-top: 2px solid #012C4C;
+    border-bottom: 2px solid #012C4C;
+    overflow: auto;
+}
+
+.PopupBG_Medium_Head {
+    width: 575px;
+    height: 21px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    color: #000;
+    color: #FFFFFF;
+}
+
+.PopupClose_Medium {
+    width: 21px;
+    height: 21px;
+    text-align: right;
+}
+
+.PopupBG_XLarge_Head {
+    width: 600px;
+    height: 21px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    background-color: #094d70;
+    color: #000;
+    color: #FFFFFF;
+}
+
+.PopupClose_XLarge {
+    width: 50px;
+    height: 21px;
+    text-align: right;
+    background-color: #094d70;
+}
+
+.btntemp.btn {
+    padding: 3px 12px;
+}
+
+.btntemp.btn-primary {
+    background-color: #f99350;
+    border-color: #f99350;
+    box-shadow: 0px 0px 10px #949090;
+    border-radius: 12px;
+}

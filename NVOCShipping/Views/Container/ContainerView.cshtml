@@ -1,0 +1,364 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+    .card .table tr td {
+        white-space: nowrap;
+    }
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+        $('.my-selectSize').select2({
+            placeholder: "CntrSizeType", allowClear: true, width: '100%'
+        });
+        $('.my-selectStatus').select2({
+            placeholder: "Status", allowClear: true, width: '100%'
+        });
+        $('.my-selectLP').select2({
+            placeholder: "LeasePartner", allowClear: true, width: '100%'
+        });
+        $('.my-selectBO').select2({
+            placeholder: "BoxOwner", allowClear: true, width: '100%'
+        });
+        });
+
+        $scope.AddNew = function () {
+           window.location = "/Container/Container"
+        }
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+        $scope.BoxOwnerList = null;
+        $scope.FilBoxOwner = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BoxOwner/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BoxOwnerList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilBoxOwner();
+
+        $scope.LeasingPartnerList = null;
+        $scope.FilLeasingPartner = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LeasingPartnerList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilLeasingPartner();
+
+        $scope.StatusList = null;
+        $scope.FilStatus = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/ContainerStatus/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.StatusList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilStatus();
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.CntrRecords = null;
+        $scope.CntrRecords = function () {
+
+
+            var BussData = {}
+            BussData.CntrNo = $scope.txtCntrNo;
+            BussData.TypeID = $("#ddlSizeType").val();
+            BussData.StatusID = $("#ddlStatus").val();
+            BussData.LeasingPartnerID = $("#ddlLeasePartner").val();
+            BussData.BoxOwnerID = $("#ddlBoxOwner").val();
+            //BussData.StateName = $scope.txtStateName;
+            //BussData.Status = $scope.ChkStatus;
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/ViewContainers",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.CntrRec = result.data;
+
+                $scope.totalItems = $scope.CntrRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.CntrRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        }
+
+        $scope.CntrViewRecords = function () {
+
+            $scope.CntrRecords();
+        }
+        $scope.ClearRecords = function () {
+
+            $scope.txtCntrNo = "";
+            $("#ddlSizeType").val(null).trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $("#ddlLeasePartner").val(null).trigger("change");
+            $("#ddlBoxOwner").val(null).trigger("change");
+
+            $scope.CntrRecords();
+        }
+        $scope.CntrRecords();
+
+        $scope.ContainerUpdate = function (url) {
+            var url = "/Container/Container?CntrID=" + encodeURIComponent(url);
+            window.location.href = url;
+        }
+        $scope.FileUploadingWindows = function () {
+            var UserID = localStorage.getItem("UserID");
+            var left = (screen.width / 2) - (400 / 2);
+            var top = (screen.height / 2) - (300 / 2);
+            return window.open("../CntrMasterUpload.aspx?UserID=" + UserID, 'window', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=300, top=' + top + ', left=' + left);
+        }
+
+           $scope.btnExcel = function () {
+
+               var CntrNo = $scope.txtCntrNo;
+               var TypeID = $("#ddlSizeType").val();
+               var StatusID = $("#ddlStatus").val();
+               var LeasingPartnerID = $("#ddlLeasePartner").val();
+               var BoxOwnerID = $("#ddlBoxOwner").val();
+               var User = localStorage.getItem("UserName");
+
+             window.location.href = '@Url.Action("CntrMasterExcel", "ContainersExcel")?CntrNo=' + CntrNo + "&TypeID=" + TypeID + "&StatusID=" + StatusID + "&LeasingPartnerID=" + LeasingPartnerID + "&BoxOwnerID=" + BoxOwnerID + "&User=" + User;
+
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Container Master
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 exceldownload" style="text-align:right;">
+                            <a href="#" ng-click="FileUploadingWindows();" class="btn btn-fill btn-success btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">upload</i> Upload
+                            </a>
+
+                            <a ng-click="btnExcel();">Download <i class="fa fa-file-excel-o"></i></a>
+                        </div>
+                    </div>
+                    <div class="material-datatables" style="overflow:scroll">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Container Number</th>
+                                    <th> Size </th>
+                                    <th>Box Owner</th>
+                                    <th>Leasing Partner</th>
+                                    <th>Status</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in CntrRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.CntrNo}}</td>
+                                    <td>{{i.Size}}</td>
+                                    <td>{{i.BoxOwner}}</td>
+                                    <td>{{i.LeasingPartner}}</td>
+                                    <td>{{i.Status}}</td>
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="" ng-click="ContainerUpdate(i.ID)">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(CntrRec|filter:CntrNo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtCntrNo" ng-model="txtCntrNo" class="form-control" placeholder="Container Number">
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectSize" ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                <option value="" disabled selected>CntrSizeType</option>
+                            </select>
+                         
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectBO" ng-model="ddlBoxOwner" id="ddlBoxOwner" ng-options="item.BoxOwner for item in BoxOwnerList track by item.BoxOwnerID" required>
+                                <option value="" disabled selected>BoxOwner</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectLP" ng-model="ddlLeasePartner" id="ddlLeasePartner" ng-options="item.CustomerName for item in LeasingPartnerList track by item.ID" required>
+                                <option value="" disabled selected>LeasePartner</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectStatus" ng-model="ddlStatus" id="ddlStatus" ng-options="item.Status for item in StatusList track by item.StatusID" required>
+                                <option value="" disabled selected>Status</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="CntrViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

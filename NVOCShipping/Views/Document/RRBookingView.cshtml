@@ -1,0 +1,506 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        $("#btnShow").click(function ()
+        {
+            $('#demoModal').modal('show');
+        });
+    });
+</script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(100).fadeOut();
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+        $scope.ddlStatusSearch = { ID: 4};
+        document.getElementById("ddlStatusSearch").disabled = true;
+
+        $scope.RRStatusValueAll = [
+
+            { 'Status': 'PENDING', 'ID': 1 },
+            { 'Status': 'REJECTED', 'ID': 2 },
+            { 'Status': 'RE-QUOTE', 'ID': 3 },
+            { 'Status': 'APPROVED', 'ID': 4 }
+        ];
+
+        $scope.RRNumbervalues = null;
+        $scope.fillRRNumbervalues = function ()
+        {
+            var BussData = {};
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/RRMaster/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RRNumbervalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillRRNumbervalues();
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.ShipmentTypeAllvalues = null;
+        $scope.fillShipmentTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "1"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillShipmentTypeValues();
+
+
+        $scope.AgencyMasterAllvalues = null;
+        $scope.fillAgencyMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAgencyMasterValues();
+
+        $scope.BookingPartyAllvalues = null;
+        $scope.fillBookingPartyValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BookingPartyAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBookingPartyValues();
+
+
+
+        $scope.CustomerMasterAllvalues = null;
+        $scope.fillCustomerMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCustomerMasterValues();
+        $scope.BookingSearchAllVeiw = null;
+        $scope.BookingSearch = function ()
+        {
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            BussData.RatesheetNo = $("#ddlRRNoSearch").val();
+            BussData.BookingParty = $("#ddlbookingParty").val();
+            BussData.POL = $("#ddlPortOfLoadingSearch").val();
+            BussData.POD = $("#ddlPortOfDischargeSearch").val();
+            BussData.ShipmentTypes = $("#ddlShipmenTypeSearch").val();
+            BussData.AgentID = $("#ddlAgencySearch").val();
+            BussData.ShipperID = $("#ddlShipper").val();
+            BussData.RSStatus = $("#ddlStatusSearch").val();
+            BussData.LogInAgentID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/MRGExistingMasterRecord/',
+                data: JSON.stringify(BussData)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BookingSearchAllVeiw = result.data;
+
+
+                    $scope.totalItems = $scope.BookingSearchAllVeiw.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 10;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.BookingSearchAllVeiw.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.ClearRecords = function () {
+
+            $('#overlay').show();
+            $("#ddlRRNoSearch").val(null).trigger("change");
+            $("#ddlPortOfLoadingSearch").val(null).trigger("change");
+            $("#ddlPortOfDischargeSearch").val(null).trigger("change");
+            $("#ddlShipmenTypeSearch").val(null).trigger("change");
+            $("#ddlAgencySearch").val(null).trigger("change"); 
+            $("#ddlShipper").val(null).trigger("change");
+            $("#ddlbookingParty").val(null).trigger("change");
+
+            $scope.BookingSearchAllVeiw.length = 0;
+            $('#overlay').hide();
+            
+        }
+        $scope.ChekBoxRRate = function (RRIDv)
+        {
+            var url = "/Document/Booking?BkgRRID=" + encodeURIComponent(RRIDv);
+            window.location.href = url;
+        }
+       
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<style>
+    .table.ratetable > tbody > tr > td, .table.ratetable > tbody > tr > th, .table.ratetable > tfoot > tr > td, .table.ratetable > tfoot > tr > th, .table.ratetable > thead > tr > td, .table.ratetable > thead > tr > th {
+        padding: 6px 4px;
+        font-size: 13px;
+    }
+    @@media(max-width:1280px)
+    {
+        .bookingimg
+        {
+            width:635px!important;
+        }
+        .pol
+        {
+            /*padding-left:147px!important;*/
+            margin-left:-9px!important;
+        }
+        .pod
+        {
+           /* padding-left:242px!important;*/
+            margin-left:-13px!important;
+        }
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Document/BookingSearch" type="submit" ng-click="back();" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </a>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Booking with RR</h4>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: .9375rem 15px;">
+                        <div class="row" style="background-color:aliceblue;">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Booking/RR Number</label>
+                                            <select id="ddlRRNoSearch" class="form-control my-select" ng-model="ddlRNoSearch" options="{ allowClear: true }" ng-options="item.RatesheetNo for item in RRNumbervalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port Of Loading</label>
+                                            <select id="ddlPortOfLoadingSearch" class="form-control my-select" ng-model="ddlPortOfLoadingSearch" options="{ allowClear: true }" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port Of Discharge</label>
+                                            <select id="ddlPortOfDischargeSearch" class="form-control my-select" ng-model="ddlPortOfDischargeSearch" options="{ allowClear: true }" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Booking Party</label>
+                                            <select class="form-control my-select" id="ddlbookingParty" ng-model="ddlbookingParty" ng-options="item.CustomerName for item in CustomerMasterAllvalues track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipment Type</label>
+                                            <select id="ddlShipmenTypeSearch" class="form-control my-select" ng-model="ddlShipmenTypeSearch" options="{ allowClear: true }" ng-options="item.GeneralName for item in ShipmentTypeAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Agency</label>
+                                            <select id="ddlAgencySearch" class="form-control my-select" ng-model="ddlAgencySearch" options="{ allowClear: true }" ng-options="item.AgencyName for item in AgencyMasterAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <select id="ddlStatusSearch" class="form-control my-select" ng-model="ddlStatusSearch" ng-options="item.Status for item in RRStatusValueAll track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipper</label>
+                                            <select class="form-control my-select" id="ddlShipper" ng-model="ddlShipper" ng-options="item.CustomerName for item in CustomerMasterAllvalues track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="BookingSearch();" class="btn btn-fill btn-rose">
+                                    <i class="material-icons">search</i>
+                                    Search
+                                </button>
+                                <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger">Clear</button>
+                            </div>
+                        </div>
+
+                        <div class="row" ng-repeat="i in BookingSearchAllVeiw">
+                            <div class="col-md-12" style="border: 1px dashed #ccc; border-radius:15px;padding:15px; margin-top:17px; margin-bottom:0px;">
+                                <div class="row">
+                                    <div class="col-md-2" style="text-align:center;border-right: 1px solid #ccc;">
+                                        <div class="row">
+                                            <div class="col-md-12" style="margin-top:31px; margin-bottom:15px;">
+                                                <h4 style="color:#16079c!important;font-size:15px;font-weight:bold;">{{i.RatesheetNo}}</h4>
+                                            </div>
+                                            <div class="col-md-8 offset-2" style="background-color:#cccccc4a; text-align:center;padding: 4px;border-radius: 5px;">
+                                                <h5 style="color:#808080; font-size:12px; margin-bottom:0;">Expiry Date</h5>
+                                                <p style="color:red;font-size:11px;margin-top:0;margin-bottom:0;">{{i.ValidTill}}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8" style="border-right:1px solid #ccc;">
+                                        <h5 style="font-weight: bold;color: #16079c; font-size:15px;"><span>CUSTOMER</span> <span style="padding-left:50px;">:</span> <span style="padding-left:50px;">{{i.BookingParty}}</span></h5>
+                                        <img src="~/assets/img/bookingimg1.jpg" class="img-responsive bookingimg" style="width:660px;" />
+                                        <div class="col-md-12 padlr0" style="margin-top:-20px;">
+                                            <span style="font-size:12px;color: #989696;">{{i.POO}}</span> <span style="padding-left: 224px; font-size: 14px; color: #032584;" class="pol">{{i.POL}}</span> <span class="pod" style="padding-left: 144px; font-size: 14px; color: #032584;">{{i.POD}}</span> <span style="margin-left:63px;font-size:12px;color: #989696;">{{i.FPOD}}</span>
+                                            @*<span style="font-size:12px;"></span> <span style="margin-left:105px;font-size:12px;">MYPKG</span> <span style="margin-left:72px;font-size:12px;">CNTAO</span> <span style="margin-left:63px;font-size:12px;"></span>*@
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6" style="margin-top:8px;">
+                                                <h5 style="font-weight: bold;font-size:17px;margin-bottom:0;"><span style="color:#16079c;">Shipper:</span><span style="color:#e40874;padding-left:8px;">{{i.Shipper}}</span></h5>
+                                            </div>
+                                            <div class="col-md-6" style="margin-top:8px; text-align:right;">
+                                                <h5 style="font-weight: bold;font-size:17px;margin-bottom:0;"><span style="color:#16079c;">Transhipment:</span><span style="color:#e40874;padding-left:8px;">{{i.Transhipment}}</span></h5>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-2">
+                                        <div class="col-md-12 padlr0">
+                                            <h5 style="font-weight: bold;color: #16079c; font-size:17px; text-align:center;" class="ng-binding">Flagging</h5>
+                                        </div>
+                                        <div class="col-md-12 padlr0" style="margin-top:35px; text-align:center;">
+
+                                            <input type="checkbox" ng-click="ChekBoxRRate(i.ID);" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="notFoundDiv" ng-show="(BookingSearchAllVeiw|filter:BookingParty).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+@*<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>*@
+

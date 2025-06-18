@@ -1,0 +1,909 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+        $scope.StatusList = [
+            { 'Name': 'Open', 'ID': 1 },
+            { 'Name': 'Closed', 'ID': 0 }
+        ];
+
+        //Vessel DropDown//
+        $scope.Vessel = null;
+        $scope.fillVessel = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/VesselDropDown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Vessel = result.data;
+
+                });
+            });
+        };
+        $scope.fillVessel();
+
+
+        //Customer DropDown//
+    $scope.SlotOperatorValue = null;
+        $scope.fillSlotOperatorValues = function () {
+
+
+            var Datavalue = {};
+            Datavalue.BussTypes = "7,8,13"; 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerBussTypesMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result)
+            {
+               
+                $timeout(function()
+                {
+                   
+                    $scope.SlotOperatorValue = result.data;
+                  
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSlotOperatorValues();
+
+
+        $scope.PortValue = null;
+        $scope.fillPortValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortValues();
+
+
+        //Terminal DropDown//
+
+        $("#ddlCurrentPort").change(function () {
+            $scope.TerminalValue = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlCurrentPort").val();
+            $http({
+                method: 'POST',
+                url: '/api/Home/TerminalDropDown/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LoadTerminalValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.bindLoadingTerminal = function (PortID) {
+
+            $scope.TerminalValue = null;
+            var Datavalue = {};
+            Datavalue.ID = PortID;
+            $http({
+                method: 'POST',
+                url: '/api/Home/TerminalDropDown/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LoadTerminalValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        // grid dropdowm ngchange
+        $("#ddlNextPort").change(function () {
+            $scope.TerminalValues = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlNextPort").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/TerminalDropDown/',
+                data: JSON.stringify(Datavalue),
+                //  data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TerminalValues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+        // $scope.BindDischargeTerminal();
+
+        $scope.BindDischargeTerminalExist = function (PortID) {
+            $scope.TerminalValue = null;
+            var Datavalue = {};
+            Datavalue.ID = PortID;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/TerminalDropDown/',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TerminalValues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["VoyDtlsID"] != null) {
+                $scope.HdVoyDtlsId = queryString["VoyDtlsID"].toString();
+                $scope.BindVoyDtls(queryString["VoyDtlsID"].toString());
+                $scope.BindVoyPortDtls(queryString["VoyDtlsID"].toString());
+            }
+        });
+        $scope.BindVoyDtls = function (VoyDtlsID) {
+
+
+            var Datavalue = {}
+            var id = VoyDtlsID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = VoyDtlsID;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/VoyDtlsViewParticular/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    console.log(result);
+
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+                        $scope.ddlVessel = { ID: result.data[0].VesVID };
+                        $scope.txtVoyNo = result.data[0].VoyageNo
+                        $scope.txtRotNo = result.data[0].RotationNo
+                        $scope.txtETA = result.data[0].ETA;
+                        $scope.txtETD = result.data[0].ETD;
+                        $scope.txtATA = result.data[0].ATA;
+                        $scope.txtATD = result.data[0].ATD;
+                        $scope.txtCutOff = result.data[0].CutOff;
+                        $scope.txtRemarks = result.data[0].Remarks;
+                        $scope.ddlCurrentPort = { ID: result.data[0].CurrentPortID };
+                        $scope.ddlLoadTerminal = { ID: result.data[0].LoadingTerminalID };
+                        $scope.ddlFinalPort = { ID: result.data[0].FinalPortID };
+                        $scope.txtSCNNo = result.data[0].SCNNo;
+                        $scope.ddlStatus = { ID: result.data[0].Status };
+                        $scope.bindLoadingTerminal(result.data[0].CurrentPortID);
+                    }
+                    else {
+                        $('#ddlVessel').val('');
+                        $('#txtVoyNo').val('');
+                        $('#txtRotNo').val('');
+                        $('#txtETA').val('');
+                        $('#txtETD').val('');
+                        $('#txtATA').val('');
+                        $('#txtATD').val('');
+                        $('#txtCutOff').val('');
+                        $('#txtRemarks').val('');
+                        $('#ddlStatus').val('');
+                        $('#ddlCurrentPort').val('');
+                        $('#ddlLoadTerminal').val('');
+                        $('#txtSCNNo').val('');
+                    }
+                });
+            });
+            //$scope.back = function () {
+            //    window.location = "/Party/CustomerView";
+            //}
+        }
+        // $scope.BindVoyDtls();
+
+        $scope.BindVoyPortDtls = function (VoyDtlsID) {
+            var Datavalue = {};
+            Datavalue.ID = VoyDtlsID;
+
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/VoyPortDtlsParticular/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $scope.DynamicGrid = [{
+                    VID: "", VesOpID: "", VesOperator: "", NextPortID: "", NextPort: "", TerminalID: "", Terminal: "", NextPortETA: ""
+                }];
+                $timeout(function () {
+
+                    if (result.data[0].ChargeCodeID != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'VID': result.data[key].VID,
+                            'VesOpID': result.data[key].VesOpID,
+                            'VesOperator': result.data[key].VesOperator,
+                            'NextPortID': result.data[key].NextPortID,
+                            'NextPort': result.data[key].NextPort,
+                            'TerminalID': result.data[key].TerminalID,
+                            'Terminal': result.data[key].Terminal,
+                            'NextPortETA': result.data[key].NextPortETA,
+
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+        //  $scope.BindVoyPortDtls();
+
+        $scope.DynamicGrid = [{ VID: "", VesOpID: "", VesOperator: "", NextPortID: "", NextPort: "", TerminalID: "", Terminal: "", NextPortETA: "" }];
+
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.Selectvalues = function (DynamicGrid, index) {
+            $scope.HDArrayIndex = index;
+            $scope.VID = $scope.DynamicGrid[index].VID;
+            $scope.VesOperator = { ID: $scope.DynamicGrid[index].VesOpID };
+            $scope.BindDischargeTerminalExist($scope.DynamicGrid[index].NextPortID);
+            $scope.Terminal = { ID: $scope.DynamicGrid[index].TerminalID };
+            $scope.NextPortETA = $scope.DynamicGrid[index].NextPortETA;
+            $scope.NextPort = { ID: $scope.DynamicGrid[index].NextPortID };
+
+        }
+        $scope.Add = function (DynamicGrid) {
+          
+            var validation = "";
+
+            var ddlVesselOperator = $('#ddlVesselOperator').val();
+            if (ddlVesselOperator == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Vessel Operator</span></br>"
+            }
+
+            var ddlNextPort = $('#ddlNextPort').val();
+            if (ddlNextPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Next Port</span></br>"
+            }
+            var ddlTerminal = $('#ddlTerminal').val();
+            if (ddlTerminal == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Discharge Terminal</span></br>"
+            }
+
+            var txtNextPortETA = $('#txtNextPortETA').val();
+            if (txtNextPortETA.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter NextPortETA</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var VIDValue;
+
+            VIDValue = ($scope.VID == "") ? 0 : $scope.VID;
+
+            var val = {
+                'VID': VIDValue,
+                'VesOpID': $("#ddlVesselOperator").val(),
+                'VesOperator': $("#ddlVesselOperator option:selected").text(),
+                'NextPortID': $("#ddlNextPort").val(),
+                'NextPort': $("#ddlNextPort option:selected").text(),
+                'TerminalID': $("#ddlTerminal").val(),
+                'Terminal': $("#ddlTerminal option:selected").text(),
+                'NextPortETA': $scope.NextPortETA
+
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+                
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+               
+                $scope.DynamicGrid.push(val);
+            }
+
+            $("#ddlVesselOperator").val("");
+            $("#ddlNextPort").val("");
+            $("#ddlTerminal").val("");
+            $scope.NextPortETA = "";
+            $scope.HDArrayIndex = "";
+            $scope.VID = 0;
+
+        }
+        $scope.Remove = function (DynamicGrid, index) {
+            $scope.DynamicGrid.splice(index, 1);
+        }
+
+      
+
+        $scope.Recordsave = function (data) {
+            var validation = "";
+            var ddlVessel = $('#ddlVessel').val();
+            if (ddlVessel == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Vessel</span></br>"
+            }
+            var txtVoyNo = $('#txtVoyNo').val();
+            if (txtVoyNo.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Voyage No</span></br>"
+            }
+
+            var txtETA = $('#txtETA').val();
+            if (txtETA.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter ETA</span></br>"
+            }
+            var txtETD = $('#txtETD').val();
+            if (txtETD.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter ETD</span></br>"
+            }
+
+            var ddlCurrentPort = $('#ddlCurrentPort').val();
+            if (ddlCurrentPort == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Current Port</span></br>"
+            }
+
+            var ddlLoadTerminal = $('#ddlLoadTerminal').val();
+            if (ddlLoadTerminal == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Loading Terminal</span></br>"
+            }
+
+            var txtSCNNo = $('#txtSCNNo').val();
+            if (txtSCNNo.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter SCN No</span></br>"
+            }
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+
+        
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var Datav = "undefined";
+            angular.forEach(data, function (value, key) {
+
+                Datav += data[key].VesOpID;
+
+            });
+
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select NextPort Details </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+         
+            var BussData = {}
+
+            var id = $scope.HdVoyDtlsId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdVoyDtlsId;
+
+
+            BussData.VesVID = $('#ddlVessel').val();
+            BussData.VoyageNo = $('#txtVoyNo').val();
+            BussData.RotationNo = $('#txtRotNo').val();
+            BussData.ETA = $('#txtETA').val();
+            BussData.ETD = $('#txtETD').val();
+            BussData.ATA = $('#txtATA').val();
+            BussData.ATD = $('#txtATD').val();
+            BussData.CutOff = $('#txtCutOff').val();
+            BussData.CurrentPortID = $('#ddlCurrentPort').val();
+            BussData.LoadingTerminalID = $('#ddlLoadTerminal').val();
+            BussData.FinalPortID = $('#ddlFinalPort').val();
+            BussData.SCNNo = $('#txtSCNNo').val();
+            BussData.Status = $('#ddlStatus').val();
+            BussData.Remarks = $('#txtRemarks').val();
+            var Items = []
+
+
+            angular.forEach(data, function (value, key) {
+                var intVID = data[key].VID;
+                if (typeof data[key].VID == "undefined") {
+                    intVID = 0;
+                }
+
+                Items.push('Insert:' + intVID, data[key].VesOpID, data[key].VesOperator, data[key].NextPortID, data[key].NextPort,
+                    data[key].TerminalID,
+                    data[key].Terminal, data[key].NextPortETA
+                    );
+            });
+
+            BussData.Itemsv = Items.toString();
+            console.log(Items);
+            $http({
+                method: 'POST',
+                url: "/api/Home/VoyageDetails",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Vessel Details Updated Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Vessel Details Saved Successfully");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.back = function () {
+
+            window.location = "/VesVoy/VoyageDetailsView";
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Voyage Details</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vessel</label>
+                                            <select id="ddlVessel" ng-model="ddlVessel" class="form-control my-select" ng-options="item.VesselName for item in Vessel track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Voyage No</label>
+
+                                            <input id="txtVoyNo" type="text" ng-model="txtVoyNo" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Rotation Number</label>
+
+                                            <input id="txtRotNo" type="text" ng-model="txtRotNo" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>ETA</label>
+                                            <input id="txtETA" type="text" ng-model="txtETA" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>ETA</label>
+                                            <input id="txtETD" type="text" ng-model="txtETD" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>ATA</label>
+                                            <input id="txtATA" type="text" ng-model="txtATA" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>ATD</label>
+                                            <input id="txtATD" type="text" ng-model="txtATD" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Cut Off</label>
+                                            <input id="txtCutOff" type="text" ng-model="txtCutOff" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Current Port</label>
+                                            <select class="form-control my-select" ng-model="ddlCurrentPort" id="ddlCurrentPort" ng-options="item.PortName for item in PortValue track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Loading terminal</label>
+                                            <select id="ddlLoadTerminal" ng-model="ddlLoadTerminal" class="form-control my-select" ng-options="item.TerminalName for item in LoadTerminalValue  track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Final Port</label>
+                                            <select class="form-control my-select" ng-model="ddlFinalPort" id="ddlFinalPort" ng-options="item.PortName for item in PortValue track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>SCN No</label>
+                                            <input id="txtSCNNo" type="text" ng-model="txtSCNNo" class="form-control " />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <select id="ddlStatus" ng-model="ddlStatus" class="form-control my-select" ng-options="item.Name for item in StatusList track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Remarks</label>
+                                            <textarea id="txtRemarks" ng-model="txtRemarks" class="form-control" rows="5"></textarea>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Vessel Operator</th>
+                                                <th>Next Port</th>
+                                                <th>Discharge Terminal</th>
+                                                <th>Next Port ETA</th>
+                                                <th class="disabled-sorting text-right actwid">Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody style="margin-top:20px!important;">
+                                            <tr class="gridbody">
+                                                <td></td>
+                                                <td class="chg">
+                                                    <input type="hidden" id="HDIDv" class="form-control" ng-model="VID" />
+                                                    <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                    <select id="ddlVesselOperator" ng-model="VesOperator" class="form-control" ng-options="item.CustomerName for item in SlotOperatorValue track by item.ID"></select>
+
+                                                </td>
+                                                <td class="chgcode">
+                                                    <select id="ddlNextPort" ng-model="NextPort" class="form-control" ng-options="item.PortName for item in PortValue track by item.ID"></select>
+                                                </td>
+                                                <td class="basis">
+                                                    <select id="ddlTerminal" ng-model="Terminal" class="form-control" ng-options="item.TerminalName for item in TerminalValues track by item.ID"></select>
+                                                </td>
+                                                <td class="amt"><input type="text" id="txtNextPortETA" class="form-control datepicker" ng-model="NextPortETA" /></td>
+                                                <td class="td-actions text-right entrygrid">
+                                                    <button type="button" rel="tooltip" ng-click="Add(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">add</i>
+                                                    </button>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                        <thead>
+                                            <tr class="gridhead1">
+                                                <th>S.No</th>
+                                                <th>Vessel Operator</th>
+                                                <th>Next Port</th>
+                                                <th>Discharge Terminal</th>
+                                                <th>Next Port ETA</th>
+                                                <th class="disabled-sorting text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                                <td>{{$index+1}}</td>
+
+                                                <td>
+                                                    {{gRow.VesOperator}}
+
+                                                    <input type="hidden" id="HDVslOperatorID" class="form-control" ng-model="gRow.VesOpID" />
+                                                </td>
+                                                <td>
+                                                    {{gRow.NextPort}}
+
+                                                    <input type="hidden" id="HDNextPortID" class="form-control" ng-model="gRow.NextPortID" />
+                                                </td>
+
+                                                <td>
+                                                    {{gRow.Terminal}}
+
+                                                    <input type="hidden" id="HDDisTerminal" class="form-control" ng-model="gRow.TerminalID" />
+                                                </td>
+
+
+                                                <td class="txtright">
+                                                    {{gRow.NextPortETA}}
+
+                                                </td>
+
+                                                <td class="td-actions text-right bindgrid">
+                                                    <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                    <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+
+                                                    <input type="hidden" id="HDID" class="form-control" ng-model="gRow.VID" />
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+
+                                    @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit"  ng-click="Recordsave(DynamicGrid);" class="btn btn-fill btn-success">Submit</button>
+                            <input type="hidden" id="HdVoyDtlsId" ng-model="HdVoyDtlsId" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

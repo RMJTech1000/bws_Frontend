@@ -1,0 +1,441 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.WaiverRequestview = null;
+        $scope.fillWaiverRequestview = function ()
+        {
+            var BussData = {};
+            BussData.RequestTypeID = $('#ddlRequestType').val();
+            BussData.BlNumber = $scope.txtBookingNo;
+            BussData.WaiverAmt = $scope.ttxWaiverAmt;
+            BussData.FreeDays = $scope.txtfreedays;
+
+            $http({
+                method: 'POST',
+                url: '/api/WaiverRequest/WaierView/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.WaiverRequestview = result.data;
+                    $scope.totalItems = $scope.WaiverRequestview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.WaiverRequestview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillWaiverRequestview();
+
+        $scope.DraftView = function () {
+            var status = 1;
+            $scope.fillWaiverRequestview(status);
+        }
+        $scope.CancelledView = function () {
+            var status = 3;
+            $scope.fillWaiverRequestview(status);
+        }
+        $scope.ConfirmedView = function () {
+            var status = 2;
+            $scope.fillWaiverRequestview(status);
+        }
+
+
+
+        //$scope.fillBookingCount = function () {
+
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/WaiverRequest/BookingCountRecord/',
+        //        data: {}
+        //    }).then(function (result) {
+        //        $timeout(function ()
+        //        {
+        //            $scope.Draft = result.data[0].Draft;
+        //            $scope.Cancelled = result.data[0].Cancelled;
+        //            $scope.Confirmed = result.data[0].Confirm;
+        //        });
+        //    }, function (result) {
+        //        if (result.status == 500) {
+        //            ShowPopup("Sorry no internet connectivity Application Error.");
+        //        }
+        //        else if (result.status == 404) {
+        //            ShowPopup("Sorry no internet connectivity page not found.");
+        //        }
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    }).catch(function (result) {
+        //        ShowPopup('There has been an error: ' + result);
+        //    });
+        //}
+        //$scope.fillBookingCount();
+
+        $scope.LoadingWaiverPage = function (urlv)
+        {
+            //var url = "/Sales/WaiverRequest?WaiverID=" + encodeURIComponent(urlv);
+            //window.location.href = url;
+
+            var ParameterValue = "WaiverID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Sales/WaiverRequest?" + ciphertext;
+
+            window.location.href = url;
+        }
+
+         $scope.btnPrint = function () {
+             var ReqType = $('#ddlRequestType').val();
+             var BookingNo = $('#txtBookingNo').val();
+             var FreeDays = $('#txtfreedays').val();
+             var WaiverAmt = $('#txWaiverAmt').val();
+             var User = localStorage.getItem("UserName");
+             window.location.href = '@Url.Action("WaiverRequestExcel", "MastersExcel")?ReqType=' + ReqType + '&BookingNo=' + BookingNo + '&FreeDays=' + FreeDays + '&WaiverAmt=' + WaiverAmt + '&User=' + User;
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnShow").click(function () {
+            $('#demoModal').modal('show');
+        });
+    });
+</script>
+<style>
+    .bg-gradient-info, .bg-gradient-success, .bg-gradient-danger, .bg-gradient-warning {
+        height: 127px !important;
+    }
+
+    .viewdiv {
+        background-color: #fff;
+        margin-top: -10px;
+        height: 22px;
+        position: absolute;
+        left: 0;
+        top: 115px;
+    }
+
+        .viewdiv h5 {
+            color: #00172a;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 2px;
+            margin-left: 4px;
+        }
+
+        .viewdiv .fa-arrow-right {
+            color: #000;
+        }
+
+        .viewdiv .col-md-4 {
+            text-align: right;
+            padding-right: 6px;
+            margin-top: -2px;
+        }
+    .card-stats .card-header.card-header-icon i {
+        color: #ffffff !important;
+        font-size: 38px !important;
+    }
+
+    .card.card-stats.card-cancelled {
+        background-color: #f34394;
+        margin-bottom: 0;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            <a href="/Sales/WaiverRequest" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </a>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="demoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="width:414px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Waiver Request View
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card bg-gradient-info card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Draft
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Draft"></span></h2></div>
+                                        <div class="col-md-6" style="text-align:right;"><h2><i class="material-icons">file_copy</i></h2></div>
+                                    </div>
+
+                                    <div class="col-md-12 viewdiv">
+                                        <a href="#">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="DraftView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card bg-gradient-danger card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Cancelled
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Cancelled"></span></h2></div>
+                                        <div class="col-md-6" style="text-align:right;"><h2><i class="material-icons">clear</i></h2></div>
+                                    </div>
+
+                                    <div class="col-md-12 viewdiv">
+                                        <a href="#">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="CancelledView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card bg-gradient-success card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Approved
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Confirmed"></span></h2></div>
+                                        <div class="col-md-6" style="text-align:right;"><h2><i class="material-icons">task_alt</i></h2></div>
+                                    </div>
+                                    <div class="col-md-12 viewdiv">
+                                        <a href="#">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="ConfirmedView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-lg-4 col-md-4 col-sm-6">
+            <div class="card card-stats card-draft">
+                <div class="card-header card-header-warning card-header-icon">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <i class="material-icons">file_copy</i>
+                        </div>
+                        <div class="col-md-9">
+                            <p class="card-category">Draft</p>
+                            <h3 class="card-title" ng-bind="Draft"></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6">
+            <div class="card card-stats card-cancelled">
+                <div class="card-header card-header-warning card-header-icon">
+                    <div class="row">
+                        <div class="col-md-3">
+
+                            <i class="material-icons">clear</i>
+                        </div>
+                        <div class="col-md-9">
+                            <p class="card-category">Cancelled</p>
+                            <h3 class="card-title" ng-bind="Cancelled"></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6">
+            <div class="card card-stats card-confirmed">
+                <div class="card-header card-header-warning card-header-icon">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <i class="material-icons">task_alt</i>
+                        </div>
+                        <div class="col-md-9">
+                            <p class="card-category">Confirmed</p>
+                            <h3 class="card-title" ng-bind="Confirmed"></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+                        <div class="col-md-12 padlr0" style="text-align:right; padding-right:16px;">
+                           
+                            <a href="#" ng-click="btnPrint();" class="btn btn-fill btn-danger btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">download</i> Download Excel
+                            </a>
+                        </div>
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Request Type</th>
+                                    <th>BookingNo</th>
+                                    <th>Freedays</th>
+                                    <th>Waiver Amt</th>
+                                    <th>Status</th>
+
+
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in WaiverRequestview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.RequestType}}</td>
+                                    <td>{{i.BLNumber}}</td>
+                                    <td>{{i.Freedays}}</td>
+                                    <td>{{i.WaiverAmt}}</td>
+                                    <td>{{i.Status}}</td>
+
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingWaiverPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+
+                            <select class="form-control" id="ddlRequestType" ng-model="ddlRequestType" options="{ allowClear: true }" ng-options="item.GeneralName for item in RequestTypeAllvalues track by item.ID">
+                                <option value="" disabled selected>Request Type</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtBookingNo" ng-model="txtBookingNo" class="form-control" placeholder="Booking No">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtfreedays" ng-model="txtfreedays" class="form-control" placeholder="Freedays">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="ttxWaiverAmt" ng-model="ttxWaiverAmt" class="form-control" placeholder="Waiver Amt">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="TerminalViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

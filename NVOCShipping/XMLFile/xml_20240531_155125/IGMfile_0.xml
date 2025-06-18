@@ -1,0 +1,243 @@
+<RootElement>
+  <Header>
+    <DocumentFormat>
+      <DocumentFormatIdentifier>TRADEDOC</DocumentFormatIdentifier>
+      <ControllingAgency>DNT</ControllingAgency>
+    </DocumentFormat>
+    <DocumentType>
+      <DocumentTypeCode>GIG</DocumentTypeCode>
+    </DocumentType>
+    <DocumentIdentification>
+      <UniqueReferenceNo>SNRF123</UniqueReferenceNo>
+      <MessageFunction>9</MessageFunction>
+    </DocumentIdentification>
+    <InterchangeSender>
+      <SenderID>info@bluewave.com.my</SenderID>
+    </InterchangeSender>
+    <InterchangeRecipient>
+      <RecipientID>info@bluewave.com.my</RecipientID>
+    </InterchangeRecipient>
+    <DateorTimeofPreparation>
+      <DateofPreparation>20240509</DateofPreparation>
+      <TimeofPreparation>3643</TimeofPreparation>
+    </DateorTimeofPreparation>
+  </Header>
+  <Body>
+    <BeginningofMessage>
+      <DocumentNo>1</DocumentNo>
+      <MessageCode>785</MessageCode>
+      <DocMessageJobNo>BWSKAT24020019PKG</DocMessageJobNo>
+      <IssueDate>202405311551265570</IssueDate>
+    </BeginningofMessage>
+    <ProcessingIndicator>
+      <ProcessingIndicatorCode>23</ProcessingIndicatorCode>
+      <ProcessingIndicatorCode>MNT</ProcessingIndicatorCode>
+    </ProcessingIndicator>
+    <Parties>
+      <PartyType>PSA</PartyType>
+      <OrganizationIdentification>CM0010</OrganizationIdentification>
+      <OrganizationName>BULUE WAVE SHIPPING</OrganizationName>
+      <AddressInformation>
+        <Text>NO.31-1,JALAN RAMIN 1, BANDAR AMBAN</Text>
+        <Text>G BOTANIC, 41200 KLANG, SELANGOR DA</Text>
+        <Text>RUL EHSAN,MALAYSIA</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>SA</PartyType>
+      <OrganizationIdentification>CM0007</OrganizationIdentification>
+      <OrganizationName>BULUE WAVE SHIPPING</OrganizationName>
+      <AddressInformation>
+        <Text>NO.31-1,JALAN RAMIN 1, BANDAR AMBAN</Text>
+        <Text>G BOTANIC, 41200 KLANG, SELANGOR DA</Text>
+        <Text>RUL EHSAN,MALAYSIA </Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>CZ</PartyType>
+      <OrganizationIdentification>CM5444</OrganizationIdentification>
+      <OrganizationName>TUBE INVESTMENTS OF INDIA LIMITED-CHENNAI-CHENNAI</OrganizationName>
+      <AddressInformation>
+        <Text>POST BAG NO.4 AND 18,CHENNAI TIRUVA</Text>
+        <Text>LLUR HIGH ROAD
+AVADI,CHENNAI TIRUVA</Text>
+        <Text>LLUR,TAMIL NADU
+PIN-600054, India,,</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>CN</PartyType>
+      <OrganizationIdentification>CM7955</OrganizationIdentification>
+      <OrganizationName>INDUSTRIAL QUALITY MANAGEMENT SDN.BHD-PORT KLANG </OrganizationName>
+      <AddressInformation>
+        <Text>LOT 7, KAWASAM MIEL 11
+JALAN BUREA </Text>
+        <Text>23/4, SECTION 23
+40300 SHAH ALAM,DA</Text>
+        <Text>RUL EHSAN
+SELANGOR, MALAYSIA,,</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>IN</PartyType>
+      <OrganizationIdentification>CM7955</OrganizationIdentification>
+      <OrganizationName>INDUSTRIAL QUALITY MANAGEMENT SDN.BHD-PORT KLANG </OrganizationName>
+      <AddressInformation>
+        <Text>LOT 7, KAWASAM MIEL 11
+JALAN BUREA </Text>
+        <Text>23/4, SECTION 23
+40300 SHAH ALAM,DA</Text>
+        <Text>RUL EHSAN
+SELANGOR, MALAYSIA</Text>
+      </AddressInformation>
+    </Parties>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>8</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>MYWSP</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>9</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>INKAT</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>8</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>MYWSP</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>13</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>
+      </PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>27</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>
+      </PlaceOrLocCode>
+    </PlaceOrLocation>
+    <DateTimeDetail>
+      <DateTimeFuncCode>182</DateTimeFuncCode>
+      <DateTimeValue>202405311551265570</DateTimeValue>
+    </DateTimeDetail>
+    <DateTimeDetail>
+      <DateTimeFuncCode>132</DateTimeFuncCode>
+      <DateTimeValue>202402111852000000</DateTimeValue>
+    </DateTimeDetail>
+    <DateTimeDetail>
+      <DateTimeFuncCode>132</DateTimeFuncCode>
+      <DateTimeValue>202402131852000000</DateTimeValue>
+    </DateTimeDetail>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>AA</DocRefCode>
+        <DocRefNo>PCA</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>BM</DocRefCode>
+        <DocRefNo>BLNO</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CAC</DocRefCode>
+        <DocRefNo>GENDRAL/HAZ</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CSC</DocRefCode>
+        <DocRefNo>9</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>SCN</DocRefCode>
+        <DocRefNo>2452U7</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>TOP</DocRefCode>
+        <DocRefNo>BKMT01</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <TransportDetails>
+      <TransportStageCodeQualifier>11</TransportStageCodeQualifier>
+      <ModeofTransportCode>1</ModeofTransportCode>
+      <ConveyanceReferenceNo>170E</ConveyanceReferenceNo>
+      <TransportMeans>
+        <TransportTypeID />
+        <TransportTypeName />
+      </TransportMeans>
+      <TransportIdentification>
+        <TransportTypeID>BPNC</TransportTypeID>
+        <TransportMeansName>XIN YANG PU</TransportMeansName>
+        <Nationality>
+        </Nationality>
+      </TransportIdentification>
+    </TransportDetails>
+    <LineItem>
+      <LineItemNo>1</LineItemNo>
+      <ItemIdentifiers>
+        <TariffCode>850220</TariffCode>
+        <ProductDesc>
+        </ProductDesc>
+      </ItemIdentifiers>
+      <PackageandWeightSummary>
+        <TotalPackage>
+          <NumberofPackages>12</NumberofPackages>
+          <PackageTypeCode>CAS</PackageTypeCode>
+        </TotalPackage>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementDimensionCode>AAD</MeasurementDimensionCode>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>11260.000</Value>
+          <MeasurementDimensionCode>MFT</MeasurementDimensionCode>
+          <MeasurementDimensionCode>MFT</MeasurementDimensionCode>
+        </Measurement>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>10445.000</Value>
+        </Measurement>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>10445.000</Value>
+        </Measurement>
+      </PackageandWeightSummary>
+      <AdditionalInformation>
+        <InformationType>PAC</InformationType>
+        <Text>N/M</Text>
+      </AdditionalInformation>
+      <Container>
+        <ContainerIdentifier>PCIU2764604</ContainerIdentifier>
+      </Container>
+    </LineItem>
+    <Container>
+      <ContainerItemNo>1</ContainerItemNo>
+      <ContainerIdentifier>PCIU2764604</ContainerIdentifier>
+      <ContainerSizeandCodes>
+        <ContainerSizeandDetailedTypeCode>20GP</ContainerSizeandDetailedTypeCode>
+      </ContainerSizeandCodes>
+      <EquipmentStatus>3</EquipmentStatus>
+      <FullEmptyIndicator>1</FullEmptyIndicator>
+      <Seal>1251382</Seal>
+      <SealingParty>CA</SealingParty>
+    </Container>
+    <GrandTotal>
+      <TotalMeasurement>
+        <MeasurementQualifier>AAE</MeasurementQualifier>
+        <MeasurementDimensionCode>AAD</MeasurementDimensionCode>
+        <MeasurementUnitCode>KGM</MeasurementUnitCode>
+        <Value>0.00</Value>
+      </TotalMeasurement>
+    </GrandTotal>
+    <AdditionalInformation>
+      <InformationType>AAA</InformationType>
+      <Text>
+      </Text>
+    </AdditionalInformation>
+  </Body>
+</RootElement>

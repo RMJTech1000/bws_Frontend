@@ -1,0 +1,218 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<script type="text/javascript">
+
+
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+        $scope.AddNew = function () {
+
+            window.location = "/MNR/MNRRepair"
+        }
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.RepairRecords = null;
+        $scope.RepairRecords = function () {
+            var BussData = {}
+            BussData.RepairCode = $scope.txtRprCode;
+            BussData.RepairDescription = $scope.txtRprDesc;
+            BussData.Status = $scope.ChkStatus;
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/RepairView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.RepairRec = result.data;
+
+                $scope.totalItems = $scope.RepairRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.RepairRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.RepairViewRecords = function () {
+
+            $scope.RepairRecords();
+        }
+        $scope.ClearRecords = function () {
+
+            $scope.txtRprCode = "";
+            $scope.txtRprDesc = "";
+            $scope.ChkStatus = "0";
+            $scope.RepairRecords();
+        }
+        $scope.RepairRecords();
+
+        $scope.RepairUpdate = function (urlv) {
+            //var url = "/MNR/MNRRepair?RprID=" + encodeURIComponent(url);
+            //window.location.href = url;
+
+            var ParameterValue = "RprID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/MNR/MNRRepair?" + ciphertext;
+            window.location.href = url;
+        }
+        $scope.btnPrint = function () {
+            var RprCode = $('#txtRprCode').val();
+            var RprDesc = $('#txtRprDesc').val();
+             var User = localStorage.getItem("UserName");
+            window.location.href = '@Url.Action("MNRRepairExcel", "MastersExcel")?RprCode=' + RprCode + '&RprDesc=' + RprDesc + '&User=' + User;
+        }
+    }
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Repair Master
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+                        <div class="col-md-12 padlr0" style="text-align:right; padding-right:16px;">
+                            <a href="#" ng-click="btnPrint();" class="btn btn-fill btn-danger btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">download</i> Download Excel
+                            </a>
+                        </div>
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Repair Code</th>
+                                    <th>Repair Description</th>
+                                    <th>Status</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in RepairRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.RepairCode}}</td>
+                                    <td>{{i.RepairDescription}}</td>
+                                    <td>{{i.StatusResult}}</td>
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="RepairUpdate(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(RepairRec|filter:RepairCode).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtRprCode" ng-model="txtRprCode" class="form-control" placeholder="Repair Code">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtRprDesc" ng-model="txtRprDesc" class="form-control" placeholder="Repair Description">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Status</label>
+                                </div>
+                                <div class="col-md-6 input-field" style="text-align:right; padding-right:0;">
+                                    <div class="togglebutton">
+                                        <label>
+                                            <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                            <span class="toggle"></span>
+
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<select class="form-control">
+                                    <option>--Status--</option>
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="RepairViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

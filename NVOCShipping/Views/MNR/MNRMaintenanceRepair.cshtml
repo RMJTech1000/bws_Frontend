@@ -1,0 +1,1865 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+    .attch .ng-valid {
+        opacity: 1 !important;
+        color: #000 !important;
+        margin-top: -40px !important;
+        margin-left: 93px !important;
+    }
+    .form-control:read-only {
+        background-image: linear-gradient(0deg,#d2d2d2 1px,hsla(0,0%,82%,0) 0),linear-gradient(0deg,#d2d2d2 1px,hsla(0,0%,82%,0) 0);
+        background-color: transparent;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, Upload, $timeout) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.MNRDamageList = null;
+        $scope.fillMNRDamageList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindDamage/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRDamageList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRDamageList();
+
+        $scope.MNRRepairList = null;
+        $scope.fillMNRRepairList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindRepair/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRRepairList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRRepairList();
+
+        $scope.MNRComponentList = null;
+        $scope.fillMNRComponentList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindComponent/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRComponentList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRComponentList();
+
+        $scope.MNRLocationList = null;
+        $scope.fillMNRLocationList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindMNRLocation/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRLocationList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRLocationList();
+
+        $scope.MNRCostToList = null;
+        $scope.fillMNRCostToList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindCostToDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCostToList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRCostToList();
+
+        $scope.MNRAttachTypeList = null;
+        $scope.fillMNRAttachTypeList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindMNRAttachTypeDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRAttachTypeList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRAttachTypeList();
+
+        $scope.MNRApproveRejectList = null;
+        $scope.fillMNRApproveRejectList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindApproveRejectDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRApproveRejectList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRApproveRejectList();
+
+        $scope.BindMNRTariffValues = function (gRow) {
+            var Datavalue = {};
+            Datavalue.DepotID = "15";
+            //localStorage.getItem("DepotID");
+            Datavalue.DamageID = gRow.DmgCode.ID
+            Datavalue.RepairID = gRow.RprCode.ID
+            Datavalue.ComponentID = gRow.CompCode.ID
+            Datavalue.LocationID = gRow.LocCode.ID
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindMNRTariffDtlsValuesByDepot/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data[0].ID != "" || result.data[0].ID != "" != null) {
+                        gRow.Length = result.data[0].Length;
+                        gRow.Width = result.data[0].Width;
+                        gRow.ApprLabHrs = result.data[0].LabourHrs;
+                        gRow.ApprLabCost = result.data[0].LabourCostx100;
+                        gRow.ApprMatCost = result.data[0].MaterialCostx100;
+                        gRow.ApprTotalCost = result.data[0].TotalCost;
+                    }
+
+                });
+
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+
+                    ShowPopup("Tariff not exists for selected component combination.");
+                }
+                //if (result.status > 0) {
+                //    var errorMsg = result.status + ': ' + result.data;
+                //    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                //}
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["ReqID"] != null) {
+
+                $scope.HDRegId = queryString["ReqID"].toString();
+                $scope.MNRCRPreviewGrid1Records(queryString["ReqID"].toString());
+                $scope.MNRCRPreviewGrid2Records(queryString["ReqID"].toString());
+                $scope.MNRCRPreviewSurveyorRecords(queryString["ReqID"].toString());
+                $scope.MNRCRCostRecords(queryString["ReqID"].toString());
+                $scope.MNRCRCostApprRecords(queryString["ReqID"].toString());
+                $scope.MNRCRCostDtlsTotalView(queryString["ReqID"].toString());
+                $scope.MNRAttachmentsView(queryString["ReqID"].toString());
+                $scope.MNRApprovedDtlsView(queryString["ReqID"].toString());
+
+                if (queryString["Status"] == "OPEN") {
+                    $scope.IsVisibleCost2 = false;
+                    $scope.IsVisibleCost1 = true;
+                    $scope.IsVisibleApprDtlsGrid = false;
+                    $scope.IsVisibleApprDtlsHead = false;
+                    $scope.IsVisibleStatus = false;
+                    $scope.ISMoveToAV = false;
+                    
+                }
+                else if (queryString["Status"] == "REPAIRED") {
+                    $scope.IsVisibleCost2 = true;
+                    $scope.IsVisibleCost1 = false;
+                    $scope.IsVisibleApprDtlsGrid = true;
+                    $scope.IsVisibleApprDtlsHead = true;
+                    $scope.IsVisibleStatus = true;
+                    $scope.ISMoveToAV = true;
+                    $scope.MNRApprovedDtlsView(queryString["ReqID"].toString());
+                    document.getElementById('btnrepair').style.visibility = 'hidden';
+                    document.getElementById('btnapprove').style.visibility = 'hidden';
+                }
+                else {
+
+                    $scope.IsVisibleCost2 = true;
+                    $scope.IsVisibleCost1 = false;
+                    $scope.IsVisibleApprDtlsGrid = true;
+                    $scope.IsVisibleApprDtlsHead = true;
+                    $scope.IsVisibleStatus = true;
+                    $scope.ISMoveToAV = false;
+                    document.getElementById('btnapprove').style.visibility = 'hidden';
+                    document.getElementById('btneorconfirm').style.visibility = 'hidden';
+                    document.getElementById('btnsave').style.visibility = 'hidden';
+                    $scope.MNRApprovedDtlsView(queryString["ReqID"].toString());
+                }
+            }
+        });
+
+        $scope.MNRCRCostDtls = [{ DID: "", AppLabCost: "", AppMatCost: "", AppTotalCost: "", AppTotalLabCost: "", AppTotalMatCost: "", AppTotalEstCost: "",CostToDD: "", ApproveRejectDD: "", ApprRemarks: ""}];
+
+        $scope.MNRCRPreviewGrid1Records = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRRepairReqPreviewGrid1",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCRPreviewGrid1 = result.data;
+                    $scope.HdCntrNo = result.data[0].CntrNo;
+                    $scope.HdCntrID = result.data[0].CntrID;
+                    $scope.IsVendor = result.data[0].IsVendor;
+                    $scope.CntrRepairHistoryView(result.data[0].CntrID);
+                    $scope.MNRCntrCurrentStatusView(result.data[0].CntrID);
+                    if (result.data[0].MovedToAV == "1") {
+                        $scope.IsVisibleStatus = false;
+                        $scope.ShowCompImage = true;
+                        $scope.ShowAttachments = false;
+                    }
+                    else {
+                        $scope.IsVisibleStatus = true;
+                        $scope.ShowCompImage = false;
+                        $scope.ShowAttachments = true;
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRCRPreviewGrid2Records = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRApprovedBLCargoDetails",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCRPreviewGrid2 = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRCRPreviewSurveyorRecords = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRSurveyorView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCRPreviewSurveyorGrid = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRCRCostRecords = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRRepairReqPreviewCostDtls",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.MNRCRCostDtls = result.data;
+                    //$scope.DynamicGridMNRCRAppCostDtls = result.data;
+
+                    $scope.EstTotLabCost = 0.00;
+                    $scope.EstTotMatCost = 0.00;
+                    $scope.EstGrandTotCost = 0.00;
+                    $scope.AprveTotLabCost = 0.00;
+                    $scope.AprveMatLabCost = 0.00;
+                    $scope.AprveGrandCost = 0.00;
+
+                    $scope.EstTotLabCostOpen = 0.00;
+                    $scope.EstTotMatCostOpen = 0.00;
+                    $scope.EstGrandTotCostOpen = 0.00;
+                    $scope.AprveTotLabCostOpen = 0.00;
+                    $scope.AprveMatLabCostOpen = 0.00;
+                    $scope.AprveGrandCostOpen = 0.00;
+                    
+                    for (var i = 0; i < $scope.MNRCRCostDtls.length; i++) {
+
+                        //$scope.GridPortBillDtls[i].ChkFlag = checked;
+
+                      
+                        var EstTotLabCostOpenV = 0.00;
+                        var EstTotMatCostOpenV = 0.00;
+                        var EstGrandTotCostOpenV = 0.00;
+          
+
+                        EstTotLabCostOpenV = parseFloat($scope.MNRCRCostDtls[i].TotalLabCost);
+                        EstTotMatCostOpenV = parseFloat($scope.MNRCRCostDtls[i].TotalMatCost);
+                        EstGrandTotCostOpenV = parseFloat($scope.MNRCRCostDtls[i].EstTotalCost);
+
+                        //AprveTotLabCostV = parseFloat($scope.MNRCRCostDtls[i].TotalLabCost);
+                        //AprveMatLabCostV = parseFloat($scope.MNRCRCostDtls[i].TotalMatCost);
+                        //AprveGrandCostV = parseFloat($scope.MNRCRCostDtls[i].EstTotalCost);
+
+                        $scope.EstTotLabCostOpen += parseFloat(EstTotLabCostOpenV);
+                        $scope.EstTotMatCostOpen += parseFloat(EstTotMatCostOpenV);
+                        $scope.EstGrandTotCostOpen += parseFloat(EstGrandTotCostOpenV);
+
+                      
+                    };
+
+                    //for (var i = 0; i < $scope.DynamicGridMNRCRAppCostDtls.length; i++) {
+
+                    //    //$scope.GridPortBillDtls[i].ChkFlag = checked;
+
+
+                    //    var EstTotLabCostV = 0.00;
+                    //    var EstTotMatCostV = 0.00;
+                    //    var EstGrandTotCostV = 0.00;
+                    //    var AprveTotLabCostV = 0.00;
+                    //    var AprveMatLabCostV = 0.00;
+                    //    var AprveGrandCostV = 0.00;
+
+                    //    EstTotLabCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].TotalLabCost);
+                    //    EstTotMatCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].TotalMatCost);
+                    //    EstGrandTotCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].EstTotalCost);
+
+                    //    AprveTotLabCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].ApprTotalLabCost);
+                    //    AprveMatLabCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].ApprTotalMatCost);
+                    //    AprveGrandCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].TotalApprCost);
+
+                    //    $scope.EstTotLabCost += parseFloat(EstTotLabCostV);
+                    //    $scope.EstTotMatCost += parseFloat(EstTotMatCostV);
+                    //    $scope.EstGrandTotCost += parseFloat(EstGrandTotCostV);
+
+                    //    $scope.AprveTotLabCost += parseFloat(AprveTotLabCostV);
+                    //    $scope.AprveMatLabCost += parseFloat(AprveMatLabCostV);
+                    //    $scope.AprveGrandCost += parseFloat(AprveGrandCostV);
+                    //};
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRCRCostApprRecords = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRRepairReqPreviewApprCostDtls",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                 
+                    $scope.DynamicGridMNRCRAppCostDtls = result.data;
+
+                    $scope.EstTotLabCost = 0.00;
+                    $scope.EstTotMatCost = 0.00;
+                    $scope.EstGrandTotCost = 0.00;
+                    $scope.AprveTotLabCost = 0.00;
+                    $scope.AprveMatLabCost = 0.00;
+                    $scope.AprveGrandCost = 0.00;
+
+                    $scope.EstTotLabCostOpen = 0.00;
+                    $scope.EstTotMatCostOpen = 0.00;
+                    $scope.EstGrandTotCostOpen = 0.00;
+                    $scope.AprveTotLabCostOpen = 0.00;
+                    $scope.AprveMatLabCostOpen = 0.00;
+                    $scope.AprveGrandCostOpen = 0.00;
+
+                
+
+                    for (var i = 0; i < $scope.DynamicGridMNRCRAppCostDtls.length; i++) {
+
+                        //$scope.GridPortBillDtls[i].ChkFlag = checked;
+
+
+                        var EstTotLabCostV = 0.00;
+                        var EstTotMatCostV = 0.00;
+                        var EstGrandTotCostV = 0.00;
+                        var AprveTotLabCostV = 0.00;
+                        var AprveMatLabCostV = 0.00;
+                        var AprveGrandCostV = 0.00;
+
+                        EstTotLabCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].TotalLabCost);
+                        EstTotMatCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].TotalMatCost);
+                        EstGrandTotCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].EstTotalCost);
+
+                        AprveTotLabCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].ApprTotalLabCost);
+                        AprveMatLabCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].ApprTotalMatCost);
+                        AprveGrandCostV = parseFloat($scope.DynamicGridMNRCRAppCostDtls[i].TotalApprCost);
+
+                        $scope.EstTotLabCost += parseFloat(EstTotLabCostV);
+                        $scope.EstTotMatCost += parseFloat(EstTotMatCostV);
+                        $scope.EstGrandTotCost += parseFloat(EstGrandTotCostV);
+
+                        $scope.AprveTotLabCost += parseFloat(AprveTotLabCostV);
+                        $scope.AprveMatLabCost += parseFloat(AprveMatLabCostV);
+                        $scope.AprveGrandCost += parseFloat(AprveGrandCostV);
+                    };
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRCRCostDtlsTotalView = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNREstApprTotalView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNREstApprTotalViewGrid = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRAttachmentsView = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRAttachmentsView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRAttachmentsViewGrid = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRApprovedDtlsView = function (ReqID) {
+            var BussData = {}
+            BussData.ID = ReqID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRApprovedDtlsView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRApprovalDtlsViewGrid = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.MNRCntrCurrentStatusView = function (CntrID) {
+
+            var BussData = {}
+            BussData.ID = CntrID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRCntrCurrentStatusView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCntrCurrentStatusViewGrid = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.UploadFiles = function (files) {
+
+
+            var validation = "";
+
+            if (validation != "") {
+                $('#upload-file-info').text("");
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $scope.SelectedFiles = files;
+            //$scope.HdCntrNo = cntrno;
+            if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                    Upload.upload({
+                        url: '/MNR/Upload/',
+                        data: {
+                            files: $scope.SelectedFiles,
+                        },
+                        params: { cntrno: $scope.HdCntrNo }
+                    }).then(function (response) {
+                        $timeout(function () {
+
+                            $('#upload-file-info').text("");
+                            $scope.HDAttach = response.data;
+                            //$scope.HdCntrNo = cntrno;
+                            console.log(response.data);
+
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            var errorMsg = response.status + ': ' + response.data;
+
+                        }
+                    }, function (evt) {
+                        var element = angular.element(document.querySelector('#dvProgress'));
+                        $scope.Progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                        element.html('<div style="width: ' + $scope.Progress + '%">' + $scope.Progress + '%</div>');
+                    });
+                }
+
+            }
+
+        }
+
+        $scope.SaveAttachedFile = function () {
+            var validation = "";
+            var attachment = "";
+            attachment = $scope.HDAttach;
+            var ddlAttachType = $('#ddlAttachType').val();
+
+            if (ddlAttachType == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Attachment Type </span></br>"
+            }
+
+            if (typeof attachment == 'undefined') {
+                validation += "<span style='color:red;'>*</span> <span>Please Upload Post-Repaired Attachment </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var BussData = {}
+
+            var id = $scope.HDRegId;
+            if (id == "" || id == null)
+                BussData.RepairReqID = 0;
+            else
+                BussData.RepairID = $scope.HDRegId;
+            BussData.AttachTypeID = $('#ddlAttachType').val();
+            //BussData.UploadedBy = localStorage.getItem("VendorID");
+            BussData.UploadedBy = "2718";
+            BussData.FileName = $scope.HDAttach;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRAttachments",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.HDRegId = result.data[0].AID;
+
+                    if (BussData.ID != "") {
+                        ShowPopup("MNR Attachments Uploaded");
+
+                    }
+                    else {
+                        ShowPopup("MNR Attachments Uploaded Successfully");
+                    }
+                });
+            });
+        }
+
+        //$scope.EORConfirm = function () {
+        //    var BussData = {}
+
+        //    var id = $scope.HDRegId;
+        //    if (id == "" || id == null)
+        //        BussData.RepairID = 0;
+        //    else
+        //        BussData.RepairID = $scope.HDRegId;
+
+
+        //    $http({
+        //        method: 'POST',
+        //        url: "/api/MNRApi/MNREORConfirmUpdateApprDtls",
+        //        data: JSON.stringify(BussData),
+
+        //    }).then(function (result) {
+        //        $timeout(function () {
+
+        //            //if (BussData.RepairID != "") {
+        //            //    ShowPopup("EOR Confirmed Successfully");
+
+        //            //}
+        //            //else {
+        //            //    ShowPopup("EOR Confirmed Successfully");
+        //            //}
+        //        });
+        //    });
+        //}
+
+        $scope.Approve = function (data) {
+
+            var validation = "";
+            var Datav = "";
+            var DataA = "";
+          
+            var LabCostV = "";
+            var MatCostV = "";
+            var TotalCostV = "";
+            var TotalLabCostV = "";
+            angular.forEach(data, function (value, key) {
+                Datav = data[key].CostToDD;
+                DataA = data[key].ApproveRejectDD;
+                LabCostV = data[key].AppLabCost;
+                MatCostV = data[key].AppMatCost;
+                TotalCostV = data[key].AppTotalCost;
+                TotalLabCostV = data[key].ApprTotalLabCost;
+               
+            });
+          
+            if (typeof LabCostV == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Approved Lab Cost </span></br>"
+            }
+            if (typeof MatCostV == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Approved Mat Cost </span></br>"
+            }
+            if (typeof TotalCostV == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Approved Total Cost </span></br>"
+            }
+
+            if ($scope.AprveGrandCostOpen== "0") {
+                validation += "<span style='color:red;'>*</span> <span>Please Click Calculate For Approved</span></br>"
+            }
+            alert($scope.AprveGrandCostOpen);
+            if (typeof Datav == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select CostTo </span></br>"
+            }
+            if (typeof DataA == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Approve/Reject </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {}
+
+            var id = $scope.HDRegId;
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+
+            BussData.ApprovedByID = localStorage.getItem("UserID");
+            BussData.ApprovedAtID = localStorage.getItem("AgencyID");
+            BussData.SessionFinYear = new Date().getFullYear();
+            BussData.AgentCode = localStorage.getItem("DocumentSuffix");
+            BussData.StatusCode = "UR";
+            BussData.CntrID = $scope.HdCntrID;
+            var Items = []
+           
+            angular.forEach(data, function (value, key) {
+                var intDID = data[key].DID;
+
+                if (typeof data[key].DID == "undefined") {
+                    intDID = 0;
+                }
+              
+
+                var intCostTo = $("#ddlCostTo" + key).val();
+                var intApproveReject = $("#ddlApproveReject" + key).val();
+                var ApprRemarksV = $("#txtApprRemarks" + key).val();
+
+              
+                if (ApprRemarksV == "")
+                    ApprRemarksV = "  ";
+                else
+                    ApprRemarksV = data[key].ApprRemarks;
+
+                Items.push('Insert:' + intDID, data[key].AppLabCost, data[key].AppMatCost, data[key].AppTotalCost, data[key].AppTotalLabCost, data[key].AppTotalMatCost, data[key].AppTotalEstCost,intCostTo, intApproveReject, ApprRemarksV
+                );
+            });
+
+            console.log(Items);
+            BussData.Itemsv = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRApprove",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    //$scope.Recordsave();
+                    //$scope.EORConfirm();
+                    if (BussData.RepairID != "") {
+                        ShowPopup("Approved Successfully");
+
+                    }
+                    else {
+                        ShowPopup("Approved Successfully");
+                    }
+                    var url = "/MNR/MNRMaintenanceRepairView";
+                     window.location.href = url;
+                });
+            });
+        }
+
+        //$scope.StatusChangeToAV = function (CntrID) {
+        //    var validation = "";
+        //    var txtDtMovement = $('#txtDtMovement').val();
+        //    if (txtDtMovement.length == 0) {
+
+        //        validation += "<span style='color:red;'>*</span> <span>Please Select Movement Date</span></br>"
+
+        //    }
+
+        //    if (validation != "") {
+
+        //        ShowPopup(validation);
+        //        return false;
+        //    }
+        //    var BussData = {}
+
+        //    var id = $scope.HDRegId;
+        //    if (id == "" || id == null)
+        //        BussData.ID = 0;
+        //    else
+        //        BussData.ID = $scope.HDRegId;
+
+        //    BussData.CntrID = CntrID;
+        //    BussData.StatusCode = "AV";
+        //    BussData.DtMovement = $('#txtDtMovement').val();
+        //    BussData.AgencyID = localStorage.getItem("AgencyID");
+        //    BussData.DepotID = 15;
+        //    BussData.LocationID = 160;
+        //    BussData.VendorID = 0;
+        //    $http({
+        //        method: 'POST',
+        //        url: "/api/MNRApi/MNRStatusChangeToAV",
+        //        data: JSON.stringify(BussData),
+
+        //    }).then(function (result) {
+        //        $timeout(function () {
+
+        //            if (BussData.CntrID != "") {
+        //                ShowPopup("Status Changed To AV Successfully");
+
+        //            }
+        //            else {
+        //                ShowPopup("Status Changed To AV Successfully");
+        //            }
+        //            var url = "/MNR/MNRMaintenanceRepairView";
+        //            window.location.href = url;
+        //        });
+        //    });
+        //}
+        //$scope.Recordsave = function (data) {
+
+
+        //    $('#overlay').fadeIn().delay(100).fadeOut();
+        //    var BussData = {}
+        //    var id = $scope.HDRegId;
+
+        //    if (id == "" || id == null)
+        //        BussData.ID = 0;
+        //    else
+        //        BussData.ID = $scope.HDRegId;
+
+        //    var Items = []
+
+        //    angular.forEach(data, function (value, key) {
+        //        var intDID = data[key].DID;
+        //        alert(data[key].DID);
+        //        if (typeof data[key].DID == "undefined") {
+        //            intDID = 0;
+        //        }
+        //        var intCostTo = $("#ddlCostTo" + key).val();
+        //        var intApproveReject = $("#ddlApproveReject" + key).val();
+        //        var strRemarks = $("#txtApprRemarks" + key).val();
+
+        //        Items.push('Insert:' + intDID, intCostTo, intApproveReject, strRemarks
+        //        );
+        //    });
+        //    console.log(Items);
+        //    BussData.Itemsv = Items.toString();
+
+        //    $http({
+        //        method: 'POST',
+        //        url: "/api/MNRApi/MNRRepairReqApprovCostDtls",
+        //        data: JSON.stringify(BussData),
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            // BussData.ID = result.data[0].ID;
+        //            //alert(result.data[0].ID);
+        //            //if (BussData.ID != "") {
+        //            //    ShowPopup("MNR Repair Request Master Updated");
+        //            //}
+        //            //else {
+
+        //            //    ShowPopup("MNR Repair Request Saved Successfully");
+        //            //}
+        //            var url = "/MNR/MNRMaintenanceRepairView";
+        //            window.location.href = url;
+
+        //            setTimeOut(function () {
+        //                window.location = "/";
+        //            }, 3000);
+        //        });
+        //    }, function (result) {
+        //        if (result.status == 500) {
+        //            ShowPopup("Sorry no internet connectivity Application Error.");
+        //        }
+        //        else if (result.status == 404) {
+        //            ShowPopup("Sorry no internet connectivity page not found.");
+        //        }
+
+
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            // $(".modal").hide();
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    }).catch(function (result) {
+        //        // This is set in the event of an error.
+        //        console.log(result);
+        //        ShowPopup('There has been an error: ' + result);
+        //    });
+
+        //}
+        $scope.Repair = function () {
+            var BussData = {}
+
+            var id = $scope.HDRegId;
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+
+            //BussData.DtRepaired = localStorage.getItem("UserID");
+            BussData.StatusCode = "UR";
+            BussData.CntrID = $scope.HdCntrID;
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            BussData.DepotID = 15;
+            BussData.LocationID = 160;
+            BussData.VendorID = 0;
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRRepair",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (BussData.ID != "") {
+                        ShowPopup("Repaired Successfully");
+
+                    }
+                    else {
+                        ShowPopup("Repaired Successfully");
+                    }
+                    var url = "/MNR/MNRMaintenanceRepairView";
+                    window.location.href = url;
+                });
+            });
+        }
+        $scope.DownloadFile = function (fileName) {
+         
+            if ($scope.IsVendor == 0) {
+                window.location.href = '@Url.Action("DownloadAttachment", "MNR")?fileName=' + fileName;
+            }
+            else {
+                window.location.href = 'https://depo.oceanus-lines.com/MNRAttachments/' + fileName;
+            }
+
+
+        };
+
+        $scope.CntrRepairHistoryView = function (CntrID) {
+            var BussData = {}
+
+            BussData.CntrID = CntrID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRCntrRepairHistoryDetails",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrRepairHistoryView = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+
+        $scope.EstimateReport = function () {
+
+            var id = $scope.HDRegId;
+             window.open('@Url.Action("MNRPDF", "MNRPDF")?ReqID=' + id  + "&IsforAppvd=1");
+
+        }
+
+        $scope.ApprovedReport = function () {
+
+            var id = $scope.HDRegId;
+               window.open('@Url.Action("MNRPDF", "MNRPDF")?ReqID=' + id);
+
+        }
+        $scope.ApprovedReport50 = function () {
+
+            var id = $scope.HDRegId;
+               window.open('@Url.Action("MNRPDF", "MNRPDF")?ReqID=' + id);
+
+        }
+
+        $scope.Closebtn = function () {
+
+            window.location = "/MNR/MNRMaintenanceRepairView"
+        }
+        $scope.getTotal = function (iRow) {
+
+
+            var total = 0.00;
+            var LabCost = 0.00;
+            var MatCost = 0.00;
+            var Qty = 0.00;
+            var TotalLabCostgr = 0.00;
+            var TotalMatCostgr = 0.00;
+            // var EstTotalMatCostgr = 0.00;
+            for (var i = 0; i < $scope.MNRCRCostDtls.length; i++) {
+                var iRow = $scope.MNRCRCostDtls[i];
+                LabCost = iRow.AppLabCost;
+                MatCost = iRow.AppMatCost;
+                Qty = iRow.Qty;
+
+                // TotalLabCostgr += (Qty * LabCost);
+                iRow.AppTotalLabCost = (Qty * LabCost);
+
+                // TotalMatCostgr += (Qty * MatCost);
+                iRow.AppTotalMatCost = (Qty * MatCost);
+
+                iRow.AppTotalEstCost = (Qty * LabCost) + (Qty * MatCost);
+
+               
+            }
+            $scope.AprveTotLabCostOpen += parseFloat(iRow.AppTotalLabCost);
+            $scope.AprveMatLabCostOpen += parseFloat(iRow.AppTotalMatCost);
+            $scope.AprveGrandCostOpen += parseFloat(iRow.AppTotalEstCost);
+
+            return total;
+        }
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+   
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #20498e !important;
+        color: #fff;
+    }
+
+        .table > thead > tr > th.appth {
+            background-color: #3b9e40 !important;
+        }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+@*<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />*@
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/MNR/MNRMaintenanceRepairView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        CONTAINER MAINTENANCE & REPAIR
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12" style="text-align:center;">
+                                <p>
+                                    <a href='#' ng-click="EstimateReport();" style="color:#A04000;font-size:14px;font-weight:bold;text-decoration:underline;">Estimate Report </a> ||
+
+                                    <a href='#' ng-click="ApprovedReport();" style="color:#05872f;font-size:14px;font-weight:bold;text-decoration:underline;">Approved Report </a> ||
+
+                                    <a href='#' ng-click="ApprovedReport50();" style="color: #05872f;  font-size: 14px;   font-weight: bold; text-decoration: underline;"> 50% Approved Report </a> ||
+
+                                    <a href="#" data-toggle="modal" data-target="#CntrRepairHistory" style="color:#7D3C98;text-decoration: underline;font-weight: bold;">Container Repair history </a>
+                                </p>
+                            </div>
+                            <div class="col-md-12">
+                                <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Container Repair Request</h4>
+                            </div>
+                            <div class="col-md-12">
+
+                                <div class="material-datatables">
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th> Location</th>
+                                                <th>Depot</th>
+                                                <th>Request Date</th>
+                                                <th>Request Reference#</th>
+                                                <th>Request Status</th>
+                                                <th>Container#</th>
+                                                <th>Size & Type</th>
+                                                <th>MTY In-Date</th>
+                                                <th>Commodity</th>
+                                                <th>BL Number</th>
+                                                <th>Currency</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="i in MNRCRPreviewGrid1">
+                                                <td>{{i.Location}}</td>
+                                                <td>{{i.Depot}}</td>
+                                                <td>{{i.DtRequest}}</td>
+                                                <td>{{i.RequestNo}}</td>
+                                                <td>{{i.MNRStatus}}</td>
+                                                <td>{{i.CntrNo}}</td>
+                                                <td>{{i.TypeSize}}</td>
+                                                <td>{{i.DtModified}}</td>
+                                                <td>{{i.Commodity}}</td>
+                                                <td>{{i.BLNumber}}</td>
+                                                <td>
+                                                    {{i.Currency}}
+                                                    <input type="hidden" id="HdCntrNo" ng-model="HdCntrNo" />
+                                                    <input type="hidden" id="HdCntrID" ng-model="HdCntrID" />
+                                                    <input type="hidden" id="IsVendor" ng-model="IsVendor" />
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>POL Code</th>
+                                                <th>POD Code</th>
+                                                <th>Description</th>
+                                                <th>Pkgs</th>
+                                                <th>Package Type</th>
+                                                <th>Gr.Wt.(KGs)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr ng-repeat="i in MNRCRPreviewGrid2">
+                                                <td>{{i.POLCode}}</td>
+                                                <td>{{i.PODCode}}</td>
+                                                <td>{{i.CargoDescription}}</td>
+                                                <td>{{i.NoofPackages}}</td>
+                                                <td>{{i.GrsWt}}</td>
+                                                <td>{{i.PackageTypes}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="row">
+                        <div class="col-md-6">
+                            <div class="col-md-12">
+                                <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Surveyor Details</h4>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+
+                                                <th>Surveyor By</th>
+                                                <th>Surveyor Request Date</th>
+                                                <th>Surveyor Complete Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="i in MNRCRPreviewSurveyorGrid">
+                                                <td>{{i.Surveyor}}</td>
+                                                <td>{{i.DtSvrReq}}</td>
+                                                <td>{{i.DtSvrComplete}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Cost Details</h4>
+                                    </div>
+                                    <div class="col-md-12" style="text-align:right;">
+                                        <a href="#" style="text-decoration:underline;"  ng-click="getTotal(iRow);">Calculate</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-12" style="overflow:scroll; width:100%;">
+                                <div class="material-datatables" ng-show="IsVisibleCost1">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+
+                                                <th colspan="15" style="text-align:center;">Estimated</th>
+                                                <th colspan="14" style="text-align: center; background-color:#3b9e40 !important;">Approved</th>
+                                                <th colspan="4" style="text-align:center;"></th>
+                                            </tr>
+                                            <tr>
+                                                <th>DM Code</th>
+                                                <th>Damage Description</th>
+                                                <th>Repair Type</th>
+                                                <th>Component Code</th>
+                                                <th>Location</th>
+                                                <th>Measurement</th>
+                                                <th>MeasureUnit</th>
+                                                <th>Lab Hrs</th>
+                                                <th>Lab Cost</th>
+                                                <th>Mat Cost</th>
+                                                <th>Total Costs</th>
+                                                <th>Qty</th>
+                                                <th>Total Lab Cost</th>
+                                                <th>Total Mat Cost</th>
+                                                <th>Grand Total</th>
+
+                                                <th class="appth">DM Code</th>
+                                                <th class="appth">Repair Type</th>
+                                                <th class="appth">Component Code</th>
+                                                <th class="appth">Location</th>
+                                                <th class="appth">Measurement</th>
+                                                <th class="appth">MeasureUnit</th>
+                                                <th class="appth">Lab Hrs</th>
+                                                <th class="appth">Lab Cost</th>
+                                                <th class="appth">Mat Cost</th>
+                                                <th class="appth">Total Costs</th>
+                                                <th class="appth">Qty</th>
+                                                <th class="appth">Total Lab Cost</th>
+                                                <th class="appth">Total Mat Cost</th>
+                                                <th class="appth">Grand Total</th>
+
+                                                <th>Cost To</th>
+                                                <th>Vendor Remarks</th>
+                                                <th>Approve/Reject</th>
+                                                <th>Approve Remarks</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr ng-repeat="iRow in MNRCRCostDtls">
+                                                <td>{{iRow.DamageCode}}</td>
+                                                <td>{{iRow.DamageDescription}}</td>
+                                                <td>{{iRow.RepairCode}}</td>
+                                                <td>{{iRow.ComponentCode}}</td>
+                                                <td>{{iRow.LocationCode}}</td>
+                                                <td>{{iRow.Measurement}}</td>
+                                                <td>{{iRow.MeasureUnit}}</td>
+                                                <td>{{iRow.LabHrs}}</td>
+                                                <td>{{iRow.LabCost}}</td>
+                                                <td>{{iRow.MatCost}}</td>
+                                                <td>{{iRow.TotalCost}}</td>
+                                                <td>{{iRow.Qty}}</td>
+                                                <td>{{iRow.TotalLabCost}}</td>
+                                                <td>{{iRow.TotalMatCost}}</td>
+                                                <td>{{iRow.EstTotalCost}}</td>
+
+                                                <td>{{iRow.DamageCode}}</td>
+                                                <td>{{iRow.RepairCode}}</td>
+                                                <td>{{iRow.ComponentCode}}</td>
+                                                <td>{{iRow.LocationCode}}</td>
+                                                <td>{{iRow.Measurement}}</td>
+                                                <td>{{iRow.MeasureUnit}}</td>
+                                                <td>{{iRow.LabHrs}}</td>
+                                                <td><input type="text" id="txtLabCost" ng-model="iRow.AppLabCost" class="form-control" /></td>
+                                                <td><input type="text" id="txtMatCost" ng-model="iRow.AppMatCost" class="form-control" /></td>
+                                                <td><input type="text" id="txtTotalCost" ng-model="iRow.AppTotalCost" class="form-control" /></td>
+                                                <td>{{iRow.Qty}}</td>
+                                                <td><input type="text" readonly id="txtTotalLabCost" ng-model="iRow.AppTotalLabCost" class="form-control hidetext" /></td>
+                                                <td><input type="text" readonly id="txtTotalMatCost" ng-model="iRow.AppTotalMatCost" class="form-control hidetext" /></td>
+                                                <td><input type="text" readonly id="txtTotalEstCost" ng-model="iRow.AppTotalEstCost" class="form-control hidetext" /></td>
+
+                                                <td>
+                                                    <select class="form-control" ng-model="iRow.CostToDD" id="ddlCostTo{{$index}}" ng-options="item.CostTo for item in MNRCostToList track by item.ID" required>
+                                                    </select>
+                                                </td>
+                                                <td>{{iRow.VendorRemarks}}</td>
+                                                <td>
+                                                    <select class="form-control" ng-model="iRow.ApproveRejectDD" id="ddlApproveReject{{$index}}" ng-options="item.ApproveReject for item in MNRApproveRejectList track by item.ID" required>
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" id="txtApprRemarks{{$index}}" ng-model="iRow.ApprRemarks" class="form-control" /></td>
+                                                <td style="display:none;"><input type="hidden" id="HdDID" ng-model="iRow.DID" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="12" style="text-align: right; font-weight: bold; color: red; font-size: 15px; ">
+                                                    Total
+                                                </td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="EstTotLabCostOpen"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="EstTotMatCostOpen"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="EstGrandTotCostOpen"></span></td>
+                                                <td colspan="11" style="text-align: right; font-weight: bold; color: red; font-size: 15px; ">
+                                                    Total
+                                                </td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="AprveTotLabCostOpen"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="AprveMatLabCostOpen"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="AprveGrandCostOpen"></span></td>
+                                                <td colspan="4"></td>
+                                            </tr>
+                                           
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="material-datatables" ng-show="IsVisibleCost2">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+
+                                                <th colspan="15" style="text-align:center;">Estimated</th>
+                                                <th colspan="14" style="text-align: center; background-color: #3b9e40 !important;">Approved</th>
+                                                <th colspan="4" style="text-align:center;"></th>
+                                            </tr>
+                                            <tr>
+                                                <th>DM Code</th>
+                                                <th>Damage Description</th>
+                                                <th>Repair Type</th>
+                                                <th>Component Code</th>
+                                                <th>Location</th>
+                                                <th>Measurement</th>
+                                                <th>MeasureUnit</th>
+                                                <th>Lab Hrs</th>
+                                                <th>Lab Cost</th>
+                                                <th>Mat Cost</th>
+                                                <th>Total Costs</th>
+                                                <th>Qty</th>
+                                                <th>Total Lab Cost</th>
+                                                <th>Total Mat Cost</th>
+                                                <th>Grand Total</th>
+
+                                                <th class="appth">DM Code</th>
+                                                <th class="appth">Repair Type</th>
+                                                <th class="appth">Component Code</th>
+                                                <th class="appth">Location</th>
+                                                <th class="appth">Measurement</th>
+                                                <th class="appth">MeasureUnit</th>
+                                                <th class="appth">Lab Hrs</th>
+                                                <th class="appth">Lab Cost</th>
+                                                <th class="appth">Mat Cost</th>
+                                                <th class="appth">Total Costs</th>
+                                                <th class="appth">Qty</th>
+                                                <th class="appth">Total Lab Cost</th>
+                                                <th class="appth">Total Mat Cost</th>
+                                                <th class="appth">Grand Total</th>
+                                                <th>Cost To</th>
+                                                <th>Vendor Remarks</th>
+                                                <th>Approve/Reject</th>
+                                                <th>Approve Remarks</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr ng-repeat="i in  DynamicGridMNRCRAppCostDtls">
+                                                <td>{{i.DamageCode}}</td>
+                                                <td>{{i.DamageDescription}}</td>
+                                                <td>{{i.RepairCode}}</td>
+                                                <td>{{i.ComponentCode}}</td>
+                                                <td>{{i.LocationCode}}</td>
+                                                <td>{{i.Measurement}}</td>
+                                                <td>{{i.MeasureUnit}}</td>
+                                                <td>{{i.LabHrs}}</td>
+                                                <td>{{i.LabCost}}</td>
+                                                <td>{{i.MatCost}}</td>
+                                                <td>{{i.TotalCost}}</td>
+                                                <td>{{i.Qty}}</td>
+                                                <td>{{i.TotalLabCost}}</td>
+                                                <td>{{i.TotalMatCost}}</td>
+                                                <td>{{i.EstTotalCost}}</td>
+
+                                                <td>{{i.DamageCode}}</td>
+                                                <td>{{i.RepairCode}}</td>
+                                                <td>{{i.ComponentCode}}</td>
+                                                <td>{{i.LocationCode}}</td>
+                                                <td>{{i.Measurement}}</td>
+                                                <td>{{i.MeasureUnit}}</td>
+                                                <td>{{i.LabHrs}}</td>
+                                                <td>{{i.ApprLabCost}}</td>
+                                                <td>{{i.ApprMatCost}}</td>
+                                                <td>{{i.ApprTotalCost}}</td>
+                                                <td>{{i.Qty}}</td>
+                                                <td>{{i.ApprTotalLabCost}}</td>
+                                                <td>{{i.ApprTotalMatCost}}</td>
+                                                <td>{{i.TotalApprCost}}</td>
+
+                                                <td>{{i.CostTo}}</td>
+                                                <td>{{i.VendorRemarks}}</td>
+                                                <td>{{i.ApproveReject}}</td>
+                                                <td>{{i.ApproverRemarks}}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <td colspan="12" style="text-align: right; font-weight: bold; color: red; font-size: 15px; ">
+                                                    Total
+                                                </td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="EstTotLabCost"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="EstTotMatCost"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="EstGrandTotCost"></span></td>
+                                                <td colspan="11" style="text-align: right; font-weight: bold; color: red; font-size: 15px; ">
+                                                    Total
+                                                </td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="AprveTotLabCost"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="AprveMatLabCost"></span></td>
+                                                <td style="font-weight: bold; color: blue; font-size: 13px;"><span ng-bind="AprveGrandCost"></span></td>
+                                                <td colspan="4"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:20px;">
+                        <div class="col-md-6">
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Accountability</th>
+                                                <th>Estimated</th>
+                                                <th>Approved</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="i in  MNREstApprTotalViewGrid">
+                                                <td>{{i.CostTo}}</td>
+                                                <td>{{i.EstTotalCost}}</td>
+                                                <td>{{i.ApprTotalCost}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-12 padlr0">
+                                    <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Attachments</h4>
+                                </div>
+
+                                <div class="col-md-12 padlr0">
+                                    <div class="material-datatables">
+
+                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>Attachment Details</th>
+                                                    <th>File Type</th>
+                                                    <th class="disabled-sorting text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="i in  MNRAttachmentsViewGrid">
+
+                                                    <td>
+                                                        <a href="#" ng-click="DownloadFile(i.FileName);" style="text-decoration:underline;">{{i.FileName}}</a>
+                                                    </td>
+                                                    <td>{{i.MNRAttachType}}</td>
+
+                                                    <td class="td-actions text-right">
+
+                                                        <button type="button" rel="tooltip" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                            <i class="material-icons">delete</i>
+                                                        </button>
+
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="text-align:center;">
+                            <div ng-show="ShowCompImage">
+                                <img style="width:200px" src="~/assets/img/Completed.png" />
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <h4 ng-show="IsVisibleApprDtlsHead" style="color: #12759a;font-size:14px;font-weight:bold;">Approve/Rejection Details</h4>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="material-datatables" ng-show="IsVisibleApprDtlsGrid">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Applied By</th>
+                                                <th>Approved By</th>
+                                                <th>Approval No</th>
+                                                <th>Repair Date</th>
+                                                <th>Approval Date</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="i in  MNRApprovalDtlsViewGrid">
+
+                                                <td>{{i.AppliedAt}}</td>
+                                                <td>{{i.ApprovedBy}}</td>
+                                                <td>{{i.ApprovalNo}}</td>
+                                                <td>{{i.DtRepaired}}</td>
+                                                <td>{{i.DtApproved}}</td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <h4 ng-show="IsVisibleStatus" style="color: #12759a;font-size:14px;font-weight:bold;">Container Status</h4>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="material-datatables" ng-show="IsVisibleStatus">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                @*<th>Status</th>*@
+                                                <th>Current Status</th>
+                                                <th>Status DateTime</th>
+                                                @*<th>Action</th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="i in  MNRCntrCurrentStatusViewGrid">
+
+
+                                                @*<td>AV(AVAILABLE)</td>*@
+                                                <td>{{i.StatusCode}}</td>
+                                                <td>{{i.DtModified}}</td>
+                                                
+                                                @*<td> <input type="datetime-local" id="txtDtMovement" ng-model="txtDtMovement" class="form-control"></td>*@
+                                                @*<td>
+            <button  ng-show="ISMoveToAV" type="button" ng-click="StatusChangeToAV(i.ID);" style="width:100%" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                Move To AV
+            </button>
+        </td>*@
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right; margin-top:20px;">
+                            <div class="col-md-12">
+                                @*<button type="submit" id="btneorconfirm" ng-click="EORConfirm();" class="btn btn-fill btn-success">
+            Confirm EOR
+        </button>*@
+                                <button type="submit" id="btnapprove" ng-click="Approve(MNRCRCostDtls);" class="btn btn-fill btn-success">
+                                    Approve
+                                </button>
+                                @*<button type="submit" id="btnrepair" ng-click="Repair();" class="btn btn-fill btn-success">
+                                    Repair
+                                </button>*@
+                                @*<button type="submit" id="btnsave" ng-click="Recordsave(MNRCRCostDtls);" class="btn btn-fill btn-success">
+            <i class="material-icons">save</i>
+            Save
+        </button>*@
+                                <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                                @*<button ng-show="ShowAttachments" type="submit" class="btn btn-fill btn-primary" data-toggle="modal" data-target="#Attachment">
+                                    <i class="material-icons">attachment</i>
+                                    Attachments
+                                </button>*@
+                                <div class="modal" id="Attachment">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content" style="margin:0 auto; width:600px;">
+                                            <div class="card-header card-header-primary card-header-text" style=" margin-bottom: 50px;text-align:center;">
+                                                <div class="card-text">
+                                                    <h1 class="card-title">Container Repair Attachment</h1>
+                                                </div>
+                                            </div>
+
+                                            <!-- Modal body -->
+                                            <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-12 attch">
+                                                                <div class="input-group">
+
+                                                                    <input ng-model="FileName" id="FileName" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40" ngf-select="UploadFiles($files)" onchange='$("#upload-file-info").html($(this).val());'>
+
+                                                                    <span class='label label-info' id="upload-file-info"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <label>Attach Type</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <select class="form-control" ng-model="ddlAttachType" id="ddlAttachType" ng-options="item.MNRAttachType for item in MNRAttachTypeList track by item.ID" required>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="margin-top:30px;">
+                                                            <div class="col-md-12" style="text-align:right;">
+                                                                <button type="submit" class="btn btn-fill btn-success" ng-click="SaveAttachedFile();">
+
+                                                                    Save
+                                                                </button>
+                                                                <button type="submit" class="btn btn-danger">
+                                                                    <i class="material-icons">clear</i>
+                                                                    Close
+                                                                </button>
+                                                                <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                                                                <input type="hidden" id="HDAttach" ng-model="HDAttach" />
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+                                <button ng-click="Closebtn();" type="submit" class="btn btn-fill btn-danger">
+                                    <i class="material-icons">clear</i>
+                                    Close
+                                </button>
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal" id="CntrRepairHistory">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:1100px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Container Repair History</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div style="text-align:right;">
+                                        <span style="font-size:13px;">Cntr History</span><a href="#" style="color:#18aa08;font-size:16px;"> <i class="fa fa-file-excel-o"></i></a>
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="col-md-12 padr0">
+                                            <div class="material-datatables">
+
+                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No</th>
+                                                            <th>Reference#</th>
+                                                            <th>Approval No</th>
+                                                            <th>Approved Date</th>
+                                                            <th>Approved At</th>
+                                                            <th>Depot</th>
+                                                            <th>Requested By</th>
+                                                            <th>Approved By</th>
+                                                            <th>Total Amount </th>
+
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr ng-repeat="i in CntrRepairHistoryView">
+                                                            <td>{{$index+1}}</td>
+
+                                                            <td>{{i.ReqRefNo}}</td>
+                                                            <td>{{i.ApprovalNo}}</td>
+                                                            <td>{{i.DtApproved}}</td>
+                                                            <td>{{i.ApprovedAt}}</td>
+                                                            <td>{{i.Depot}}</td>
+                                                            <td>{{i.Vendor}}</td>
+                                                            <td>{{i.ApprovedBy}}</td>
+                                                            <td>{{i.ApprTotalCost}}</td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

@@ -1,0 +1,484 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout)
+    {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+
+
+        $(document).ready(function ()
+        {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["RQRegNo"] != null)
+            {
+
+                $scope.RegId = queryString["RQRegNo"].toString();
+                $scope.FilRateSheetExsitingMaster();
+                $scope.CheckStatusDetails();
+
+            }
+
+        });
+
+        $scope.CheckStatusDetails = function ()
+        {
+            if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+                ShowPopup("please fill RATE REQUEST first1");
+                return;
+            }
+            var validation = "";
+            var BussData = {}
+            BussData.ID = $scope.RegId;
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/SalesRRFinalSubmitCheck',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length != 0) {
+
+                        if (result.data[0].Status == '')
+                        {
+
+                            document.getElementById("btnSendApprovel").disabled = true;
+                            document.getElementById("btnSendApprovel").style.cursor = 'not-allowed';
+                            document.getElementById("btnHistory").disabled = true;
+                            document.getElementById("btnHistory").style.cursor = 'not-allowed';
+                            document.getElementById("btnPrint").disabled = true;
+                            document.getElementById("btnPrint").style.cursor = 'not-allowed';
+                        }
+                        else {
+
+
+                            document.getElementById("btnSendApprovel").disabled = false;
+                            document.getElementById("btnSendApprovel").style.cursor = 'pointer';
+                            document.getElementById("btnHistory").disabled = false;
+                            document.getElementById("btnHistory").style.cursor = 'pointer';
+                            document.getElementById("btnPrint").disabled = false;
+                            document.getElementById("btnPrint").style.cursor = 'pointer';
+                        }
+
+                        if (result.data[0].Status == 4 || result.data[0].Status == 4) {
+
+                            document.getElementById("btnSendApprovel").disabled = true;
+                            document.getElementById("btnSendApprovel").style.cursor = 'not-allowed';
+                            document.getElementById("btnSubmit").disabled = true;
+                            document.getElementById("btnSubmit").style.cursor = 'not-allowed';
+
+                        }
+
+                        if (validation != "") {
+                            ShowPopup(validation);
+                            return false;
+                        }
+
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.submitCheck = function ()
+        {
+            if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+                ShowPopup("please fill RATE REQUEST first1");
+                return;
+            }
+            var validation = "";
+            var BussData = {}
+            BussData.ID = $scope.RegId;
+            BussData.status = 0;
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/SalesRRFinalSubmitCheck',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length != 0)
+                    {
+
+                        if (result.data[0].CheckCntr == 0) {
+                            validation += "<span style='color:red;'>*</span> <span>Please Check Container Types</span></br>"
+                        }
+                        if (result.data[0].CheckMRG == 0) {
+
+                            validation += "<span style='color:red;'>*</span> <span>Please Check MRG</span></br>"
+                        }
+                        if (result.data[0].CheckSLOT == 0) {
+
+                            validation += "<span style='color:red;'>*</span> <span>Please Check SLOT</span></br>"
+                        }
+
+                        if (validation != "") {
+                            ShowPopup(validation);
+                            return false;
+                        }
+                        else {
+
+                            $http({
+                                method: 'POST',
+                                url: '/api/SalesApi/SalesRRSendApproval',
+                                data: JSON.stringify(BussData),
+
+                            }).then(function (result) {
+                                $timeout(function () {
+                                    if (result.data.length != 0) {
+                                        ShowPopup("successfully Generated RRNo");
+                                    }
+                                    else {
+
+                                        ShowPopup("Error Not saved");
+                                    }
+
+                                });
+                            });
+                        }
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.ApprovalsSave = function () {
+
+            if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+                ShowPopup("please fill RATE REQUEST first1");
+                return;
+            }
+            var validation = "";
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            BussData.ID = $scope.RegId;
+            BussData.status = 1;
+
+
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/SalesRRSendApproval',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result)
+            {
+                $timeout(function () {
+                    if (result.data.length != 0) {
+                        $scope.CheckStatusDetails();
+                        ShowPopup("Email Send Approval Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.OnPagetab = function (tab)
+        {
+
+            if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+                ShowPopup("please fill RATE REQUEST first1");
+                return;
+            }
+
+            var myp = $scope.RegId;
+
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Sales/RR?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create RR Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Sales/RRContainer?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Sales/RRMRGSLOT?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Sales/RRLocalCharges?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Sales/RRConfirmation?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 6) {
+                if (myp != "0") {
+                    var url = "/Sales/RRRebate?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+
+
+        $scope.FilRateSheetExsitingMaster = function () {
+
+            var Datavalue = {};
+            Datavalue.RRID = $scope.RegId;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/RateSheetExistingMasterRecord',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.divRRNo = result.data[0].RatesheetNo;
+                    $scope.divStatus = result.data[0].Status;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.btnPrint = function () {
+
+            var id = $scope.RegId;
+            window.location.href = '@Url.Action("RateRequestPdfSample", "RateRequest")?id=' + id;
+        }
+
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<style>
+    .btn {
+       
+        padding: 10px 23px;
+    }
+    .headtop.row {
+        background-color: #e1f2f9;
+    }
+
+    .headtop .form-group {
+        margin: 5px 0 0;
+        padding-bottom: 0;
+    }
+
+    .btn-success.btnsearch {
+        padding: 8px 14px;
+        margin-top: 32px;
+    }
+
+    .btn-rose.btnsearch {
+        padding: 8px 14px;
+    }
+
+    .headbox.row {
+        border: 1px solid #ccc;
+        margin-top: 12px;
+        padding-bottom: 12px;
+        padding-top: 10px;
+    }
+
+    .headbox p {
+        font-size: 12px;
+        margin-bottom: 0;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Sales/RaterequestView" type="submit" ng-click="back();" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </a>
+                @*<a href="/Sales/RaterequestView" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+                </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Rate Request</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12 download" style="text-align:right;">
+                                <span style="font-weight:bold;color: #af7e4c;">RR Number :<span ng-bind="divRRNo"></span> </span>
+                                <span style="margin-left:100px; font-weight:bold;color: #af7e4c;">Status : <span style="color:red;" ng-bind="divStatus"></span></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 padlr0">
+                                <nav>
+                                    <div class="col-md-12" style="background-color: #f5f4f4;">
+                                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Rate Request</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(5);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">MRG & SLOT</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(3);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Local Charges</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(6);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Rebate</a>
+                                            <a class="nav-item nav-link active" ng-click="OnPagetab(4);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Confirmation</a>
+                                        </div>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="row buttons">
+                                <div class="col-md-12 topbtn" style="text-align:center;">
+
+                                    <button type="submit" ng-click="submitCheck();" id="btnSubmit" class="btn btn-fill btn-primary btntop">
+                                        <i class="material-icons">done</i>
+                                        Submit
+                                    </button>
+                                    <button type="submit" id="btnPrint" name="btnprint" ng-click="btnPrint();" value="PDF" @*onclick="location.href='@Url.Action("btnPDF", "Sales", new {id = "ID"})'"*@ class="btn btn-fill btn-default btntop">
+                                        <i class="material-icons">print</i>
+                                        Print
+                                    </button>
+                                    <button type="submit" ng-click="ApprovalsSave();" id="btnSendApprovel" class="btn btn-fill btn-success btntop">
+                                        <i class="material-icons">done</i>
+                                        Send To Approve
+                                    </button>
+
+                                    <button type="submit" id="btnHistory" class="btn btn-fill btn-info btntop">
+                                        <i class="material-icons">book</i>
+                                        History
+                                    </button>
+
+                                    <span class="btn  btn-rose btn-file">
+                                        <span class="fileinput-new">Add Attachments</span>
+                                        <input type="file" name="..." />
+                                    </span>
+
+                                    <input type="hidden" id="RegId" ng-model="RegId" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+

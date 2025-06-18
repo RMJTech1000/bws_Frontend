@@ -1,0 +1,2046 @@
+﻿@model  NVOCShipping.Models.MasterModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $scope.PickUpDrCrValues = [
+            { 'Name': 'Lease Billing', 'ID': 1 },
+            { 'Name': 'Sub Lease Billing', 'ID': 2 }
+        ];
+        $scope.LeaseTypesValues = [
+            { 'Name': 'Main Lease', 'ID': 1 },
+            { 'Name': 'Sub Lease', 'ID': 2 }
+        ];
+        $scope.DropOffDrCrValues = [
+            { 'Name': 'Credit', 'ID': 1 },
+            { 'Name': 'Debit', 'ID': 2 }
+        ];
+        $scope.StatusValues = [
+            { 'Name': 'Active', 'ID': 1 },
+            { 'Name': 'Inactive', 'ID': 2 }
+        ];
+        $scope.LeaseTermList = null;
+        $scope.FilLeaseTerm = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/LeaseTerm/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LeaseTermList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilLeaseTerm();
+
+        $scope.LeasingPartnerList = null;
+        $scope.FilLeasingPartner = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/LeasingPartner/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LeasingPartnerList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilLeasingPartner();
+
+        $scope.PickupCriteriaList = null;
+        $scope.FillPickupCriteria = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/PickUpCriteria/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PickupCriteriaList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillPickupCriteria();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+        $scope.PickUpCurrency = null;
+        $scope.fillPickUpCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PickUpCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPickUpCurrency();
+
+        $scope.PerDiemCurrency = null;
+        $scope.fillPerDiemCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PerDiemCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPerDiemCurrency();
+
+        $scope.HDIFCurrency = null;
+        $scope.fillHDIFCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.HDIFCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillHDIFCurrency();
+
+        $scope.DPPCurrency = null;
+        $scope.fillDPPCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DPPCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDPPCurrency();
+
+        $scope.DropOffCurrency = null;
+        $scope.fillDropOffCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DropOffCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDropOffCurrency();
+
+        $scope.CntrValueCurrency = null;
+        $scope.fillCntrValueCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrValueCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCntrValueCurrency();
+
+        $scope.HDOFCurrency = null;
+        $scope.fillHDOFCurrency = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.HDOFCurrency = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillHDOFCurrency();
+
+        $scope.DropOffPortValue = null;
+        $scope.fillDropOffPortValue = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DropOffPortValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDropOffPortValue();
+
+        $("#ddlPickUpLoc").change(function () {
+            $scope.DepotValue = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlPickUpLoc").val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/DepotByPort/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.bindExistingPickupDepot = function (portid) {
+            $scope.DepotValue = null;
+            var Datavalue = {};
+
+            Datavalue.ID = portid;
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/DepotByPort/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.PickUpPortValue = null;
+        $scope.fillPickUpPortValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PickUpPortValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPickUpPortValues();
+
+        $("#ddlDropOffLoc").change(function () {
+            $scope.DropOffDepotValue = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlDropOffLoc").val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/DepotByPort/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DropOffDepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.bindExistingDropOffDepot = function (portid) {
+            $scope.DropOffDepotValue = null;
+            var Datavalue = {};
+
+            Datavalue.ID = portid;
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/DepotByPort/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DropOffDepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["LeaseID"] != null) {
+                $scope.HdLeaseId = queryString["LeaseID"].toString();
+                $scope.BindLeaseContractEdit(queryString["LeaseID"].toString());
+                $scope.BindLeaseDetails(queryString["LeaseID"].toString());
+            }
+        });
+        $scope.BindLeaseContractEdit = function (LeaseID) {
+
+            var Datavalue = {}
+            var id = LeaseID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = LeaseID;
+
+
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/LeaseContractEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+
+
+                        $scope.txtLeaseRef = result.data[0].ContractRefNo;
+                        $scope.ddlLeasePartner = { LeasingPartnerID: result.data[0].LeasingPartnerID };
+                        $scope.ddlLeaseTypes = { ID: result.data[0].LeaseTypeID };
+                        $scope.ddlLeaseTerm = { LeaseTermID: result.data[0].LeaseTermID };
+                        $scope.txtDesc = result.data[0].Description;
+                        $scope.txtDtValidFrom = result.data[0].DtContractFrom;
+                        $scope.txtDtValidTill = result.data[0].DtContractTill;
+                        $scope.ddlCriteria = { PickupCriteriaID: result.data[0].PickupCriteriaID };
+                        $scope.ddlStatus = { ID: result.data[0].Status };
+                        $scope.txtRemarks = result.data[0].Remarks;
+                        $scope.txtCntrValue = result.data[0].CntrValue;
+                        $scope.ddlCntrValueCurr = { ID: result.data[0].CntrValueCurrID };
+                    }
+                    else {
+                        $scope.txtLeaseRef = "";
+                        $scope.ddlLeasePartner = "";
+                        $scope.ddlLeaseTerm = "";
+                        $scope.ddlLeasePartner = "";
+                        $scope.txtDesc = "";
+                        $scope.txtDtValidFrom = "";
+                        $scope.txtDtValidTill = "";
+                        $scope.ddlCriteria = "";
+                        $scope.ddlStatus = "";
+
+
+                    }
+                });
+            });
+
+        }
+
+        $scope.BindLeaseDetails = function (LeaseID) {
+
+            //alert('test');
+            var Datavalue = {}
+            var id = LeaseID;
+
+            if (id == "" || id == null)
+                Datavalue.LeaseContractID = 0;
+            else
+                Datavalue.LeaseContractID = LeaseID;
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/ViewLeaseDetails",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $scope.DynamicGrid = [{
+                    LID: "", CntrTypeID: "", CntrType: "", Qty: "", FreeDays: "", PerDiemAmt: "", PerDiemCurrID: "", PerDiemCurr: "", DPPAmt: "", DPPCurrID: "", DPPCurr: "", PickUpDebitID: "", PickUpDebit: "", HDIF: "", HDIFCurr: "", PickUpTariffAmt: "", PickUpCurr: "", PickUpPortID: "", PickUpPort: "", PickUpDepotID: "", PickUpDepot: "", DropOffDebitID: "", DropOffDebit: "", HDOF: "", HDOFCurr: "", DropOffTariffAmt: "", DropOffCurrID: "", DropOffCurr: "", DropOffPortID: "", DropOffPort: "", DropOffDepotID: "", DropOffDepot: ""
+                }];
+                $timeout(function () {
+
+                    if (result.data[0].CntrTypeID != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'LID': result.data[key].LID,
+                            'CntrTypeID': result.data[key].CntrTypeID,
+                            'CntrType': result.data[key].CntrType,
+                            'Qty': result.data[key].Qty,
+                            'FreeDays': result.data[key].FreeDays,
+                            'PerDiemAmt': result.data[key].PerDiemAmt,
+                            'PerDiemCurrID': result.data[key].PerDiemCurrID,
+                            'PerDiemCurr': result.data[key].PerDiemCurr,
+                            'DPPAmt': result.data[key].DPPAmt,
+                            'DPPCurrID': result.data[key].DPPCurrID,
+                            'DPPCurr': result.data[key].DPPCurr,
+                            'PickUpDebitID': result.data[key].PickUpDebitID,
+                            'PickUpDebit': result.data[key].PickUpDebit,
+                            //'HDIF': result.data[key].HDIF,
+                            //'HDIFCurrID': result.data[key].HDIFCurrID,
+                            //'HDIFCurr': result.data[key].HDIFCurr,
+                            'PickUpTariffAmt': result.data[key].PickUpTariffAmt,
+                            'PickUpCurrID': result.data[key].PickUpCurrID,
+                            'PickUpCurr': result.data[key].PickUpCurr,
+                            'PickUpPortID': result.data[key].PickUpPortID,
+                            'PickUpPort': result.data[key].PickUpPort,
+                            'PickUpDepotID': result.data[key].PickUpDepotID,
+                            'PickUpDepot': result.data[key].PickUpDepot,
+                            'DropOffDebitID': result.data[key].DropOffDebitID,
+                            'DropOffDebit': result.data[key].DropOffDebit,
+                            'HDOF': result.data[key].HDOF,
+                            'HDOFCurrID': result.data[key].HDOFCurrID,
+                            'HDOFCurr': result.data[key].HDOFCurr,
+                            'DropOffTariffAmt': result.data[key].DropOffTariffAmt,
+                            'DropOffCurrID': result.data[key].DropOffCurrID,
+                            'DropOffCurr': result.data[key].DropOffCurr,
+                            'DropOffPortID': result.data[key].DropOffPortID,
+                            'DropOffPort': result.data[key].DropOffPort,
+                            'DropOffDepotID': 0,
+                            'DropOffDepot':'',
+                         
+                        });
+              
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        //$scope.DynamicGrid = [{ LID: "", CntrTypeID: "", CntrType: "", Qty: "", PickUpPortID: "", PickUpPort: "", PickUpTariffAmt: "", PickUpCurrID: "", PickUpCurr: "", PickUpDebitID: "", PickUpDebit: "", PickUpDepotID: "", PickUpDepot: "", PerDiemAmt: "", PerDiemCurrID: "", PerDiemCurr: "", FreeDays: "", InsAmt: "", InsCurrID: "", InsCurr: "", DPPAmt: "", DPPCurrID: "", DPPCurr: "", DropOffPortID: "", DropOffPort: "", DropOffTariffAmt: "", DropOffCurrID: "", DropOffCurr: "", DropOffDebitID: "", DropOffDebit: "", Remarks: "" }];
+
+        $scope.DynamicGrid = [{
+            LID: "", CntrTypeID: "", CntrType: "", Qty: "", FreeDays: "", PerDiemAmt: "", PerDiemCurrID: "", PerDiemCurr: "", DPPAmt: "", DPPCurrID: "", DPPCurr: "", PickUpDebitID: "", PickUpDebit: "", HDIF: "", HDIFCurr: "", PickUpTariffAmt: "", PickUpCurr: "", PickUpPortID: "", PickUpPort: "", PickUpDepotID: "", PickUpDepot: "", DropOffDebitID: "", DropOffDebit: "", HDOF: "", HDOFCurr: "", DropOffTariffAmt: "", DropOffCurrID: "", DropOffCurr: "", DropOffPortID: "", DropOffPort: "", DropOffDepotID: "", DropOffDepot: ""
+        }];
+
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.Selectvalues = function (DynamicGrid, index) {
+            $scope.HDArrayIndex = index;
+            $scope.LID = $scope.DynamicGrid[index].LID;
+            $scope.CntrType = { TypeID: $scope.DynamicGrid[index].CntrTypeID };
+            $scope.Qty = $scope.DynamicGrid[index].Qty;
+            $scope.FreeDays = $scope.DynamicGrid[index].FreeDays;
+            $scope.PerDiemAmt = $scope.DynamicGrid[index].PerDiemAmt;
+            $scope.PerDiemCurr = { ID: $scope.DynamicGrid[index].PerDiemCurrID };
+            $scope.DPPAmt = $scope.DynamicGrid[index].DPPAmt;
+            $scope.DPPCurr = { ID: $scope.DynamicGrid[index].DPPCurrID };
+            $scope.PickUpDebit = { ID: $scope.DynamicGrid[index].PickUpDebitID };
+            $scope.HDIF = $scope.DynamicGrid[index].HDIF;
+            $scope.HDIFCurr = { ID: $scope.DynamicGrid[index].HDIFCurrID };
+            $scope.PickUpTariffAmt = $scope.DynamicGrid[index].PickUpTariffAmt;
+            $scope.PickUpCurr = { ID: $scope.DynamicGrid[index].PickUpCurrID };
+           // $scope.PickUpPort = { ID: $scope.DynamicGrid[index].PickUpPortID };
+            $scope.PickUpDepot = { ID: $scope.DynamicGrid[index].PickUpDepotID };
+            $scope.DropOffDebit = { ID: $scope.DynamicGrid[index].DropOffDebitID };
+            $scope.HDOF = $scope.DynamicGrid[index].HDOF;
+            $scope.HDOFCurr = { ID: $scope.DynamicGrid[index].HDOFCurrID };
+            $scope.DropOffTariffAmt = $scope.DynamicGrid[index].DropOffTariffAmt;
+            $scope.DropOffCurr = { ID: $scope.DynamicGrid[index].DropOffCurrID };
+           // $scope.DropOffPort = { ID: $scope.DynamicGrid[index].DropOffPortID };
+            $scope.DropOffDepot = { ID: $scope.DynamicGrid[index].DropOffDepotID };
+
+            $('#ddlDropOffLoc').val($scope.DynamicGrid[index].DropOffPortID).trigger("change");
+            $('#ddlPickUpLoc').val($scope.DynamicGrid[index].PickUpPortID).trigger("change");
+            $scope.bindExistingPickupDepot($scope.DynamicGrid[index].PickUpPortID);
+            $scope.bindExistingDropOffDepot($scope.DynamicGrid[index].DropOffPortID);
+            
+        }
+        $scope.AddLeaseDetails = function (DynamicGrid) {
+
+            var validation = "";
+
+            var ddlCntrType = $('#ddlCntrType').val();
+            if (ddlCntrType == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container Type</span></br>"
+            }
+            var txtQuantity = $('#txtQuantity').val();
+            if (txtQuantity.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Quantity </span></br>"
+            }
+            var txtPerDiemAmt = $('#txtPerDiemAmt').val();
+            if (txtPerDiemAmt.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter PerDiem Fee </span></br>"
+            }
+            var ddlPerDiemCurr = $('#ddlPerDiemCurr').val();
+            if (ddlPerDiemCurr == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select PerDiem Currency</span></br>"
+            }
+
+            //var txtDPPAmt = $('#txtDPPAmt').val();
+            //if (txtDPPAmt.length == 0) {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Enter DPP Amount </span></br>"
+            //}
+            //var ddlDppCurr = $('#ddlDppCurr').val();
+            //if (ddlDppCurr == "?") {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select DPP Currency</span></br>"
+            //}
+            var ddlPickUpDebit = $('#ddlPickUpDebit').val();
+            if (ddlPickUpDebit == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select PickUp Tariff Type</span></br>"
+            }
+            var ddlPickUpLoc = $('#ddlPickUpLoc').val();
+            if (ddlPickUpLoc == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select PickUp Port </span></br>"
+            }
+            var ddlPkDepot = $('#ddlPkDepot').val();
+            if (ddlPkDepot == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select PickUp Depot </span></br>"
+            }
+          
+            //var ddlDropOffDebit = $('#ddlDropOffDebit').val();
+            //if (ddlDropOffDebit == "?") {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select DropOff Tariff Type</span></br>"
+            //}
+            var ddlDropOffLoc = $('#ddlDropOffLoc').val();
+            if (ddlDropOffLoc == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Drop-Off Port </span></br>"
+            }
+            //var ddlDropOffDepot = $('#ddlDropOffDepot').val();
+            //if (ddlDropOffDepot == "?") {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Drop-Off  Depot </span></br>"
+            //}
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var LIDValue;
+
+            LIDValue = ($scope.LID == "") ? 0 : $scope.LID;
+
+            var val = {
+                'LID': LIDValue,
+                'CntrTypeID': $("#ddlCntrType").val(),
+                'CntrType': $("#ddlCntrType option:selected").text(),
+                'Qty': $scope.Qty,
+                'FreeDays': $scope.FreeDays,
+                'PerDiemAmt': $scope.PerDiemAmt,
+                'PerDiemCurrID': $("#ddlPerDiemCurr").val(),
+                'PerDiemCurr': $("#ddlPerDiemCurr option:selected").text(),
+                'DPPAmt': $scope.DPPAmt,
+                'DPPCurrID': $("#ddlDppCurr").val(),
+                'DPPCurr': $("#ddlDppCurr option:selected").text(),
+                'PickUpDebitID': $("#ddlPickUpDebit").val(),
+                'PickUpDebit': $("#ddlPickUpDebit option:selected").text(),
+                'HDIF': 0,
+                'HDIFCurrID': 0,
+                'HDIFCurr': '',
+                'PickUpTariffAmt': $scope.PickUpTariffAmt,
+                'PickUpCurrID': $("#ddlPkCurr").val(),
+                'PickUpCurr': $("#ddlPkCurr option:selected").text(),
+                'PickUpPortID': $("#ddlPickUpLoc").val(),
+                'PickUpPort': $("#ddlPickUpLoc option:selected").text(),
+                'PickUpDepotID': $("#ddlPkDepot").val(),
+                'PickUpDepot': $("#ddlPkDepot option:selected").text(),
+                'DropOffDebitID': 0,
+                'DropOffDebit': '',
+                'HDOF': $scope.HDOF,
+                'HDOFCurrID': $("#ddlHDOFCurr").val(),
+                'HDOFCurr': $("#ddlHDOFCurr option:selected").text(),
+                'DropOffTariffAmt': $scope.DropOffTariffAmt,
+                'DropOffCurrID': $("#ddlDropOffCurr").val(),
+                'DropOffCurr': $("#ddlDropOffCurr option:selected").text(),
+                'DropOffPortID': $("#ddlDropOffLoc").val(),
+                'DropOffPort': $("#ddlDropOffLoc option:selected").text(),
+                'DropOffDepotID': $("#ddlDropOffDepot").val(),
+                'DropOffDepot': $("#ddlDropOffDepot option:selected").text(),
+                
+            };
+            //alert($("#ddlPickUpLoc option:selected").val());
+
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGrid.push(val);
+            }
+            // ("#ddlCntrType").empty();
+        
+            $("#ddlCntrType").val(null).trigger("change");
+            $("#ddlPickUpLoc").val(null).trigger("change");
+            $("#ddlPkCurr").val(null).trigger("change");
+            $("#ddlPickUpDebit").val(null).trigger("change");
+            $("#ddlPkDepot").val(null).trigger("change");
+            $("#ddlPerDiemCurr").val(null).trigger("change");
+            $("#ddlDppCurr").val(null).trigger("change");
+            $("#ddlDropOffLoc").val(null).trigger("change");
+            $("#ddlDropOffCurr").val(null).trigger("change");
+            //$("#ddlDropOffDebit").val(null).trigger("change");
+            $("#ddlDropOffDepot").val(null).trigger("change");
+            $("#ddlHDIFCurr").val(null).trigger("change");
+            $("#ddlHDOFCurr").val(null).trigger("change");
+            $scope.CntrType = "";
+            $scope.Qty = "";
+            $scope.PickUpTariffAmt = "";
+            $scope.PickUpCurr = "";
+            $scope.PerDiemAmt = "";
+            $scope.FreeDays = "";
+            $scope.HDOF = "";
+            $scope.HDIF = "";
+            $scope.DPPAmt = "";
+            $scope.DropOffTariffAmt = "";     
+            $scope.HDArrayIndex = "";
+            $scope.LID = 0;
+
+        }
+        $scope.Remove = function (DynamicGrid, index) {
+            $scope.DynamicGrid.splice(index, 1);
+        }
+
+
+        $scope.SaveLeaseContract = function (data) {
+
+
+            var validation = "";
+            var txtLeaseRef = $('#txtLeaseRef').val();
+            if (txtLeaseRef.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Lease Ref Number</span></br>"
+
+            }
+
+            var ddlLeasePartner = $('#ddlLeasePartner').val();
+            if (ddlLeasePartner == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Leasing Partner</span></br>"
+            }
+
+            var ddlLeaseTypes = $('#ddlLeaseTypes').val();
+            if (ddlLeaseTypes == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Lease Types</span></br>"
+            }
+            var ddlLeaseTerm = $('#ddlLeaseTerm').val();
+            if (ddlLeaseTerm == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Leasing Term</span></br>"
+            }
+
+
+
+            var ddlCriteria = $('#ddlCriteria').val();
+            if (ddlCriteria == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select PickUp Criteria </span></br>"
+            }
+            var txtDtValidFrom = $('#txtDtValidFrom').val();
+            if (txtDtValidFrom.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Valid From Date </span></br>"
+            }
+            var txtDtValidTill = $('#txtDtValidTill').val();
+            if (txtDtValidTill.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Valid Till Date </span></br>"
+            }
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+
+            var Datav = "";
+            angular.forEach(data, function (value, key) {
+
+                Datav = data[key].CntrType;
+
+            });
+
+            if (Datav == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Add Lease Details</span></br>"
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+           
+        
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+            var id = $scope.HdLeaseId;
+            //alert($scope.HdLeaseId);
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdLeaseId;
+
+            // alert(BussData.ID);
+            BussData.ContractRefNo = $scope.txtLeaseRef;
+            BussData.DtContractFrom = $("#txtDtValidFrom").val();
+            BussData.DtContractTill = $("#txtDtValidTill").val();
+            BussData.Description = $scope.txtDesc;
+            BussData.LeasingPartnerID = $("#ddlLeasePartner").val();
+            BussData.LeaseTermID = $("#ddlLeaseTerm").val();
+            BussData.PickupCriteriaID = $("#ddlCriteria").val();
+            BussData.Remarks = $scope.txtRemarks;
+            BussData.CntrValueCurrID = 0;
+            BussData.CntrValue = 0;
+            BussData.LeaseTypeID = $("#ddlLeaseTypes").val();
+            BussData.Status = $("#ddlStatus").val();
+            var Items = []
+
+            
+            angular.forEach(data, function (value, key) {
+                var intLID = data[key].LID;
+                var deciHDIFAmt = data[key].HDIF;
+                var intHDIFCurrID = data[key].HDIFCurrID;
+                var desiPickUpTariffAmt = data[key].PickUpTariffAmt;
+                var intPickUpCurrID = data[key].PickUpCurrID;
+                var deciHDOFAmt = data[key].HDOF;
+                var intHDOFCurrID = data[key].HDOFCurrID;
+                var deciDropOffTariffAmt = data[key].DropOffTariffAmt;
+                var intDropOffCurrID = data[key].DropOffCurrID;
+                var deciDppAmt = data[key].DPPAmt;
+                var intDppCurrID = data[key].DPPCurrID;
+                var intDrDepotID = data[key].DropOffDepotID;
+                if (typeof data[key].LID == "undefined") {
+                    intLID = 0;
+                }
+                
+                if (typeof data[key].HDIF == "undefined" ||   typeof data[key].HDIF == "") {
+                  
+                    deciHDIFAmt = 0;
+                }
+               // alert(deciHDIFAmt);
+                if (typeof data[key].HDIFCurrID == "undefined" ||  data[key].HDIFCurrID == "" ||  data[key].HDIFCurrID == null ||    data[key].HDIFCurrID == "?") {
+                    intHDIFCurrID = 0;
+                }
+
+                if (typeof data[key].PickUpTariffAmt == "undefined" || typeof data[key].PickUpTariffAmt == "") {
+                    desiPickUpTariffAmt = 0;
+                 
+                }
+            
+                if (typeof data[key].PickUpCurrID == "undefined" || data[key].PickUpCurrID == "" ||  data[key].PickUpCurrID == null ||  data[key].PickUpCurrID == "?") {
+                    intPickUpCurrID = 0;
+                  
+                }
+          
+                if (typeof data[key].HDOF == "undefined" ||  typeof data[key].HDOF == "") {
+                    deciHDOFAmt = 0;
+                }
+                if (typeof data[key].HDOFCurrID == "undefined" ||  data[key].HDOFCurrID == "" ||  data[key].HDOFCurrID == null ||  data[key].HDOFCurrID == "?") {
+                    intHDOFCurrID = 0;
+                }
+       
+                if (typeof data[key].DropOffTariffAmt == "undefined" || typeof data[key].DropOffTariffAmt == "") {
+                    deciDropOffTariffAmt = 0;
+                }
+
+                if (typeof data[key].DropOffCurrID == "undefined" ||  data[key].DropOffCurrID == "" ||  data[key].DropOffCurrID == null ||
+                     data[key].DropOffCurrID == "?") {
+                    intDropOffCurrID = 0;
+                }
+
+                if (typeof data[key].DPPAmt == "undefined" || typeof data[key].DPPAmt == "") {
+                    deciDppAmt = 0;
+                }
+
+                if (typeof data[key].DPPCurrID == "undefined" ||  data[key].DPPCurrID == "" ||  data[key].DPPCurrID == null ||
+                     data[key].DPPCurrID == "?") {
+                    intDppCurrID = 0;
+                }
+                if (typeof data[key].DropOffDepotID == "undefined" ||  data[key].DropOffDepotID == "" ||  data[key].DropOffDepotID == null ||
+                     data[key].DropOffDepotID == "?") {
+                    intDrDepotID = 0;
+                }
+
+                Items.push('Insert:' + intLID, data[key].CntrTypeID, data[key].CntrType, data[key].Qty, data[key].FreeDays, data[key].PerDiemAmt, data[key].PerDiemCurrID, data[key].PerDiemCurr, deciDppAmt, intDppCurrID, data[key].DPPCurr, data[key].PickUpDebitID, data[key].PickUpDebit, 0, 0,'',desiPickUpTariffAmt, intPickUpCurrID, data[key].PickUpCurr, data[key].PickUpPortID, data[key].PickUpPort, data[key].PickUpDepotID, data[key].PickUpDepot,0, '',
+                    deciHDOFAmt, intHDOFCurrID, data[key].HDOFCurr, deciDropOffTariffAmt, intDropOffCurrID, data[key].DropOffCurr,
+                    data[key].DropOffPortID, data[key].DropOffPort, '', 0
+                );
+            });
+
+            BussData.Items = Items.toString();
+            console.log(Items);
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/InsertLeasingContract",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    BussData.ID = result.data[0].ID;
+                    if ((result.data[0].ID != "0")) {
+                        ShowPopup("Lease Contract Details Saved Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+                    setTimeout(function () { location.href = "/Container/LeaseContractView" }, 1500);
+                    //var url = "/Container/LeaseContractView";
+                    //window.location.href = url;
+                    //setTimeOut(function () {
+                    //    window.location = "/";
+                    //}, 10000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.btnUpdate = function (LID) {
+            $scope.GridLID = LID;
+            $scope.BindExistDropoffLocValues(LID);
+            $('#demoModalUPDATE').modal('show');
+        }
+        $scope.BindExistDropoffLocValues = function (LID) {
+            var Datavalue = {};
+            Datavalue.LID = LID;
+            Datavalue.LeaseContractID = $scope.HdLeaseId;
+       
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/LeaseDropoffLocsEdit",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].DropOffLocID != "") {
+                            $scope.DynamicGridLoc.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridLoc.push({
+
+                                'DID': result.data[key].DID,
+                                'DropOffLocID': result.data[key].DropOffLocID,
+                                'DropOffLoc': result.data[key].DropOffLoc,
+
+                            });
+
+                        });
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.back = function () {
+
+            window.location = "/Container/LeaseContractView";
+        }
+
+        $scope.DynamicGridLoc = [{ DID: "", DropOffLocID: "", DropOffLoc: ""}];
+
+        $scope.DynamicGridLoc.splice(0, 1);
+
+        $scope.SelectvaluesDropOffLoc = function (DynamicGridLoc, index) {
+            $scope.HDArrayIndex = index;
+            $scope.DID = $scope.DynamicGridLoc[index].DID;
+            $scope.DropOffLocID = { ID: $scope.DynamicGridLoc[index].DropOffLocID };
+         
+        }
+        $scope.AddLocations = function (DynamicGridLoc) {
+
+            var validation = "";
+
+            var ddlDropOffLocV = $('#ddlDropOffLocV').val();
+            if (ddlDropOffLocV == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Locations</span></br>"
+            }
+
+
+            for (var i = 0; i < $scope.DynamicGridLoc.length; i++) {
+
+                if ($scope.DynamicGridLoc[i].DropOffLocID == $('#ddlDropOffLocV').val() ) {
+
+                    validation += "<span style='color:red;'>*</span> <span> Drop Off Locations Already Exists </span></br>"
+                }
+
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var DIDValue;
+
+            DIDValue = ($scope.DID == "") ? 0 : $scope.DID;
+
+            var val = {
+                'DID': DIDValue,
+                'DropOffLocID': $("#ddlDropOffLocV").val(),
+                'DropOffLoc': $("#ddlDropOffLocV option:selected").text(),
+              
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGridLoc[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGridLoc.push(val);
+            }
+
+            $("#ddlDropOffLocV").val("");
+
+            $scope.DID = 0;
+
+        }
+        $scope.RemoveDropOffLoc = function (DynamicGridLoc, index, DID) {
+
+            var Datavalue = {}
+            Datavalue.DID = DID;
+           // $scope.DynamicGridLoc.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/DropOffLocsDelete/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGridLoc.splice(index, DID);
+                    $scope.BindExistDropoffLocValuess($scope.HdLeaseId);
+                });
+            });
+
+
+
+        }
+
+        $scope.SaveLocs = function (dataLOC) {
+
+
+            var validation = "";
+
+            var Datav = "";
+            angular.forEach(dataLOC, function (value, key) {
+
+                Datav = dataLOC[key].DropOffLocID;
+
+            });
+
+            if (Datav == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Add Drop-Off Locs </span></br>"
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+
+            BussData.LeaseContractID = $scope.HdLeaseId;
+            BussData.LID = $scope.GridLID;
+
+            var ItemsLoc = []
+            angular.forEach(dataLOC, function (value, key) {
+
+                var intDID = dataLOC[key].DID;
+                if (typeof dataLOC[key].DID == "undefined") {
+                    intDID = 0;
+                }
+
+                ItemsLoc.push('Insert:' + intDID, dataLOC[key].DropOffLocID, dataLOC[key].DropOffLoc  );
+            });
+            BussData.ItemsLocs = ItemsLoc.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/InsertDropoffLocs",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    var url = "/Container/LeaseContract?LeaseID=" + $scope.HdLeaseId;
+                   
+                    setTimeout(function () { url}, 2000);
+                    "/Container/LeaseContract?LeaseID=" + encodeURIComponent(url);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<style>
+    label
+    {
+        line-height:unset!important;
+    }
+    select{
+        height:30px!important;
+    }
+    .togglebutton {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+</style>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+
+                        <div class="card-text">
+                            <h4 class="card-title">Lease Contract</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="border: 1px solid #ccc; margin-bottom: 20px; ">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Leasing Reference  <span style='color:red;font-size:20px'>*</span></label>
+
+                                                    <input type="text" autocomplete="off" id="txtLeaseRef" ng-model="txtLeaseRef" class="form-control">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Leasing Partner  <span style='color:red;font-size:20px'>*</span></label>
+                                                    <select class="form-control my-select" ng-model="ddlLeasePartner" id="ddlLeasePartner" ng-options="item.LeasingPartner for item in LeasingPartnerList track by item.LeasingPartnerID" required>
+                                                    </select>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Leasing Types  <span style='color:red;font-size:20px'>*</span> </label>
+
+                                                    <select class="form-control my-select" ng-model="ddlLeaseTypes" id="ddlLeaseTypes" ng-options="item.Name for item in LeaseTypesValues track by item.ID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Leasing Term  <span style='color:red;font-size:20px'>*</span> </label>
+
+                                                    <select class="form-control my-select" ng-model="ddlLeaseTerm" id="ddlLeaseTerm" ng-options="item.LeaseTerm for item in LeaseTermList track by item.LeaseTermID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Pick Up Criteria  <span style='color:red;'>*</span></label>
+                                                    <select class="form-control my-select" ng-model="ddlCriteria" id="ddlCriteria" ng-options="item.PickupCriteria for item in PickupCriteriaList track by item.PickupCriteriaID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Depreciation %</label>
+                                                    <input type="text" id="txtDesc" autocomplete="off" ng-model="txtDesc" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    @*<div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>Container Value</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtCntrValue" autocomplete="off" ng-model="txtCntrValue" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="ddlCntrValueCurr" id="ddlCntrValueCurr" ng-options="item.Currency for item in CntrValueCurrency track by item.ID" required>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>*@
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Valid From  <span style='color:red;font-size:20px'>*</span></label>
+
+                                                    <input type="text" id="txtDtValidFrom" autocomplete="off" ng-model="txtDtValidFrom" class="form-control datepicker">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Valid Till  <span style='color:red;font-size:20px'>*</span></label>
+
+                                                    <input type="text" id="txtDtValidTill" autocomplete="off" ng-model="txtDtValidTill" class="form-control datepicker">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Remarks</label>
+                                                    <input type="text" id="txtRemarks" autocomplete="off" ng-model="txtRemarks" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Status  <span style='color:red;font-size:20px'>*</span></label>
+                                                    <select class="form-control my-select" ng-model="ddlStatus" id="ddlStatus" ng-options="item.Name for item in StatusValues track by item.ID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12" style="border: 1px solid #ccc;padding-top:7px;padding-bottom:5px;">
+                                @*style="border-top: 1px dashed #4c4b4b;padding-top:10px;"*@
+                                <h5 class="cardtitle">Lease Details</h5>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Container Type <span style='color:red;font-size:20px'>*</span> </label>
+                                                    <input type="hidden" id="HDIDv" class="form-control" ng-model="LID" />
+                                                    <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                    <select class="form-control" ng-model="CntrType" id="ddlCntrType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID">
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Quantity <span style='color:red;font-size:20px'>*</span></label>
+                                                    <input type="text" id="txtQuantity" autocomplete="off" ng-model="Qty" class="form-control">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Freedays</label>
+                                                    <input type="text" id="txtFreedays" autocomplete="off" ng-model="FreeDays" class="form-control">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>Per Diem Rental Fee <span style='color:red;font-size:20px'>*</span></label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtPerDiemAmt" autocomplete="off" ng-model="PerDiemAmt" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="PerDiemCurr" id="ddlPerDiemCurr" ng-options="item.Currency for item in PerDiemCurrency track by item.ID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group bmd-form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>DPP Amount</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtDPPAmt" autocomplete="off" ng-model="DPPAmt" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="DPPCurr" id="ddlDppCurr" ng-options="item.Currency for item in DPPCurrency track by item.ID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>PUC Type <span style='color:red;font-size:20px'>*</span></label>
+                                                    <div>
+                                                        <select class="form-control" ng-model="PickUpDebit" id="ddlPickUpDebit" ng-options="item.Name for item in DropOffDrCrValues track by item.ID" required>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>Handling In Fee(HDIF)</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtHDIF" autocomplete="off" ng-model="HDIF" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="HDIFCurr" id="ddlHDIFCurr" ng-options="item.Currency for item in HDIFCurrency track by item.ID" required>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>PUC Fee</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtTariffAmt" autocomplete="off" ng-model="PickUpTariffAmt" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="PickUpCurr" id="ddlPkCurr" ng-options="item.Currency for item in PickUpCurrency track by item.ID" required>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>PickUp Location <span style='color:red;font-size:20px'>*</span></label>
+                                                    <select class="form-control my-select" ng-model="PickUpPort" id="ddlPickUpLoc" ng-options="item.PortName for item in PickUpPortValue track by item.ID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>PickUp Depot <span style='color:red;font-size:20px'>*</span></label>
+                                                    <select class="form-control" ng-model="PickUpDepot" id="ddlPkDepot" ng-options="item.DepotName for item in DepotValue track by item.ID">
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!--<div class="col-md-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Drop-Off Tariff Type <span style='color:red;font-size:20px'>*</span></label>
+                                                <div>
+                                                    <select class="form-control" ng-model="DropOffDebit" id="ddlDropOffDebit" ng-options="item.Name for item in DropOffDrCrValues track by item.ID" required>
+                                                    </select>-->
+                                    @*<label>
+                                        <input type="radio" ng-model="IsDropoffDebit" ng-value="0">
+                                        Debit
+                                    </label>
+                                    <label>
+                                        <input type="radio" ng-model="IsDropoffDebit" ng-value="1">
+                                        Credit*@
+                                    @*</label>*@
+                                    <!--</div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>-->
+                                    <div class="col-md-3">
+                                        <div class="form-group bmd-form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>On-Hire Handling Cost</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtHDOF" autocomplete="off" ng-model="HDOF" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="HDOFCurr" id="ddlHDOFCurr" ng-options="item.Currency for item in HDOFCurrency track by item.ID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group bmd-form-group">
+                                            <div class="row">
+
+                                                <div class="col-md-12">
+                                                    <label>Off-Hire Handling Cost</label>
+                                                    <div class="row">
+
+                                                        <div class="col-md-8 padr6">
+                                                            <input type="text" id="txtDropOffAmt" autocomplete="off" ng-model="DropOffTariffAmt" class="form-control">
+                                                        </div>
+                                                        <div class="col-md-4 padl0">
+                                                            <select class="form-control" ng-model="DropOffCurr" id="ddlDropOffCurr" ng-options="item.Currency for item in DropOffCurrency track by item.ID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Drop Off Location <span style='color:red;font-size:20px'>*</span></label>
+                                                    <select class="form-control my-select" ng-model="DropOffPort" id="ddlDropOffLoc" ng-options="item.PortName for item in DropOffPortValue track by item.ID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Drop-Off Depot </label>
+                                                    <select class="form-control" ng-model="DropOffDepot" id="ddlDropOffDepot" ng-options="item.DepotName for item in DropOffDepotValue track by item.ID">
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12" style="border-bottom: 1px solid #ccc; margin-bottom: 14px; ">
+                        <div class="row">
+                            <div class="col-md-12 txtright1">
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="AddLeaseDetails(gRow);">
+                                    <i class="material-icons">add</i>
+                                    Add
+                                </button>
+                                <input type="hidden" id="HdDtlsID" ng-model="HdDtlsID" />
+
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            @*style="border-bottom:1px dashed #000; padding-bottom:10px;"*@
+                            <div class="material-datatables" style="width:100%;overflow:scroll;">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead class="gridhead1">
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Container Type</th>
+                                            <th>Qty</th>
+                                            <th>FreeDays</th>
+                                            <th>PerDiem Rental</th>
+                                            <th>PerDiem Curr</th>
+                                            <th>DPP Amt</th>
+                                            <th>DPP Curr</th>
+                                            <th>PUC Type </th>
+                                            <th>PUC Fee </th>
+                                            <th>PUC Curr</th>
+                                            <th>PickUp Location</th>
+                                            <th>PickUp Depot</th>
+                                            @*<th>Drop-Off Tariff Type</th>*@
+                                            <th>On-Hire Handling Cost </th>
+                                            <th>On-Hire Handling Curr</th>
+                                            <th>Off-Hire Handling </th>
+                                            <th>Off-Hire Handling Curr</th>
+                                            <th>Drop-Off Location</th>
+                                            <th>Additional Drop-Off Locations</th>
+                                            <th class="disabled-sorting text-right actwid">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+
+
+                                            <td>{{$index+1}}</td>
+
+                                            <td>
+                                                {{gRow.CntrType}}
+
+                                                <input type="hidden" id="HDCntrTypeID" class="form-control" ng-model="gRow.CntrTypeID" />
+                                            </td>
+                                            <td class="txtright">
+                                                {{gRow.Qty}}
+
+                                            </td>
+                                            <td class="txtright">
+                                                {{gRow.FreeDays}}
+
+                                            </td>
+                                            <td class="txtright">
+                                                {{gRow.PerDiemAmt}}
+
+                                            </td>
+                                            <td>
+                                                {{gRow.PerDiemCurr}}
+
+                                                <input type="hidden" id="HDPerDiemCurrID" class="form-control" ng-model="gRow.PerDiemCurrID" />
+                                            </td>
+                                            <td class="txtright">
+                                                {{gRow.DPPAmt}}
+
+                                            </td>
+                                            <td>
+                                                {{gRow.DPPCurr}}
+
+                                                <input type="hidden" id="HDDPPCurrID" class="form-control" ng-model="gRow.DPPCurrID" />
+                                            </td>
+                                            <td>
+                                                {{gRow.PickUpDebit}}
+
+                                                <input type="hidden" id="HDPickUpDebitID" class="form-control" ng-model="gRow.PickUpDebitID" />
+                                            </td>
+                                            @*<td class="txtright">
+                                                {{gRow.HDIF}}
+
+                                            </td>
+                                            <td>
+                                                {{gRow.HDIFCurr}}
+
+                                                <input type="hidden" id="HDHDIFCurrID" class="form-control" ng-model="gRow.HDIFCurrID" />
+                                            </td>*@
+
+                                            <td class="txtright">
+                                                {{gRow.PickUpTariffAmt}}
+
+                                            </td>
+                                            <td>
+                                                {{gRow.PickUpCurr}}
+
+                                                <input type="hidden" id="HDPickUpCurrID" class="form-control" ng-model="gRow.PickUpCurrID" />
+                                            </td>
+                                            <td>
+                                                {{gRow.PickUpPort}}
+
+                                                <input type="hidden" id="HDPickUpPortID" class="form-control" ng-model="gRow.PickUpPortID" />
+                                            </td>
+                                            <td>
+                                                {{gRow.PickUpDepot}}
+
+                                                <input type="hidden" id="HDPickUpDepotID" class="form-control" ng-model="gRow.PickUpDepotID" />
+                                            </td>
+                                            @*<td>
+                                                {{gRow.DropOffDebit}}
+
+                                                <input type="hidden" id="HDDropOffDebitID" class="form-control" ng-model="gRow.DropOffDebitID" />
+                                            </td>*@
+
+                                            <td class="txtright">
+                                                {{gRow.HDOF}}
+
+                                            </td>
+                                            <td>
+                                                {{gRow.HDOFCurr}}
+
+                                                <input type="hidden" id="HDHDOFCurrID" class="form-control" ng-model="gRow.HDOFCurrID" />
+                                            </td>
+
+                                            <td class="txtright">
+                                                {{gRow.DropOffTariffAmt}}
+
+                                            </td>
+                                            <td>
+                                                {{gRow.DropOffCurr}}
+
+                                                <input type="hidden" id="HDDropOffCurrID" class="form-control" ng-model="gRow.DropOffCurrID" />
+                                            </td>
+
+                                            <td>
+                                                {{gRow.DropOffPort}}
+
+                                                <input type="hidden" id="HDDropOffPortID" class="form-control" ng-model="gRow.DropOffPortID" />
+                                            </td>
+
+                                            <td>
+                                                <button href="#" class="btn btn-warning btn-round" id="btnUpdate" ng-click="btnUpdate(gRow.LID);" style="width:84%;"> Update </button>
+                                                <input type="hidden" id="GridPaymentID" ng-model="gRow.LID" />
+                                            </td>
+
+                                            <td class="td-actions text-right bindgrid">
+                                                <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                                <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+
+                                                <input type="hidden" id="HDID" class="form-control" ng-model="gRow.LID" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="ml-auto" style="margin-bottom: 13px;">
+                            <button type="submit" class="btn btn-fill btn-success" ng-click="SaveLeaseContract(DynamicGrid);">
+                                <i class="material-icons">save</i>
+                                Save
+                            </button>
+                            <input type="hidden" id="HdLeaseId" ng-model="HdLeaseId" />
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal fade" id="demoModalUPDATE" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" style="width:500px;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:center;">
+                                <div class="card-header card-header-primary card-header-text" style=" margin-bottom: 20px;">
+                                    <div class="card-text">
+                                        <h1 class="card-title"></h1>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-12">
+                                        <div class="material-datatables">
+
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                    </tr>
+                                                    <tr class="bighead">
+                                                        <th>S.No</th>
+                                                        <th> Drop Off Location</th>
+
+                                                        <th class="disabled-sorting text-right actwid">Action</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody style="margin-top:20px!important;">
+                                                    <tr class="bighead">
+                                                        <td></td>
+                                                        <td class="chg">
+                                                            <input type="hidden" id="HDIDv" class="form-control" ng-model="GridLID" />
+                                                            <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                            <select class="form-control my-select" ng-model="DropOffLoc" id="ddlDropOffLocV" ng-options="item.PortName for item in DropOffPortValue track by item.ID" required>
+                                                            </select>
+
+                                                        </td>
+                                                       
+
+                                                        <td class="td-actions text-right entrygrid">
+                                                            <button type="button" rel="tooltip" ng-click="AddLocations(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">add</i>
+                                                            </button>
+
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+
+                                      
+                                                <tbody>
+
+
+                                                    <tr class="gridbody1" ng-repeat="gRow in DynamicGridLoc">
+                                                        <td>{{$index+1}}</td>
+
+                                                        <td>
+                                                            {{gRow.DropOffLoc}}
+
+                                                            <input type="hidden" id="HDDropOffLocID" class="form-control" ng-model="gRow.DropOffLocID" />
+                                                        </td>
+
+                                                        <td id="BtnActionopr" class="td-actions text-right bindgrid">
+                                                            <button @*--ng-show="gRow.RemoveOpr"*@ type="button" rel="tooltip" ng-click="RemoveDropOffLoc(DynamicGridLoc,$index,gRow.DID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">delete</i>
+                                                            </button>
+                                                            <!--<button--> @*ng-show="gRow.SelectOpr"*@ <!--type="button" rel="tooltip" ng-click="SelectvaluesDropOffLoc(DynamicGridLoc,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">edit</i>
+                                                            </button>-->
+
+                                                            <input type="hidden" id="HOID" class="form-control" ng-model="gRow.DID" />
+                                                        </td>
+
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+
+                                            @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-12 txtright">
+                                        <button type="submit" ng-click="SaveLocs(DynamicGridLoc);" class="btn btn-fill btn-success">
+                                            <i class="material-icons">save</i>
+                                            Save
+                                        </button>
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        //md.initFormExtendedDatetimepickers();
+        //if ($('.slider').length != 0) {
+        //    md.initSliders();
+        //}
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+
+
+

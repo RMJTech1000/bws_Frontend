@@ -1,0 +1,501 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $(document).ready(function () {
+            $('.my-selectLoc').select2({
+                placeholder: "Location", allowClear: true, width: '100%'
+            });
+            $('.my-selectGroup').select2({
+                placeholder: "DGClass", allowClear: true, width: '100%'
+            });
+            $('.my-selectSerType').select2({
+                placeholder: "Service Type", allowClear: true, width: '100%'
+            });
+            $('.my-selectST').select2({
+                placeholder: "Module Shipment Type", allowClear: true, width: '100%'
+            });
+            $('.my-selectTT').select2({
+                placeholder: "Tariff Type", allowClear: true, width: '100%'
+            });
+            $('.my-selectCM').select2({
+                placeholder: "Collection Mode", allowClear: true, width: '100%'
+            });
+            $('.my-selectStatus').select2({
+                placeholder: "Status", allowClear: true, width: '100%'
+            });
+
+        });
+
+
+        $scope.BindDGClassValues = [
+
+            { 'name': 'Group-1', 'ID': 1 },
+            { 'name': 'Group-2 ', 'ID': 2 },
+            { 'name': 'Group-3 ', 'ID': 3 }
+        ];
+
+
+        $scope.StatusBindValues = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'Active', 'ID': 1 },
+            { 'name': 'Deactive ', 'ID': 2 }
+        ];
+
+
+        $scope.CollectionAllvalues = null;
+        $scope.fillCollectionValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "9"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CollectionAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCollectionValues();
+
+        $scope.ServiceTypesValue = null;
+        $scope.fillServiceTypesValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ServiceTypesValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ServiceTypesValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillServiceTypesValues();
+
+        $scope.PortTariffRateview = null;
+        $scope.TariffViewRecords = function () {
+            var BussData = {};
+            BussData.StrPortLocID = $('#ddlLocation').val();
+            BussData.StrShipmentID = $('#ddlShipment').val();
+            BussData.TariffType = $('#ddlRegTariffTypes').val();
+            BussData.StatusID = $('#ddlStatus').val();
+            BussData.GroupID = $('#ddlDGClass').val();
+            BussData.ServiceTypeID = $('#ddlServiceType').val();
+            BussData.CollectionMode = $('#ddlCollMode').val();
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortTariffRateview = result.data;
+                    $scope.totalItems = $scope.PortTariffRateview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.PortTariffRateview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.TariffViewRecords();
+
+        $scope.ClearRecords = function () {
+
+            $("#ddlLocation").val(null).trigger("change");
+            $("#ddlShipment").val(null).trigger("change");
+            $("#ddlTariffMode").val(null).trigger("change");
+            $("#ddlRegTariffTypes").val(null).trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $("#ddlServiceType").val(null).trigger("change");
+            $("#ddlDGClass").val(null).trigger("change");
+            $("#ddlCollMode").val(null).trigger("change");
+            $scope.TariffViewRecords();
+        }
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.ShipmentTypeAllvalues = null;
+        $scope.fillShipmentTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "1"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillShipmentTypeValues();
+
+        $scope.TariffModeAllvalues = null;
+        $scope.fillTariffModeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "28"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TariffModeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTariffModeAllValues();
+
+        $scope.TariffRegTypeAllvalues = null;
+        $scope.fillTariffRegTypeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "40"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TariffRegTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTariffRegTypeAllValues();
+
+        $scope.LoadingPortTariffPage = function (urlv) {
+
+            //var url = "/Sales/TariffMaster?PTRegNo=" + encodeURIComponent(urlv);
+            //window.location.href = url;
+            var ParameterValue = "PTRegNo=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Sales/TariffMaster?" + ciphertext;
+
+            window.location.href = url;
+        }
+
+        $scope.FileUploadingWindows = function () {
+
+            var left = (screen.width / 2) - (400 / 2);
+            var top = (screen.height / 2) - (300 / 2);
+            return window.open("../TarifffileUpload.aspx?ID=" + $scope.RegId, 'window', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=300, top=' + top + ', left=' + left);
+        }
+        $scope.btnPrint = function () {
+            var Loc = $('#ddlLocation').val();
+            var Shipment = $('#ddlShipment').val();
+            var TariffTypes = $('#ddlRegTariffTypes').val();
+            var Status = $('#ddlStatus').val();
+            var ServiceType = $('#ddlServiceType').val();
+            var DGClass = $('#ddlDGClass').val();
+            var CollMode = $('#ddlCollMode').val();
+              var User = localStorage.getItem("UserName");
+
+            window.location.href = '@Url.Action("TariffExcel", "MastersExcel")?Loc=' + Loc + '&Shipment=' + Shipment + '&TariffTypes=' + TariffTypes + '&Status=' + Status + '&ServiceType=' + ServiceType + '&DGClass=' + DGClass + '&CollMode=' + CollMode + '&User=' + User;
+        }
+
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+    function AddNew() {
+
+        window.location = "/Sales/Slot"
+    }
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            <a href="/Sales/TariffMaster" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Tariff Master
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+                        <div class="col-md-12 padlr0" style="text-align:right; padding-right:16px;">
+                            <a href="#" ng-click="FileUploadingWindows();" class="btn btn-fill btn-success btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">upload</i> Upload
+                            </a>
+                            <a href="#" ng-click="btnPrint();" class="btn btn-fill btn-danger btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">download</i> Download Excel
+                            </a>
+                        </div>
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Location</th>
+                                    <th>Commodity</th>
+                                    <th>Group</th>
+                                    <th>Service Type</th>
+                                    <th>Collection Mode</th>
+                                    <th>Tariff Type</th>
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                <tr ng-repeat="i in PortTariffRateview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.Locations}}</td>
+                                    <td>{{i.CommodityType}}</td>
+                                    <td>{{i.Groups}}</td>
+                                    <td>{{i.ServiceType}}</td>
+                                    <td>{{i.CollectionMode}}</td>
+                                    <td>{{i.TariffType}}</td>
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingPortTariffPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(PortTariffRateview|filter:Locations).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                  
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" id="ddlLocation" ng-model="ddlLocation" class="form-control my-selectLoc" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                <option value="" disabled selected>Location</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" id="ddlDGClass" ng-model="ddlDGClass" class="form-control my-selectGroup" placeholder="DGClass" ng-options="item.name for item in BindDGClassValues track by item.ID">
+                                <option value="" disabled selected>DG Class </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" id="ddlServiceType" ng-model="ddlServiceType" class="form-control my-selectSerType" placeholder="Shipment Type" ng-options="item.ServiceTypesName for item in ServiceTypesValue track by item.ID">
+                                <option value="" disabled selected>Service Type </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" id="ddlShipment" ng-model="ddlShipment" class="form-control my-selectST" placeholder="Shipment Type" ng-options="item.GeneralName for item in ShipmentTypeAllvalues track by item.ID">
+                                <option value="" disabled selected>Module Shipment Type</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectTT" id="ddlRegTariffTypes" ng-model="ddlRegTariffTypes" options="{ allowClear: true }" ng-options="item.GeneralName for item in TariffRegTypeAllvalues track by item.ID">
+
+                                <option value="" disabled selected> Tariff Type</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectCM" id="ddlCollMode" ng-model="ddlCollMode" options="{ allowClear: true }" ng-options="item.GeneralName for item in CollectionAllvalues track by item.ID">
+
+                                <option value="" disabled selected> Collection Mode</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" id="ddlStatus" ng-model="ddlStatus" class="form-control my-selectStatus" options="{ allowClear: true }" ng-options="item.name for item in StatusBindValues track by item.ID">
+                                <option value="" disabled selected>Status</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="TariffViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,300 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+
+
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.BkgStatusValues = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'Draft', 'ID': 1 },
+            { 'name': 'Confirmed', 'ID': 2 },
+            { 'name': 'Cancelled', 'ID': 3 }
+        ];
+
+          $scope.GridViewData = null;
+        $scope.fillDOReportview = function () {
+            var BussData = {};
+            BussData.txtFromDate = $('#txtFromDate').val();
+            BussData.txtToDate = $('#txtToDate').val();
+            BussData.Status = $('#ddlBkgStatus').val();
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/ImportReportApi/DoReportView/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GridViewData = result.data;
+                    $scope.totalItems = $scope.GridViewData.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.GridViewData.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDOReportview();
+
+        $scope.btnSearch = function () {
+
+            $scope.fillDOReportview();
+        }
+        $scope.ClearRecords = function () {
+            $("#ddlBkgStatus").val(null).trigger("change");
+            $scope.txtFromDate = "";
+            $scope.txtToDate = "";
+            $scope.fillDOReportview();
+        }
+
+        $scope.btnPrint = function () {
+
+            var DtFrom = $('#txtFromDate').val();
+            var DtTo = $('#txtToDate').val();
+            var AgencyID = localStorage.getItem("AgencyID");
+            var User = localStorage.getItem("UserName");
+            var Status = $('#ddlBkgStatus').val();
+
+            window.location.href = '@Url.Action("ImportDOReportView", "ImportExcel")?Status=' + Status + "&DtFrom=" + DtFrom + "&DtTo=" + DtTo + "&User=" + User + "&AgencyID=" + AgencyID;
+
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #12759a !important;
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/AllReports/ImportReportDashboard" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                        <div class="col-md-8" style="text-align:center;">
+                            <h4 style="font-size:24px; font-weight:bold; color:#000!important; margin-top:39px;">DO Detail Report</h4>
+                        </div>
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+
+                        <div class="col-md-12">
+                            <div class="row">
+
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">From Date</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <input type="date" id="txtFromDate" ng-model="txtFromDate" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">To Date</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <input type="date" id="txtToDate" ng-model="txtToDate" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Status</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" ng-model="ddlBkgStatus" id="ddlBkgStatus" ng-options="item.name for item in BkgStatusValues track by item.ID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3" style="text-align:center;">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-fill btn-info" ng-model="btnSearch" ng-click="btnSearch();" style="padding: 6px 18px; margin-top: -1px;width:46%; ">
+                                                    <i class="material-icons"></i>  Search 
+                                                </button>
+                                                <button type="submit" class="btn btn-fill btn-default" ng-model="ClearRecords" ng-click="ClearRecords();" style="padding: 6px 18px; margin-top: -1px; width: 46%;">
+                                                    <i class="material-icons">close</i> Clear
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 exceldownload" style="text-align:right;">
+                                    <a ng-click="btnPrint();">Download <i class="fa fa-file-excel-o"></i></a>
+                                </div>
+                            </div>
+                            <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+                                <div class="col-md-12 padlr0" style="padding:7px;">
+
+                                    <div class="material-datatables">
+                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>S.No</th>
+                                                    <th>DO No</th>
+                                                    <th>Issue Date </th>
+                                                    <th>Vessel/Voyage</th>
+                                                    <th>BLNumber</th>
+                                                    <th>Container No</th>
+                                                    <th>Size</th>
+                                                    <th>Customer Name</th>
+                                                    <th>Principal </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="gRow in GridViewData | filter : paginate | orderBy:'-Statusv'">
+                                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                                    <td>{{gRow.DONo}}</td>
+                                                    <td>{{gRow.IssueDate}}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+
+                                            </tbody>
+
+                                        </table>
+                                        <div id="notFoundDiv" ng-show="(GridViewData|filter:DONo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-5"></div>
+                                                <div class="col-md-7" style="text-align:right;">
+                                                    <pagination total-items="totalItems" ng-model="currentPage"
+                                                                max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                                    </pagination>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+    </div>
+</div>

@@ -1,0 +1,88 @@
+﻿.time {
+    position: absolute;
+    top: 14px;
+    left: 30px;
+    width: 300px;
+}
+
+    .time .col-md-2 {
+        background-color:transparent;
+        /*background-color: #00214a;*/
+        color: #ffffff;
+        border-radius: 100%;
+        text-align: center;
+        font-size: 12px;
+        width: 27px;
+        padding: 4px;
+    }
+
+#lnkFake {
+    padding: 0;
+}
+
+.modalBackground {
+    background-color: Black;
+    filter: alpha(opacity=60);
+    opacity: 0.6;
+}
+
+.modalPopup {
+    background-color: #FFFFFF;
+    width: 350px;
+    border: 3px solid #304974;
+    border-radius: 12px;
+    padding: 0;
+}
+
+    .modalPopup .header {
+        background-color: #304974;
+        height: 30px;
+        color: White;
+        line-height: 30px;
+        text-align: center;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+    }
+
+    .modalPopup .body {
+        padding: 10px;
+        min-height: 50px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .modalPopup .footer {
+        padding: 10px;
+    }
+
+    .modalPopup .yes, .modalPopup .no {
+        height: 23px;
+        color: White;
+        line-height: 23px;
+        text-align: center;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .modalPopup .yes {
+        background-color: #2FBDF1;
+        border: 1px solid #0DA9D0;
+    }
+
+    .modalPopup .no {
+        background-color: #9F9F9F;
+        border: 1px solid #5C5C5C;
+    }
+
+
+.modalv {
+    background-color: #FFFFFF;
+    width: 100px;
+    border: 3px solid #0DA9D0;
+    border-radius: 12px;
+    padding: 0;
+   
+}
+
+

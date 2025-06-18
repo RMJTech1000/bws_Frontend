@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+</head>
+
+<body>
+    <p>Set focus on the last column cells to select date!</p>
+
+    <div ng-app="myApp"
+         ng-controller="myController">
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name of the Book</th>
+                <th>Issuing Date</th>
+            </tr>
+            <tr ng-repeat="books in booksArray | orderBy : 'values.id'">
+
+                <td>{{books.values.id}}</td>
+                <td>{{books.values.name}}</td>
+                <td><input type="text" datepicker ng-model="datevalue" /></td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+<script>
+    var myApp = angular.module('myApp', []);
+
+    myApp.controller('myController', ['$scope', function ($scope) {
+        // CREATE THE books OBJECT.
+        $scope.books = [
+            { 'id': '1', 'name': 'jQuery' },
+            { 'id': '2', 'name': 'CSS3' },
+            { 'id': '3', 'name': 'Angular 2' }
+        ]
+
+        $scope.booksArray = Object.keys($scope.books)
+            .map(function (value, index) {
+                return { values: $scope.books[value] }
+            }
+            );
+    }]);
+
+    myApp.directive("datepicker", function () {
+
+        function link(scope, element, attrs) {
+            // CALL THE "datepicker()" METHOD USING THE "element" OBJECT.
+            element.datepicker({
+                dateFormat: "dd/mm/yy"
+            });
+        }
+
+        return {
+            require: 'ngModel',
+            link: link
+        };
+    });
+</script>
+</html>

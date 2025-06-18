@@ -1,0 +1,503 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<style>
+    .card-stats .card-header.card-header-icon i {
+        color: #ffffff !important;
+        font-size: 38px !important;
+    }
+
+    .card.card-stats.card-cancelled {
+        background-color: #f34394;
+        margin-bottom: 0;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                 allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.BankAllvalues = null;
+        $scope.fillBankValues = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/AccountApi/BankMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BankAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBankValues();
+
+        $scope.UserNameMasterAllvalues = null;
+        $scope.fillUserMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/UserMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.UserNameMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillUserMasterValues();
+       
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["RegID"] != null)
+            {
+                $scope.HDBLID = queryString["RegID"].toString();
+
+                $scope.ExistingValueBind(queryString["RegID"].toString());
+            }
+
+        });
+
+        $scope.ExistingValueBind = function (id)
+        {
+            var Datavalue = {};
+            Datavalue.ID = id;
+            $http({
+                method: 'POST',
+                url: '/api/OnLine/Online_EditPayment_view/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                   
+                    $scope.UTRNumber = result.data[0].UTR_No;
+                    $('#dateoftransfer').val(result.data[0].DateOfTransfer);
+                    $scope.txtBookingno = result.data[0].BLNumber;
+                    $scope.txtCustomer = result.data[0].PartyName;
+                    $scope.txtPayment = result.data[0].ModeOfPayment;
+                    
+                    
+                    $scope.ExistinggridValueBind(id);
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+        $scope.viewAllvalues = null;
+        $scope.ExistinggridValueBind = function (id) {
+
+            var Datavalue = {};
+            Datavalue.ID = id;
+
+            $http({
+                method: 'POST',
+                url: '/api/OnLine/Online_EditPayment_dlts_view/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.viewAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.SaveRecord = function ()
+        {
+            $("#overlay").show();
+            var validation = "";
+            var ddlBankName = $('#ddlBankName').val();
+            if (ddlBankName == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Payment Credited Bank</span></br>"
+            }
+
+            var ddlPreparedBy = $('#ddlPreparedBy').val();
+            if (ddlPreparedBy == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Verified By</span></br>"
+            }
+
+            
+
+            if (validation != "") {
+                ShowPopup(validation);
+                $("#overlay").hide();
+                return false;
+            }
+
+
+            var Datavalue = {};
+            if (typeof $scope.HDBLID == "undefined" || typeof $scope.HDBLID == "undefined")
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = $scope.HDBLID;
+
+            Datavalue.BankID = $("#ddlBankName").val();
+            Datavalue.VerifedByID = $("#ddlPreparedBy").val();
+
+            Datavalue.SessionFinYear = localStorage.getItem("SessionFinYear");
+            Datavalue.UserID = localStorage.getItem("UserID");
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            Datavalue.DeffRoundoff = 0;
+            Datavalue.AgentCode = localStorage.getItem("DocumentSuffix");
+            Datavalue.GeoLocID = localStorage.getItem("GeoLocationID");
+           
+            $http({
+                method: 'POST',
+                url: '/api/OnLine/Online_PaymentUpdate/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $("#overlay").hide();
+                ShowPopup("Payment Update Successfully");
+
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+
+        }
+
+        $scope.AddNew = function () {
+
+            window.location = "/Online/PaymentConfirmation"
+        }
+
+
+
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<style>
+    .modal-dialog {
+        max-width: 550px;
+    }
+
+    .modal-body .form-group {
+        margin-bottom: 0 !important;
+        padding-bottom: 0;
+    }
+
+    .modal-dialog .modal-header {
+        background-color: #057ba7;
+    }
+
+        .modal-dialog .modal-header .modal-title {
+            line-height: 0.5;
+            padding-bottom: 12px;
+            color: #fff;
+        }
+
+    .modal-body label {
+        color: #3e3d3d !important;
+        font-weight: bold !important;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        text-transform: uppercase;
+    }
+
+    .modal .modal-header .close {
+        color: #fff;
+    }
+
+    .modal-dialog .modal-body {
+        padding: 10px 24px 16px;
+    }
+
+    .card .card-body .form-group {
+        margin: 0px 0 0;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+
+            <button type="submit" id="btnAdd" ng-click="BackButton();" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">back</i>
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Payment Confirmation
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>UTR Number</label>
+                                                    <input type="text" readonly autocomplete="off" id="UTRNumber" ng-model="UTRNumber" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Date of Transfer</label>
+                                                    <input type="date" readonly autocomplete="off" id="dateoftransfer" ng-model="dateoftransfer" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Booking /BL Number</label>
+                                                    <input type="text" readonly autocomplete="off" id="txtBookingno" ng-model="txtBookingno" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Customer</label>
+                                                    <input type="text" readonly autocomplete="off" id="txtCustomer" ng-model="txtCustomer" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                  
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Mode of Payment</label>
+                                                    <input type="text" readonly autocomplete="off" id="txtPayment" ng-model="txtPayment" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+
+                                        <div class="material-datatables" style="margin-top:20px;">
+
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No</th>
+                                                        <th>Invoice No</th>
+                                                        <th>Currency</th>
+                                                        <th>Invoice Amount</th>
+                                                        @*<th>TDS Deducted</th>
+        <th>Net Paid Amount</th>*@
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr ng-repeat="gRow in viewAllvalues | filter : paginate | orderBy:'-Status'">
+
+                                                        <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                                        <td><a href="#">{{gRow.InvoiceNo}}</a></td>
+                                                        <td><a href="#">{{gRow.Currency}}</a></td>
+                                                        <td>{{gRow.InvoiceAmt}}</td>
+
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label style="color:red">Account Department Purpose(internal)</label>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Payment Credited Bank</label>
+                                                    <select class="form-control my-select" id="ddlBankName" ng-model="ddlBankName" ng-options="item.BankName for item in BankAllvalues  track by item.ID"></select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Verified By</label>
+                                                    <select id="ddlPreparedBy" ng-model="ddlPreparedBy" class="form-control my-select" ng-options="item.UserName for item in UserNameMasterAllvalues track by item.ID"></select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+
+                                                    <button type="submit" id="btnSave" ng-click="SaveRecord();" class="btn btn-success">
+                                                        <i class="material-icons"></i>
+                                                        Approval
+                                                    </button>
+                                                    <button type="submit" id="btnSave" ng-click="SaveRecord();" class="btn btn-danger">
+                                                        <i class="material-icons"></i>
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

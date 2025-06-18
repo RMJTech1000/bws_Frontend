@@ -1,0 +1,1614 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" />
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<style>
+    .nav-tabs.maintab {
+        background-color: transparent !important;
+        border: 0 !important;
+    }
+        .nav-tabs.maintab a {
+            background-color: transparent !important;
+            box-shadow:none!important;
+            color:#ccc!important;
+        }
+        .nav-tabs.maintab.demtab .nav-link.active {
+            border-bottom: 2px solid #0759d4;
+            background-color: transparent !important;
+            color: #0759d4 !important;
+        }
+        .nav-tabs.maintab .nav-item .nav-link {
+            border-bottom: 3px solid #000 !important;
+            border-radius: unset !important;
+            color: #ccc !important;
+        }
+            .nav-tabs.maintab .nav-item .nav-link:focus, .nav-tabs.maintab .nav-item .nav-link:hover {
+                color: #0759d4 !important;
+            }
+            /* .table > tbody > tr > td
+    {
+        width:100%;
+    }
+        .table > tbody > tr > td .material-datatables select.form-control
+        {
+            width:100px!important;
+        }*/
+            element.style {
+            }
+
+    .table > tbody > tr > td {
+        font-size: 12px !important;
+    }
+
+    .select2-container--default.select2-container--open.select2-container--above .select2-selection--single, .select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+
+    .select2-container--default .select2-selection--single {
+        background-color: #fff;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+    }
+
+    .select2-container .select2-selection--single {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 28px;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    .btnuser {
+        float: right;
+        font-size: 14px;
+        padding: 3px 7px;
+    }
+
+    .table.ratetable > tbody > tr > td, .table.ratetable > tbody > tr > th, .table.ratetable > tfoot > tr > td, .table.ratetable > tfoot > tr > th, .table.ratetable > thead > tr > td, .table.ratetable > thead > tr > th {
+        padding: 6px 4px;
+        font-size: 13px;
+    }
+
+    @@media(max-width:1280px) {
+        .bookingimg {
+            width: 635px !important;
+        }
+
+        .pol {
+            /*padding-left:147px!important;*/
+            margin-left: -9px !important;
+        }
+
+        .pod {
+            /* padding-left:242px!important;*/
+            margin-left: -13px !important;
+        }
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, Upload, $timeout) {
+
+        //$("#overlay").show();
+        $(document).ready(function () {
+            $('.my-select').select2({
+
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+            $scope.fillPortsValues();
+            $scope.fillCntrTypeValues();
+            $scope.fillServiceTypesValues();
+            $scope.fillSlotOperatorAll();
+            $scope.fillSlotTermsValues();
+            $scope.fillCommodityValues();
+
+
+
+
+        });
+
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+
+          
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.CntrTypesvalues = null;
+        $scope.fillCntrTypeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CntrTypeValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypesvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+
+        $scope.ServiceTypesValue = null;
+        $scope.fillServiceTypesValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ServiceTypesValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ServiceTypesValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.SlotOperatorAllvalues = null;
+        $scope.fillSlotOperatorAll = function () {
+
+            var Datavalue = {};
+            Datavalue.BussTypes = "7,8,19";
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerBussTypesMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotOperatorAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.CommodityValue = null;
+        $scope.fillCommodityValues = function () {
+
+            var Datavalue = {};
+            Datavalue.ID = "2"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CommodityValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.SlotTermsValue = null;
+        $scope.fillSlotTermsValues = function () {
+            var Datavalue = {};
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/SlotTremsValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotTermsValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.SearchTariffRateList = null;
+      
+
+        $scope.DynamicGridFreight = [{ ChargeCode: "", Currency: "", CntrType: "", Mode: "", Amount: "" }];
+        $scope.DynamicGridLocalImport = [{ ChargeCode: "", Currency: "", CntrType: "", Mode: "", Amount: "" }];
+        $scope.DynamicGridLocalExport = [{ ChargeCode: "", Currency: "", CntrType: "", Mode: "", Amount: "" }];
+        $scope.DynamicGridCostLocalImport = [{ ChargeCode: "", Currency: "", CntrType: "", Mode: "", Amount: "" }];
+        $scope.DynamicGridCostLocalExport = [{ ChargeCode: "", Currency: "", CntrType: "", Mode: "", Amount: "" }];
+
+        $scope.FreightExRate = 0;
+        $scope.FreightUSDAmt = 0;
+
+        $scope.POLChargeExRate = 0;
+        $scope.POLChargeUSDAmt = 0;
+
+        $scope.PODChargeExRate = 0;
+        $scope.PODChargeUSDAmt = 0;
+
+        $scope.SlotChargeExRate = 0;
+        $scope.SlotChargeUSDAmt = 0;
+
+        $scope.POLCostExRate = 0;
+        $scope.POLCostUSDAmt = 0;
+
+        $scope.PODCostExRate = 0;
+        $scope.PODCostUSDAmt = 0;
+        $scope.BrakupPOL = "";
+        $scope.BrakupPOD = "";
+        
+
+        $scope.SearchTariffRate = function () {
+
+            var validation = "";
+
+            var ddlFromPort = $('#ddlFromPort').val();
+            if (ddlFromPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select From Port</span></br>"
+            }
+            var ddlToPort = $('#ddlToPort').val();
+            if (ddlToPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select To Port</span></br>"
+            }
+
+            var ddlCntrTypes = $('#ddlCntrTypes').val();
+            if (ddlCntrTypes == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Cntr Size</span></br>"
+            }
+            var ddlCommodityType = $('#ddlCommodityType').val();
+            if (ddlCommodityType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Commodity</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $("#overlay").show();
+
+          
+
+            var Data = {};
+            Data.POLID = $("#ddlFromPort").val();
+            Data.PODID = $("#ddlToPort").val();
+            Data.CntrTypeId = $("#ddlCntrTypes").val();
+            Data.CommodityID = $("#ddlCommodityType").val();
+            $http({
+                method: 'POST',
+                url: '/api/RRCorrection/RRPricingView',
+                data: JSON.stringify(Data),
+
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    if (result.data.length > 0)
+                    {
+                        
+                        $scope.SearchTariffRateList = result.data;
+                        $scope.DynamicGridFreight.length = 0;
+                        $scope.DynamicGridLocalImport.length = 0;
+                       // $scope.DynamicGridLocalExport.length = 0;
+                        $scope.DynamicGridCostLocalImport.length = 0;
+                        //$scope.DynamicGridCostLocalExport.length = 0;
+
+
+                        angular.forEach($scope.SearchTariffRateList, function (value, key)
+                        {
+                            
+                            if ($scope.SearchTariffRateList[key].TraiffRegular == "135")
+                            {
+                                $scope.DynamicGridFreight.push({
+
+                                    'ChargeCode': $scope.SearchTariffRateList[key].ChargeCode,
+                                    'Currency': $scope.SearchTariffRateList[key].Currency,
+                                    'CntrType': $scope.SearchTariffRateList[key].CntrType,
+                                    'Mode': $scope.SearchTariffRateList[key].Mode,
+                                    'Amount': $scope.SearchTariffRateList[key].Amount
+                                })
+                                $scope.FreightUSDAmt += parseFloat($scope.SearchTariffRateList[key].Amount / parseFloat($scope.SearchTariffRateList[key].ExRate));
+                                $scope.FreightExRate = parseFloat($scope.SearchTariffRateList[key].ExRate);
+
+                            }
+
+                            if ($scope.SearchTariffRateList[key].TraiffRegular == "138" || $scope.SearchTariffRateList[key].TraiffRegular == "136")
+                            {
+                                    if ($scope.SearchTariffRateList[key].ChargeTypeID == "1" && $scope.SearchTariffRateList[key].CollectionModeID == "18")
+                                    {
+                                        $scope.DynamicGridLocalImport.push({
+
+                                            'ChargeCode': $scope.SearchTariffRateList[key].ChargeCode,
+                                            'Currency': $scope.SearchTariffRateList[key].Currency,
+                                            'CntrType': $scope.SearchTariffRateList[key].CntrType,
+                                            'Mode': $scope.SearchTariffRateList[key].Mode,
+                                            'Amount': $scope.SearchTariffRateList[key].Amount
+                                        })
+
+                                        $scope.POLChargeUSDAmt += parseFloat($scope.SearchTariffRateList[key].Amount / parseFloat($scope.SearchTariffRateList[key].ExRate));
+                                        $scope.POLChargeExRate = parseFloat($scope.SearchTariffRateList[key].ExRate);
+                                    }
+                                    //if ($scope.SearchTariffRateList[key].ChargeTypeID == "1" && $scope.SearchTariffRateList[key].CollectionModeID == "19") {
+                                    //    $scope.DynamicGridLocalExport.push({
+
+                                    //        'ChargeCode': $scope.SearchTariffRateList[key].ChargeCode,
+                                    //        'Currency': $scope.SearchTariffRateList[key].Currency,
+                                    //        'CntrType': $scope.SearchTariffRateList[key].CntrType,
+                                    //        'Mode': $scope.SearchTariffRateList[key].Mode,
+                                    //        'Amount': $scope.SearchTariffRateList[key].Amount
+                                    //    })
+                                    //    $scope.PODChargeUSDAmt += parseFloat($scope.SearchTariffRateList[key].Amount);
+                                    //    $scope.PODChargeExRate = parseFloat($scope.SearchTariffRateList[key].ExRate);
+                                    //}
+                            }
+
+
+                            if ($scope.SearchTariffRateList[key].TraiffRegular == "138" || $scope.SearchTariffRateList[key].TraiffRegular == "136")
+                            {
+                                if ($scope.SearchTariffRateList[key].ChargeTypeID == "2" && $scope.SearchTariffRateList[key].CollectionModeID == "18")
+                                {
+                                    $scope.DynamicGridCostLocalImport.push({
+
+                                        'ChargeCode': $scope.SearchTariffRateList[key].ChargeCode,
+                                        'Currency': $scope.SearchTariffRateList[key].Currency,
+                                        'CntrType': $scope.SearchTariffRateList[key].CntrType,
+                                        'Mode': $scope.SearchTariffRateList[key].Mode,
+                                        'Amount': $scope.SearchTariffRateList[key].Amount
+                                    })
+                                    $scope.POLCostUSDAmt += parseFloat($scope.SearchTariffRateList[key].Amount / parseFloat($scope.SearchTariffRateList[key].ExRate));
+                                    $scope.POLCostExRate = parseFloat($scope.SearchTariffRateList[key].ExRate);
+                                }
+                                //if ($scope.SearchTariffRateList[key].ChargeTypeID == "2" && $scope.SearchTariffRateList[key].CollectionModeID == "19") {
+                                //    $scope.DynamicGridCostLocalExport.push({
+
+                                //        'ChargeCode': $scope.SearchTariffRateList[key].ChargeCode,
+                                //        'Currency': $scope.SearchTariffRateList[key].Currency,
+                                //        'CntrType': $scope.SearchTariffRateList[key].CntrType,
+                                //        'Mode': $scope.SearchTariffRateList[key].Mode,
+                                //        'Amount': $scope.SearchTariffRateList[key].Amount
+                                //    })
+                                //    $scope.PODCostUSDAmt += parseFloat($scope.SearchTariffRateList[key].Amount);
+                                //    $scope.PODCostExRate = parseFloat($scope.SearchTariffRateList[key].ExRate);
+                                //}
+                            }
+                            
+                        });
+
+                        $scope.SearchTariffRatePOD();
+                       // $scope.SearchTariffSlotRate();
+                        $("#overlay").hide();
+                       
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+
+        $scope.SearchTariffRatePOD = function () {
+
+            var validation = "";
+
+            var ddlFromPort = $('#ddlFromPort').val();
+            if (ddlFromPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select From Port</span></br>"
+            }
+            var ddlToPort = $('#ddlToPort').val();
+            if (ddlToPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select To Port</span></br>"
+            }
+
+            var ddlCntrTypes = $('#ddlCntrTypes').val();
+            if (ddlCntrTypes == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Cntr Size</span></br>"
+            }
+            var ddlCommodityType = $('#ddlCommodityType').val();
+            if (ddlCommodityType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Commodity</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $("#overlay").show();
+
+
+
+            var Data = {};
+            Data.POLID = $("#ddlFromPort").val();
+            Data.PODID = $("#ddlToPort").val();
+            Data.CntrTypeId = $("#ddlCntrTypes").val();
+            Data.CommodityID = $("#ddlCommodityType").val();
+            $http({
+                method: 'POST',
+                url: '/api/RRCorrection/RRPricingViewPOD',
+                data: JSON.stringify(Data),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+
+
+                         $scope.DynamicGridLocalExport.length = 0;
+                        $scope.DynamicGridCostLocalExport.length = 0;
+                        $scope.SearchTariffRateListPOD = result.data;
+
+                        angular.forEach($scope.SearchTariffRateListPOD, function (value, key)
+                        {
+
+                            
+
+                            if ($scope.SearchTariffRateListPOD[key].TraiffRegular == "138" || $scope.SearchTariffRateListPOD[key].TraiffRegular == "136")
+                            {
+                                
+                                if ($scope.SearchTariffRateListPOD[key].ChargeTypeID == "1" && $scope.SearchTariffRateListPOD[key].CollectionModeID == "19") {
+                                    $scope.DynamicGridLocalExport.push({
+
+                                        'ChargeCode': $scope.SearchTariffRateListPOD[key].ChargeCode,
+                                        'Currency': $scope.SearchTariffRateListPOD[key].Currency,
+                                        'CntrType': $scope.SearchTariffRateListPOD[key].CntrType,
+                                        'Mode': $scope.SearchTariffRateListPOD[key].Mode,
+                                        'Amount': $scope.SearchTariffRateListPOD[key].Amount
+                                    })
+                                    $scope.PODChargeUSDAmt += parseFloat($scope.SearchTariffRateListPOD[key].Amount / parseFloat($scope.SearchTariffRateListPOD[key].ExRate));
+                                    $scope.PODChargeExRate = parseFloat($scope.SearchTariffRateListPOD[key].ExRate);
+                                }
+                            }
+
+
+                            if ($scope.SearchTariffRateListPOD[key].TraiffRegular == "138" || $scope.SearchTariffRateListPOD[key].TraiffRegular == "136") {
+                                if ($scope.SearchTariffRateListPOD[key].ChargeTypeID == "2" && $scope.SearchTariffRateListPOD[key].CollectionModeID == "19") {
+                                    $scope.DynamicGridCostLocalExport.push({
+
+                                        'ChargeCode': $scope.SearchTariffRateListPOD[key].ChargeCode,
+                                        'Currency': $scope.SearchTariffRateListPOD[key].Currency,
+                                        'CntrType': $scope.SearchTariffRateListPOD[key].CntrType,
+                                        'Mode': $scope.SearchTariffRateListPOD[key].Mode,
+                                        'Amount': $scope.SearchTariffRateListPOD[key].Amount
+                                    })
+                                    $scope.PODCostUSDAmt += parseFloat($scope.SearchTariffRateListPOD[key].Amount / parseFloat($scope.SearchTariffRateListPOD[key].ExRate));
+                                    $scope.PODCostExRate = parseFloat($scope.SearchTariffRateListPOD[key].ExRate);
+                                }
+                            }
+
+                        });
+
+                      
+                        $scope.SearchTariffSlotRate();
+                        $("#overlay").hide();
+
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+
+
+        $scope.SearchTariffSlotRate = function () {
+
+          
+            $("#overlay").show();
+            var Data = {};
+            Data.POLID = $("#ddlFromPort").val();
+            Data.PODID = $("#ddlToPort").val();
+            Data.CntrTypeId = $("#ddlCntrTypes").val();
+            Data.CommodityID = $("#ddlCommodityType").val();
+            $http({
+                method: 'POST',
+                url: '/api/RRCorrection/RRPricingSlotView',
+                data: JSON.stringify(Data),
+
+            }).then(function (result)
+            {
+                $timeout(function () {
+                    if (result.data.length > 0)
+                    {
+
+                        $scope.DynamicGridChargeSlotAmount = result.data;
+                        angular.forEach($scope.DynamicGridChargeSlotAmount, function (value, key) {
+
+                            $scope.SlotChargeExRate += parseFloat($scope.DynamicGridChargeSlotAmount[key].ExRate);
+                            $scope.SlotChargeUSDAmt = parseFloat($scope.DynamicGridChargeSlotAmount[key].SlotAmt20) + parseFloat($scope.DynamicGridChargeSlotAmount[key].SlotAmt40);
+                        });
+                       
+                        $("#overlay").hide();
+
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+
+            $scope.RevenueAmt = (parseFloat($scope.FreightUSDAmt) +
+                parseFloat($scope.POLChargeUSDAmt) + parseFloat($scope.PODChargeUSDAmt)).toFixed(3);
+
+            $scope.CostAmt = (parseFloat($scope.SlotChargeUSDAmt) +
+                parseFloat($scope.POLCostUSDAmt) + parseFloat($scope.PODCostUSDAmt)).toFixed(3);
+            $scope.ProfitAmt = (parseFloat($scope.RevenueAmt) - parseFloat($scope.CostAmt)).toFixed(3);
+
+            $scope.BrakupPOL = $("#ddlFromPort option:selected").text();
+            $scope.BrakupPOD = $("#ddlToPort option:selected").text();
+        }
+
+
+
+
+        $scope.RRonclick = function () {
+
+
+            $('#demoModal').modal('show');
+
+
+        }
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+
+
+</script>
+<style>
+    /* .select2-container {
+        width: 250px !important;
+    }*/
+
+    .btndrop {
+        padding: 12px 20px;
+        width: 137px;
+    }
+
+    .dropdown-toggle:after {
+        margin-left: 2.255em !important;
+    }
+
+    .exp.modal-dialog .modal-header .modal-title {
+        line-height: 0.5;
+        padding-bottom: 12px;
+        color: #fff;
+    }
+
+    .exp.modal.modal-dialog .modal-body {
+        padding: 10px 24px 16px;
+    }
+
+    .exp.modal-dialog .modal-body .form-group {
+        margin: 0px 0 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    .exp.modal-dialog .modal-body input[type=radio].impradio {
+        margin-left: 11px;
+    }
+
+    .exp.modal-dialog .modal-body label {
+        color: #3e3d3d !important;
+        font-weight: bold !important;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .cargo.modal-dialog .modal-header .modal-title {
+        line-height: 0.5;
+        padding-bottom: 12px;
+        color: #fff !important;
+    }
+
+    .cargo.modal-dialog .modal-header .modal-title {
+        color: #fff !important;
+    }
+</style>
+<style>
+        .nav-tabs.demtab > li.copyli {
+            width: 120px !important;
+            position: absolute;
+            right: 0;
+        }
+
+        .nav-tabs a.copybtn {
+            background-color: #ff9800 !important;
+        }
+
+        .chklbl label {
+            padding: 6px !important;
+            margin-right: 20px;
+        }
+
+        .nav.nav-tabs.demtab {
+            display: inline-flex
+        }
+
+        .nav-tabs.demtab > li {
+            width: 198px !important;
+        }
+
+        .nav-tabs.demtab li a:after {
+            border-bottom: none !important;
+        }
+
+        .nav-tabs.demtab li a:before {
+            border-top: none !important;
+        }
+
+        .nav-tabs.demtab .nav-link.active {
+            background-color: #e91e63 !important;
+        }
+
+        /* .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+            font-size: 12px !important;
+            line-height: 0 !important;
+        }
+    */
+        .form-check, label {
+            line-height: 0 !important;
+        }
+
+        .btndet {
+            padding: 7px 6px !important;
+            margin-top: 30px !important;
+        }
+
+        .table.dem > tbody > tr > td {
+            font-size: 11px !important;
+            padding: 6px 5px !important;
+            color: #000;
+            font-weight: 500;
+        }
+
+            .table.dem > tbody > tr > td.blue {
+                color: #0759d4;
+            }
+
+            .table.dem > tbody > tr > td.brown {
+                color: #800303;
+            }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+   <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="EditControl();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Pricing Prospect</h4>
+                        </div>
+                    </div>
+
+                    <div class="card-body ">
+
+                        <div class="row">
+                            <div class="col-md-12 padlr0">
+                                <div class="nav-tabs-navigation">
+                                    <div class="nav-tabs-wrapper">
+
+                                        <div class="col-md-6">
+                                            <label>Commodity Type</label>
+                                            <select class="form-control my-select" id="ddlCommodityType" ng-change="DDLComdityTypeCheck(gRow)" ng-model="gRow.CommodityTypes" ng-options="item.GeneralName for item in CommodityValue track by item.ID">
+                                            </select>
+                                        </div>
+
+                                        
+
+                                    </div>
+                                </div>
+                                <div class="tab-content" style="padding:0;">
+                                    <div class="tab-pane active" id="General">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Service Types</label>
+                                                <select class="form-control my-select" id="ddlServiceType" ng-model="ddlServiceType" ng-options="item.ServiceTypesName for item in ServiceTypesValue track by item.ID">
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Container Type</label>
+                                                <select class="form-control my-select" id="ddlCntrTypes"  ng-model="ddlCntrTypes" ng-options="item.CntrTypes for item in CntrTypesvalues track by item.ID">
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Container Quantity</label>
+                                                <input type="text" autocomplete="off" id="txtCntrQty" ng-model="txtAgencyName" class="form-control">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Weight</label>
+                                                <input type="text" autocomplete="off" class="form-control" id="Weight" required />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>From</label>
+                                                <select class="form-control my-select" id="ddlFromPort" ng-model="ddlFromPort" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>To</label>
+                                                <select class="form-control my-select" id="ddlToPort" ng-model="ddlToPort" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>Slot Basis(Slot Term)</label>
+                                                <select class="form-control" id="ddlSlotTerm" ng-model="ddlSlotTerm" ng-options="item.SlotTerm for item in SlotTermsValue track by item.ID">
+                                                </select>
+                                                
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label>slot Operator(Optional)</label>
+                                                <select class="form-control my-select" id="ddlSlotOperatorID" ng-model="ddlSlotOperatorID" ng-options="item.CustomerName for item in SlotOperatorAllvalues track by item.ID"></select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4" style="padding-top:30px;">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-3" style="padding-top: 16px;background-color:#fff;">
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-md-12" style="text-align:center;">
+                                    <p style="font-size:11px;">Ocean FCL</p>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-3" style="padding-top: 16px; background-color: #e91e63; color: #fff; ">
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-md-12" style="text-align:center;">
+                                    <p style="font-size:11px;">Ocean LCL</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="padding-top: 16px;background-color:#fff;">
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                </div>
+                                <div class="col-md-12" style="text-align:center;">
+                                    <p style="font-size:11px;">Air</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="padding-top: 16px; background-color: #1eabe9; color: #fff; ">
+                            <div class="row">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <i class="fa fa-users" aria-hidden="true"></i>
+                                </div>
+
+
+                                <div class="col-md-12" style="text-align:center;">
+                                    <a class="nav-link" href="#" ng-click="SearchTariffRate();" data-toggle="tab">
+                                        <p style="font-size:11px;">Search Rates</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 padlr0">
+                    <div class="card ">
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6" style="font-size:12px;">
+                                    <i class="fa fa-users" aria-hidden="true"></i>  <span ng-bind="BrakupPOL"></span>
+
+                                </div>
+                                <div class="col-md-6" style="font-size:12px;">
+
+                                    <i class="fa fa-users" aria-hidden="true"></i> <span ng-bind="BrakupPOD"></span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:30px;">
+                                <div class="col-md-4">
+                                    <span style="background-color: aquamarine; padding: 4px 4px; border-radius: 10%; font-size:12px;">Revenue</span>
+                                    <span style="font-size: 11px;">USD</span>  <span style="color:red; font-size:20px" ng-bind="RevenueAmt"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span style="background-color: aquamarine; padding: 4px 12px; border-radius: 10%; font-size:12px;">Cost</span>
+                                    <span style="font-size: 11px;">USD</span>  <span style="color:red; font-size:20px" ng-bind="CostAmt"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <span style="background-color: aquamarine; padding: 4px 12px; border-radius: 10%; font-size:12px;">Profit</span>
+                                    <span style="font-size: 11px;">USD</span> <span style="color:red; font-size:20px" ng-bind="ProfitAmt"></span>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:30px;">
+                                <div class="col-md-12" style="text-align:center;">
+                                    <button type="submit" ng-click="RRonclick();" class="btn btn-fill btn-default" style="background-color:#f0f0f0;color:#000;">
+                                        Show Charges & Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="demoModal" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel"  style="font-weight:bold;">Details & Charges</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="nav-tabs-navigation">
+                                            <div class="nav-tabs-wrapper">
+
+                                                <ul class="nav nav-tabs maintab demtab" data-tabs="tabs">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" href="#Charge" data-toggle="tab">
+                                                            Charge Breakdown
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#Quote" data-toggle="tab">
+                                                            Quoate Details
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="tab-content" style="padding:0;">
+                                            <div class="tab-pane active" id="Charge">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="nav-tabs-navigation">
+                                                            <div class="nav-tabs-wrapper">
+
+                                                                <ul class="nav nav-tabs demtab" data-tabs="tabs">
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link active" href="#Rate" data-toggle="tab">
+                                                                            Rate
+                                                                            <div class="ripple-container"></div>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link" href="#Cost" data-toggle="tab">
+                                                                            Cost
+                                                                            <div class="ripple-container"></div>
+                                                                        </a>
+                                                                    </li>
+
+
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-content" style="padding:0;">
+                                                            @*<div class="tab-pane active" id="Rate">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>Rate</p>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="Cost">
+            <div class="row">
+                <div class="col-md-12">
+                    <p>Cost</p>
+                </div>
+            </div>
+        </div>*@
+
+
+                                                            <div class="tab-pane active" id="Rate">
+
+
+                                                                <div class="row">
+                                                                    <div class="col-md-8" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>Freight Charges</label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>
+                                                                                    ExRate :
+                                                                                    <span style="color:red; font-size:15px" ng-bind="FreightExRate"></span>
+                                                                                </label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>USD :</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="FreightUSDAmt"></span>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="material-datatables">
+                                                                            <table class="table table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>SNo</th>
+                                                                                        <th>Charges</th>
+                                                                                        <th>Currency</th>
+                                                                                        <th>CntrType</th>
+                                                                                        <th>Mode</th>
+                                                                                        <th>Amount</th>
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="gRow in DynamicGridFreight">
+                                                                                        <td>{{$index+1}}</td>
+                                                                                        <td>{{gRow.ChargeCode}}</td>
+                                                                                        <td>{{gRow.Currency}}</td>
+                                                                                        <td>{{gRow.CntrType}}</td>
+                                                                                        <td>{{gRow.Mode}}</td>
+                                                                                        <td style="text-align:right!important;">{{gRow.Amount}}</td>
+
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-8" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>POL Charges</label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>ExRate :</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="POLChargeExRate"></span>
+
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>USD</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="POLChargeUSDAmt"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="material-datatables">
+                                                                            <table class="table table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>S.No</th>
+                                                                                        <th>Charges</th>
+                                                                                        <th>Currency</th>
+                                                                                        <th>CntrType</th>
+                                                                                        <th>Mode</th>
+                                                                                        <th>Amount</th>
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="gRow in DynamicGridLocalImport">
+                                                                                        <td>{{$index+1}}</td>
+                                                                                        <td>{{gRow.ChargeCode}}</td>
+                                                                                        <td>{{gRow.Currency}}</td>
+                                                                                        <td>{{gRow.CntrType}}</td>
+                                                                                        <td>{{gRow.Mode}}</td>
+                                                                                        <td style="text-align:right!important;">{{gRow.Amount}}</td>
+
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-8" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>POD Charges</label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>ExRate</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="PODChargeExRate"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>USD</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="PODChargeUSDAmt"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="material-datatables">
+                                                                            <table class="table table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>S.No</th>
+                                                                                        <th>Charges</th>
+                                                                                        <th>Currency</th>
+                                                                                        <th>CntrType</th>
+                                                                                        <th>Mode</th>
+                                                                                        <th>Amount</th>
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="gRow in DynamicGridLocalExport">
+                                                                                        <td>{{$index+1}}</td>
+                                                                                        <td>{{gRow.ChargeCode}}</td>
+                                                                                        <td>{{gRow.Currency}}</td>
+                                                                                        <td>{{gRow.CntrType}}</td>
+                                                                                        <td>{{gRow.Mode}}</td>
+                                                                                        <td style="text-align:right!important;">{{gRow.Amount}}</td>
+
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="tab-pane" id="Cost">
+
+                                                                <div class="row">
+                                                                    <div class="col-md-8" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>Slot Cost</label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>ExRate :</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="SlotChargeExRate"></span>
+                                                                            </div>
+
+
+
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>USD :</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="SlotChargeUSDAmt"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="material-datatables">
+                                                                            <table class="table table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>S.No</th>
+                                                                                        <th>Charges</th>
+                                                                                        <th>Currency</th>
+                                                                                        <th>Slot Operator</th>
+                                                                                        <th>Slot Terms</th>
+                                                                                        <th>20-Amt</th>
+                                                                                        <th>40-Amt</th>
+
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="gRow in DynamicGridChargeSlotAmount">
+                                                                                        <td>{{$index+1}}</td>
+                                                                                        <td>{{gRow.ChargeCode}}</td>
+                                                                                        <td>{{gRow.Currency}}</td>
+                                                                                        <td>{{gRow.SlotOperator}}</td>
+                                                                                        <td>{{gRow.SlotTerms}}</td>
+                                                                                        <td>{{gRow.SlotAmt20}}</td>
+                                                                                        <td>{{gRow.SlotAmt40}}</td>
+
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-8" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>POL Cost</label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>ExRate:</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="POLCostExRate"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>USD:</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="POLCostUSDAmt"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="material-datatables">
+                                                                            <table class="table table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>S.No</th>
+                                                                                        <th>Charges</th>
+                                                                                        <th>Currency</th>
+                                                                                        <th>CntrType</th>
+                                                                                        <th>Mode</th>
+                                                                                        <th>Amount</th>
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="gRow in DynamicGridCostLocalImport">
+                                                                                        <td>{{$index+1}}</td>
+                                                                                        <td>{{gRow.ChargeCode}}</td>
+                                                                                        <td>{{gRow.Currency}}</td>
+                                                                                        <td>{{gRow.CntrType}}</td>
+                                                                                        <td>{{gRow.Mode}}</td>
+                                                                                        <td style="text-align:right!important;">{{gRow.Amount}}</td>
+
+                                                                                    </tr>
+
+
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="row">
+                                                                    <div class="col-md-8" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>POD Cost</label>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>ExRate:</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="PODCostExRate"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                    <div class="col-md-2" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>USD:</label>
+                                                                                <span style="color:red; font-size:15px" ng-bind="PODCostUSDAmt"></span>
+                                                                            </div>
+
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-12">
+                                                                        <div class="material-datatables">
+                                                                            <table class="table table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>S.No</th>
+                                                                                        <th>Charges</th>
+                                                                                        <th>Currency</th>
+                                                                                        <th>CntrType</th>
+                                                                                        <th>Mode</th>
+                                                                                        <th>Amount</th>
+                                                                                    </tr>
+                                                                                </thead>
+
+                                                                                <tbody>
+                                                                                    <tr ng-repeat="gRow in DynamicGridCostLocalExport">
+                                                                                        <td>{{$index+1}}</td>
+                                                                                        <td>{{gRow.ChargeCode}}</td>
+                                                                                        <td>{{gRow.Currency}}</td>
+                                                                                        <td>{{gRow.CntrType}}</td>
+                                                                                        <td>{{gRow.Mode}}</td>
+                                                                                        <td style="text-align:right!important;">{{gRow.Amount}}</td>
+
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-12">
+                                                                <div class="row">
+                                                                    <div class="col-md-4" style="border: 1px solid #ccc; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>Revenue : </label><br />
+                                                                                <span style="color:red; font-size:20px" ng-bind="RevenueAmt"></span>
+                                                                            </div>
+
+                                                                        </div>
+
+
+                                                                    </div>
+
+                                                                    <div class="col-md-4" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>Cost : </label><br />
+                                                                                <span style="color:red; font-size:20px" ng-bind="CostAmt"></span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-4" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>Profit : </label><br />
+                                                                                <span style="color:red; font-size:20px" ng-bind="ProfitAmt"></span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane" id="Quote">
+                                                <div class="row">
+                                                    <div class="col-md-12" style="border: 1px solid #ccc; font-size: 14px;">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <h4 style="color: #418cdc;font-weight:bold;font-size:15px;">Route Details</h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Origin Port</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p ng-bind="BrakupPOL"></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12" style="border: 1px solid #ccc; font-size: 14px;">
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Destination Port</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p ng-bind="BrakupPOD"></p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12" style="border:1px solid #ccc;font-size:14px;">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <h4 style="color: #418cdc;font-weight:bold;font-size:15px;">Cargo Details</h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Shipment Type</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>LCL</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Cargo Units</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>1Pc</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Weight per Units</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>1Pc</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Dimensions per Units</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>1Pc</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Volume per Units</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>1Pc</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Total Weight</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>1Pc</p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <p>Total Volume</p>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <p>1Pc</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+           
+
+
+
+        </div>
+            </div>
+</div>
+    </div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>

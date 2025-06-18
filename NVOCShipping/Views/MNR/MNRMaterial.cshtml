@@ -1,0 +1,251 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $scope.Recordsave = function () {
+            var validation = "";
+            var txtMatCode = $('#txtMatCode').val();
+            if (txtMatCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Damage Code</span></br>"
+
+            }
+            var txtMatDesc = $('#txtMatDesc').val();
+            if (txtMatDesc.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Damage Desc</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+            BussData.MaterialCode = $scope.txtMatCode;
+            BussData.MaterialDescription = $scope.txtMatDesc;
+
+            if ($scope.ChkStatus == 1) {
+
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+
+
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MaterialMaster",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    // BussData.ID = result.data[0].ID;
+                    //alert(result.data[0].ID);
+                    if (BussData.ID != "") {
+                        ShowPopup("Material Master Updated");
+                    }
+                    else {
+
+                        ShowPopup("Material Master Saved Successfully");
+                    }
+                    var url = "/MNR/MNRMaterialView";
+                    window.location.href = url;
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["MatID"] != null) {
+                $scope.HDRegId = queryString["MatID"].toString();
+                $scope.BindMaterial(queryString["MatID"].toString());
+
+            }
+        });
+        $scope.BindMaterial = function (MatID) {
+
+            var Datavalue = {}
+            var id = MatID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = MatID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/MaterialViewEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.txtMatCode = result.data[0].MaterialCode;
+                        $scope.txtMatDesc = result.data[0].MaterialDescription;
+                        $scope.ChkStatus = result.data[0].Status;
+
+                    }
+                    else {
+                        $scope.txtMatCode = "";
+                        $scope.txtMatDesc = "";
+                        $scope.ChkStatus = 0;
+                    }
+                });
+            });
+
+        }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/MNR/MNRMaterialView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Material Type Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Material Code</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtMatCode" ng-model="txtMatCode" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Material Description</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtMatDesc" autocomplete="off" ng-model="txtMatDesc" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7 input-field">
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                    <span class="toggle"></span>
+
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                        </div>
+                        <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+

@@ -1,0 +1,327 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+
+    .card .table tr td a {
+        color: #2d55f1;
+        font-weight: 500;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+           $scope.Customer = null;
+        $scope.fillCustomer = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/CustDropDown/',
+                data: {},
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Customer = result.data;
+                });
+            });
+        };
+        $scope.fillCustomer();
+
+         $scope.VesselNameAllvalues = null;
+        $scope.fillVesselNameValues = function () {
+            var Datavalue = {}
+            Datavalue.ID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/VesVoyByAgency/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VesselNameAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillVesselNameValues();
+
+         $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+
+
+        $("#ddlVesVoy").change(function () {
+            $scope.AgencyMasterAllvalues = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlVesVoy").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/ReportApi/AgencyByVesVoy/',
+                data: JSON.stringify(Datavalue),
+
+
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMasterAllvalues = result.data;
+                    //console.log(result.data);
+
+                    //$scope.ddlDestinationAgent = { ID: result.data[0].AgentID }
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $("#ddlVesVoy").change(function () {
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlVesVoy").val();
+            $http({
+                method: 'POST',
+                url: '/api/ExportReportApiNew/NextPortByVesVoy/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.ddlNextPort = { ID: result.data[0].NextPortID };
+                        document.getElementById('txtETD').value = result.data[0].ETD;
+                    }
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+        $("#ddlBLNumber").change(function () {
+            var BussData = {}
+            BussData.BKgID = $("#ddlBLNumber").val();
+            $http({
+                method: 'POST',
+                url: "/api/DocumentApi/PrincipalChargeCorrector",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $scope.PrincipalChargeCodeRec = result.data;
+            });
+        });
+
+
+     
+    
+        $scope.btnExcel = function (VesVoyID) {
+            var validation = "";
+            var ddlVesVoy = $('#ddlVesVoy').val();
+            if (ddlVesVoy == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Vessel/Voyage</span></br>"
+            }
+            var AgencyID = localStorage.getItem("AgencyID");
+            if (AgencyID != 3) {
+
+                validation += "<span style='color:red;'>*</span> <span> Report Restriced.. Contact Admin</span></br>"
+
+            }
+            
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var VesVoyID = $('#ddlVesVoy').val();
+            var User = localStorage.getItem("UserName");
+            var AgencyID = localStorage.getItem("AgencyID");
+      
+
+            window.open('@Url.Action("ScreenManifestReport", "ScreenManifest")?VesVoyID=' + VesVoyID + "&User=" + User + "&AgencyID=" + AgencyID);
+
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .select2-container {
+        width: 180px !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 28px !important;
+    }
+
+    .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+        text-align: right !important;
+    }
+
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #12759a !important;
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+@*<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />*@
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="#" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-12" style="text-align:center;">
+                            <h4 style="font-size:24px; font-weight:bold; color:#000!important;"><img src="~/assets/img/tdr.jpg" style="width:100px;" /> Screen Manifest Report</h4>
+                        </div>
+                    </div>
+                    <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+                        <div class="col-md-12">
+                            <div class="row">
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label>Vessel/Voyage</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select id="ddlVesVoy" ng-model="ddlVesVoy" class="form-control my-select" ng-options="item.VesVoy for item in VesselNameAllvalues track by item.ID"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                             
+                              
+                                <div class="col-md-4" style="text-align:center;">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-fill btn-info" ng-model="btnExcel" ng-click="btnExcel();" style="padding: 6px 18px; margin-top: -1px;width:46%; ">
+                                                    <i class="material-icons"></i>  Generate Report
+                                                </button>
+                                               
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                  
+
+
+
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+

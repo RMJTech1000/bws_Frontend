@@ -1,0 +1,278 @@
+<RootElement>
+  <Header>
+    <DocumentFormat>
+      <DocumentFormatIdentifier>TRADEDOC</DocumentFormatIdentifier>
+      <ControllingAgency>DNT</ControllingAgency>
+    </DocumentFormat>
+    <DocumentType>
+      <DocumentTypeCode>GIG</DocumentTypeCode>
+    </DocumentType>
+    <DocumentIdentification>
+      <UniqueReferenceNo>SNRF123</UniqueReferenceNo>
+      <MessageFunction>9</MessageFunction>
+    </DocumentIdentification>
+    <InterchangeSender>
+      <SenderID>info@bluewave.com.my</SenderID>
+    </InterchangeSender>
+    <InterchangeRecipient>
+      <RecipientID>info@bluewave.com.my</RecipientID>
+    </InterchangeRecipient>
+    <DateorTimeofPreparation>
+      <DateofPreparation>20240819</DateofPreparation>
+      <TimeofPreparation>1242020030</TimeofPreparation>
+    </DateorTimeofPreparation>
+  </Header>
+  <Body>
+    <BeginningofMessage>
+      <DocumentNo>1</DocumentNo>
+      <MessageCode>785</MessageCode>
+      <DocMessageJobNo>BWSTAO24070265PKG</DocMessageJobNo>
+      <IssueDate>20240819</IssueDate>
+    </BeginningofMessage>
+    <ProcessingIndicator>
+      <ProcessingIndicatorCode>23</ProcessingIndicatorCode>
+      <ProcessingIndicatorCode>MNT</ProcessingIndicatorCode>
+    </ProcessingIndicator>
+    <Parties>
+      <PartyType>PSA</PartyType>
+      <OrganizationIdentification>CM0010</OrganizationIdentification>
+      <OrganizationName>BLUE WAVE SHIPPING (M) SDN BHD</OrganizationName>
+      <AddressInformation>
+        <Text>NO.31-1,JALAN RAMIN 1, BANDAR AMBAN</Text>
+        <Text>G BOTANIC, 41200 KLANG, SELANGOR DA</Text>
+        <Text>RUL EHSAN,MALAYSIA</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>SA</PartyType>
+      <OrganizationIdentification>CM0007</OrganizationIdentification>
+      <OrganizationName>BLUE WAVE SHIPPING (M) SDN BHD</OrganizationName>
+      <AddressInformation>
+        <Text>NO.31-1,JALAN RAMIN 1, BANDAR AMBAN</Text>
+        <Text>G BOTANIC, 41200 KLANG, SELANGOR DA</Text>
+        <Text>RUL EHSAN,MALAYSIA </Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>CZ</PartyType>
+      <OrganizationIdentification>CZ8210</OrganizationIdentification>
+      <OrganizationName>ESICUT (HE NAN) TECHNOLOGY CO.</OrganizationName>
+      <AddressInformation>
+        <Text>ZHONGYUAN 5G E-COMMERCE INDUSTRIAL </Text>
+        <Text>PARK,
+XINGYANG ZHENGZHOU, HENAN,,,</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>CN</PartyType>
+      <OrganizationIdentification>CN8211</OrganizationIdentification>
+      <OrganizationName>DP WHOLESALE SDN BHD (1099960-D)-SELANGOR</OrganizationName>
+      <AddressInformation>
+        <Text>LOT 9030, JALAN TELOK GONG,
+KAMPUNG</Text>
+        <Text> TELOK GONG,
+42000 PORT KLANG,SELAN</Text>
+        <Text>GOR, MALAYSIA.
+HP: +6019-556 8985
+T</Text>
+        <Text>EL: +603-3162 4460
+EMAIL: OPERATION</Text>
+        <Text>.DPW@GMAIL.COM,,,</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>NI</PartyType>
+      <OrganizationIdentification>NI8212</OrganizationIdentification>
+      <OrganizationName>WCK EMPIRE SDN BHD (1500997-W)-KUALA LUMPUR</OrganizationName>
+      <AddressInformation>
+        <Text>NO.45-1, JALAN TASIK UTAMA 4,
+MEDAN</Text>
+        <Text> NIAGA TASIK DAMAI,
+SUNGAI BESI, 57</Text>
+        <Text>000 KUALA LUMPUR,
+WP KUALA LUMPUR
+T</Text>
+        <Text>EL: 010-218 7188</Text>
+      </AddressInformation>
+    </Parties>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>8</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>MYWSP</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>9</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>CNTAO</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>11</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>MYWSP</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>27</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>CN</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <DateTimeDetail>
+      <DateTimeFuncCode>182</DateTimeFuncCode>
+      <DateTimeValue>20240819</DateTimeValue>
+    </DateTimeDetail>
+    <DateTimeDetail>
+      <DateTimeFuncCode>132</DateTimeFuncCode>
+      <DateTimeValue>202408020000000000</DateTimeValue>
+    </DateTimeDetail>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CSC</DocRefCode>
+        <DocRefNo>H10</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CS1</DocRefCode>
+        <DocRefNo>B10</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>SCN</DocRefCode>
+        <DocRefNo>2452U7</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>SC1</DocRefCode>
+        <DocRefNo>11C4</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CAC</DocRefCode>
+        <DocRefNo>2</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>BM</DocRefCode>
+        <DocRefNo>BWSTAO24070265PKG</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>TOP</DocRefCode>
+        <DocRefNo>MYPKGNT</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>AA</DocRefCode>
+        <DocRefNo>PCA</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <TransportDetails>
+      <TransportStageCodeQualifier>11</TransportStageCodeQualifier>
+      <ModeofTransportCode>1</ModeofTransportCode>
+      <ConveyanceReferenceNo>V.24028W</ConveyanceReferenceNo>
+      <TransportMeans>
+        <TransportTypeID />
+        <TransportTypeName />
+      </TransportMeans>
+      <TransportIdentification>
+        <TransportTypeID>9V8722</TransportTypeID>
+        <TransportMeansName>X-PRESS CARINA</TransportMeansName>
+        <Nationality>
+        </Nationality>
+      </TransportIdentification>
+    </TransportDetails>
+    <LineItem>
+      <LineItemNo>1</LineItemNo>
+      <ItemIdentifiers>
+        <TariffCode>850220</TariffCode>
+        <ProductDesc>
+        </ProductDesc>
+        <ProductCharacteristics>
+          <ProductCharType>IMD</ProductCharType>
+          <ProductCharValue>9</ProductCharValue>
+        </ProductCharacteristics>
+        <ProductCharacteristics>
+          <ProductCharType>LPK</ProductCharType>
+          <ProductCharValue>1</ProductCharValue>
+        </ProductCharacteristics>
+        <ProductCharacteristics>
+          <ProductCharType>UN</ProductCharType>
+          <ProductCharValue>3082</ProductCharValue>
+        </ProductCharacteristics>
+      </ItemIdentifiers>
+      <PackageandWeightSummary>
+        <TotalPackage>
+          <NumberofPackages>824</NumberofPackages>
+          <PackageTypeCode>PKG</PackageTypeCode>
+        </TotalPackage>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementDimensionCode>AAD</MeasurementDimensionCode>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>16214.000</Value>
+          <MeasurementDimensionCode>MFT</MeasurementDimensionCode>
+          <MeasurementDimensionCode>BRH</MeasurementDimensionCode>
+        </Measurement>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>16214.000</Value>
+        </Measurement>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementUnitCode>MTQ</MeasurementUnitCode>
+          <Value>16214.000</Value>
+        </Measurement>
+      </PackageandWeightSummary>
+      <AdditionalInformation>
+        <InformationType>PAC</InformationType>
+        <Text>N/M</Text>
+      </AdditionalInformation>
+      <Container>
+        <ContainerIdentifier>DRYU3099292</ContainerIdentifier>
+      </Container>
+    </LineItem>
+    <Container>
+      <ContainerItemNo>1</ContainerItemNo>
+      <ContainerIdentifier>DRYU3099292</ContainerIdentifier>
+      <ContainerSizeandCodes>
+        <ContainerSizeandDetailedTypeCode>20GP</ContainerSizeandDetailedTypeCode>
+      </ContainerSizeandCodes>
+      <EquipmentStatus>3</EquipmentStatus>
+      <FullEmptyIndicator>1</FullEmptyIndicator>
+      <Seal>XT20240201</Seal>
+      <SealingParty>CA</SealingParty>
+      <Measurement>TE</Measurement>
+      <MeasurementUnitcode>FAH</MeasurementUnitcode>
+      <MeasurementUnitgrowswt>16214.000</MeasurementUnitgrowswt>
+    </Container>
+    <GrandTotal>
+      <TotalMeasurement>
+        <MeasurementQualifier>AAE</MeasurementQualifier>
+        <MeasurementDimensionCode>AAD</MeasurementDimensionCode>
+        <MeasurementUnitCode>KGM</MeasurementUnitCode>
+        <Value>16214.000</Value>
+      </TotalMeasurement>
+      <TotalMeasurement>
+        <MeasurementQualifier>AAE</MeasurementQualifier>
+        <MeasurementUnitCode>MTQ</MeasurementUnitCode>
+        <Value>16214.000</Value>
+      </TotalMeasurement>
+      <TotalMeasurement>
+        <MeasurementQualifier>11</MeasurementQualifier>
+        <MeasurementUnitCode>CT</MeasurementUnitCode>
+        <Value>824</Value>
+      </TotalMeasurement>
+      <TotalMeasurement>
+        <MeasurementQualifier>1</MeasurementQualifier>
+        <MeasurementUnitCode>
+        </MeasurementUnitCode>
+      </TotalMeasurement>
+    </GrandTotal>
+    <AdditionalInformation>
+      <InformationType>AAA</InformationType>
+      <Text>N/M</Text>
+    </AdditionalInformation>
+  </Body>
+</RootElement>

@@ -1,0 +1,33 @@
+﻿@media(max-width:1600px) {
+    .form-control.txtarea {
+        width: 765px !important;
+    }
+
+    .dropdown-toggle:after {
+        margin-left: 8.255em !important;
+    }
+}
+
+@media(max-width:1280px)
+{
+    .form-control.txtarea
+    {
+        width:700px!important;
+    }
+    .dropdown-toggle:after {
+        margin-left: 7.255em!important;
+    }
+}
+@media(max-width:1080px) {
+    .form-control.txtarea {
+        width:542px !important;
+    }
+
+    .dropdown-toggle:after {
+        margin-left: 6.255em !important;
+    }
+    .bootstrap-select .btn.dropdown-toggle.select-with-transition
+    {
+        font-size:10px!important;
+    }
+}

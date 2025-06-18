@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <div ng-app="MyApp" ng-controller="MyController">
+        <div class="row">
+            <div class="col-md-12 createnew" style="text-align:right;">
+                Create New
+                <a href="/Finance/InvoiceSetOff" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">add</i>
+                </a>
+               
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            Invoice Set Off
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="toolbar">
+                        </div>
+                        <div class="material-datatables">
+
+                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>Account Name#</th>
+                                        <th>Set off Reference#</th>
+                                        <th>Date</th>
+                                        <th class="disabled-sorting text-right">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Nerida Shipping Pvt.Ltd</td>
+                                        <td>JOBIS00001/2021</td>
+                                        <td>18/02/2021</td>
+                                        <td class="td-actions text-right">
+
+                                            <button type="button" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                                <i class="material-icons">edit</i>
+                                            </button>
+
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                                </div>
+                                <div class="col-md-7" style="text-align:right;">
+                                    <pagination total-items="totalItems" ng-model="currentPage"
+                                                max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                    </pagination>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtAccName" ng-model="txtAccName" class="form-control" placeholder="Account Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtSetoffRef" ng-model="txtSetoffRef" class="form-control" placeholder="Set off Reference">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtDate" ng-model="txtDate" class="form-control datepicker" placeholder="Date">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                                <button type="submit" ng-click="CitViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+    </script>

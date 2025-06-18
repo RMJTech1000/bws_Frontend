@@ -1,0 +1,1003 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 2 }
+        ];
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["MNRID"] != null) {
+                $scope.HDRegId = queryString["MNRID"].toString();
+                //$scope.BindGeoLocEdit(queryString["GeoLocID"].toString());
+
+            }
+        });
+
+
+
+        $scope.back = function () {
+            window.location = "/MNRCorrection/MNRHistoryView_correction";
+        }
+    });
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.MNRCostToList = null;
+        $scope.fillMNRCostToList = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRBindCostToDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCostToList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRCostToList();
+
+        $scope.MNRItemList = null;
+        $scope.fillMNRItemList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRLineItemDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRItemList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRItemList();
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+         $scope.FillCntrNo();
+
+        $scope.MNRReferenceDropdown = null;
+        $scope.FillMNRReferenceDropdown = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNR_Correction/MNRReferenceDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRReferenceDropdown = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+       
+
+        $scope.MNRReferenceDropdown = null;
+        $scope.FillMNRReferenceDropdownExisting = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNR_Correction/MNRReferenceDropdownExisting/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRReferenceDropdown = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+      
+
+
+        $scope.MNRStatusList = null;
+        $scope.fillMNRStatusList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRNewStatus/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRStatusList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRStatusList();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+
+        $scope.AgencyMaster = null;
+        $scope.FillAgencyMaster = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMaster = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillAgencyMaster();
+
+        $scope.PortList = null;
+        $scope.fillPortList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillPortList();
+
+
+    
+        $("#ddlRefno").change(function () {
+            $("#ddlMNRNewStatus").val(null).trigger("change");
+
+            $scope.BindMNRHistoryEdit($("#ddlRefno").val());
+         
+
+        });
+        $scope.MNRStatusDropdown = null;
+        $scope.fillMNRStatusDropdown = function (MNRStatusID) {
+
+            var BussData = {}
+            BussData.MNRStatusID = MNRStatusID;
+            $http({
+                method: 'POST',
+                url: '/api/MNR_Correction/MNRStatusByPrevStatus/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRStatusDropdown = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+          
+            if (queryString["MNRCorrectorID"] != null) {
+                $scope.FillMNRReferenceDropdownExisting();
+                $scope.HDCorrectorID = queryString["MNRCorrectorID"].toString();
+                $scope.BindMNRCorrectorExistingEdit(queryString["MNRCorrectorID"].toString());
+                document.getElementById("ddlMNRNewStatus").disabled = true;
+                document.getElementById("ddlRefno").disabled = true;
+                document.getElementById("btnSave").disabled = true;
+                document.getElementById("btnSave").style.cursor = 'not-allowed';
+            }
+            else {
+                $scope.FillMNRReferenceDropdown();
+                document.getElementById("txtGrossWt").disabled = false;
+                document.getElementById("txtGrossWt").disabled = false;
+                document.getElementById("btnSave").disabled = false;
+                document.getElementById("btnSave").style.cursor = 'allowed';
+            }
+         
+        });
+
+
+     
+
+
+        $scope.BindMNRCorrectorExistingEdit = function (CorrectorID) {
+
+            var BussData = {}
+            var id = CorrectorID;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = CorrectorID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNR_Correction/MNRCorrectorEdit",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        $scope.HDCorrectorID = result.data[0].ID;
+                        $scope.txtMNRCorrectorNo = result.data[0].MNRCorrectorNo;
+                        $scope.ddlRefno = { ID: result.data[0].MNRID };
+
+                        $scope.txtMNRNo = result.data[0].MNRRefNo;
+                        $("#ddlRefno").val(result.data[0].MNRID).trigger("change");
+                      
+                        $scope.ddlOldMNRStatus = { ID: result.data[0].MNROldStatusID };
+                        $scope.fillMNRStatusDropdown(result.data[0].MNROldStatusID);
+                        $scope.ddlMNRNewStatus = { ID: result.data[0].MNRNewStatusID };
+                     
+                       // $scope.ddlRefno = { ID: result.data[0].MNRID };
+                     
+                        $scope.ddlLocation = { ID: result.data[0].LocationID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlAgency = { ID: result.data[0].AgencyID };
+                        $scope.ddlCntrNo = { ID: result.data[0].CntrID };
+                        $scope.txtConsignee = result.data[0].Consignee;
+                        $scope.txtBLNumber = result.data[0].BLNumber;
+                        $scope.ddlSizeType = { TypeID: result.data[0].CntrTypeID };
+
+                        document.getElementById('txtEmptyDate').value = result.data[0].EmptyGateIN;
+                        document.getElementById('txtSurveyDate').value = result.data[0].SurveyDate;
+                        document.getElementById('txtEstDate').value = result.data[0].EstimateDate;
+                        document.getElementById('txtApprDate').value = result.data[0].ApprovedDate;
+                        document.getElementById('txtMCDate').value = result.data[0].MNRCompleteDate;
+                        $scope.txtEstAmt = result.data[0].Estimate;
+                        $scope.txtApprAmt = result.data[0].Approved;
+                       
+
+                    }
+
+                });
+            });
+
+        }
+
+        $scope.BindMNRHistoryEdit = function (MNRID) {
+
+            var BussData = {}
+            var id = MNRID;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = MNRID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRNewApi/MNRHistoryEdit",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        $scope.HDRegId = result.data[0].ID;
+                        $scope.txtMNRNo = result.data[0].MNRRefNo;
+                      
+                        $scope.ddlOldMNRStatus = { ID: result.data[0].MNRStatusID };
+                        $("#ddlOldMNRStatus").val(result.data[0].MNRStatusID).trigger("change");
+                        $scope.fillMNRStatusDropdown(result.data[0].MNRStatusID);
+                        $scope.ddlLocation = { ID: result.data[0].LocationID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlAgency = { ID: result.data[0].AgencyID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlCntrNo = { ID: result.data[0].CntrID };
+                        $scope.txtConsignee = result.data[0].Consignee;
+                        $scope.txtBLNumber = result.data[0].BLNumber;
+                        $scope.ddlSizeType = { TypeID: result.data[0].CntrTypeID };
+                        document.getElementById('txtEmptyDate').value = result.data[0].EmptyGateIN;
+                        document.getElementById('txtSurveyDate').value = result.data[0].SurveyDate;
+                        document.getElementById('txtEstDate').value = result.data[0].EstimateDate;
+                        document.getElementById('txtApprDate').value = result.data[0].ApprovedDate;
+                        document.getElementById('txtMCDate').value = result.data[0].MNRCompleteDate;
+                        $scope.txtEstAmt = result.data[0].Estimate;
+                        $scope.txtApprAmt = result.data[0].Approved;
+                        $scope.txtCustomer = result.data[0].RecoveryCustomer;
+                        $scope.txtAgent = result.data[0].RecoveryAgent;
+                        $scope.txtPrincipal = result.data[0].RecoveryPrincipal;
+
+                        $scope.txtEstAmt1 = result.data[0].Estimate;
+                        $scope.txtApprAmt1 = result.data[0].Approved;
+
+
+                    }
+
+                });
+            });
+
+        }
+
+
+
+        $scope.SaveCorrector = function (data) {
+            var validation = "";
+
+            var ddlRefno = $('#ddlRefno').val();
+            if (ddlRefno == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select MNR No </span></br>"
+            }
+
+
+            var ddlMNRNewStatus = $('#ddlMNRNewStatus').val();
+            if (ddlMNRNewStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select MNR New Status </span></br>"
+            }
+           
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+            var id = $scope.HDCorrectorID;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDCorrectorID;
+
+            BussData.MNRID = $("#ddlRefno").val();
+            BussData.MNROldStatusID = $("#ddlOldMNRStatus").val();
+            BussData.MNRNewStatusID = $("#ddlMNRNewStatus").val();
+
+            if ($scope.txtMNRCorrectorNo == null) {
+                BussData.MNRCorrectorNo = "";
+            }
+            else {
+                BussData.MNRCorrectorNo = $scope.txtMNRCorrectorNo;;
+            }
+
+            BussData.CorrectedAgencyID = localStorage.getItem("AgencyID");
+            BussData.CorrectedUserID = localStorage.getItem("UserID");
+            BussData.MNRCorrectorStatusID = 1;
+            BussData.SessionFinYear = new Date().getFullYear();
+
+            $http({
+                method: 'POST',
+                url: "/api/MNR_Correction/InsertMNRCorrectorSave",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup(result.data[0].AlertMessage);
+                    if (result.data[0].AlertMessageID == "1") {
+                        setTimeout(function () { location.href = "/MNRCorrection/MNRHistoryView_correction" }, 1500);
+                    }
+      
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        //$scope.BtnApproval = function (data) {
+           
+        //    $('#overlay').fadeIn().delay(100).fadeOut();
+
+        //    var BussData = {}
+        //    var id = $scope.HDCorrectorID;
+
+        //    if (id == "" || id == null)
+        //        BussData.ID = 0;
+        //    else
+        //        BussData.ID = $scope.HDCorrectorID;
+
+        //    BussData.MNROldStatusID = $("#ddlOldMNRStatus").val();
+        //    BussData.MNRNewStatusID = $("#ddlMNRNewStatus").val();
+
+        //    BussData.ApprovedLoginAgencyID = localStorage.getItem("AgencyID");
+        //    BussData.ApprovedUserID = localStorage.getItem("UserID");
+        //    BussData.MNRCorrectorStatusID = 2;
+          
+
+        //    $http({
+        //        method: 'POST',
+        //        url: "/api/MNR_Correction/MNRCorrectorApprove",
+        //        data: JSON.stringify(BussData),
+
+        //    }).then(function (result) {
+        //        $timeout(function () {
+
+        //            ShowPopup(result.data[0].AlertMessage);
+        //            if (result.data[0].AlertMessageID == "1") {
+        //                setTimeout(function () { location.href = "/MNRCorrection/MNRHistoryView_correction" }, 1500);
+        //            }
+
+        //        });
+        //    }, function (result) {
+        //        if (result.status == 500) {
+        //            ShowPopup("Sorry no internet connectivity Application Error.");
+        //        }
+        //        else if (result.status == 404) {
+        //            ShowPopup("Sorry no internet connectivity page not found.");
+        //        }
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    }).catch(function (result) {
+
+        //        ShowPopup('There has been an error: ' + result);
+        //    });
+
+        //}
+
+        $scope.back = function () {
+
+            window.location = "/MNRCorrection/MNRHistoryView_correction";
+        }
+
+      
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">MNR CORRECTION</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+
+                        <div class="row" style="margin-bottom:15px;">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" class="btn btn-fill btn-success" id="btnSave"   ng-click="SaveCorrector(DynamicGridRecovery);">Save</button>
+                                <input type="hidden" id="txtMNRCorrectorNo" ng-model="txtMNRCorrectorNo" />
+                                @*<button class="btn btn-primary" id="btnApproval" ng-click="BtnApproval();" style="background-color: #20498e;"><i class="fa fa-thumbs-up"></i> Approve </button>*@
+                                @*<button href="#" class="btn btn-danger" id="btnRejected" ng-click="BtnRejected();" style="background-color: #f7948d;"><i class="fa fa-thumbs-down"></i> Rejected </button>*@
+                                <input type="hidden" id="HDCorrectorID" ng-model="HDCorrectorID" />
+                            </div>
+                        </div>
+                        <div class="row" style="border:1px solid #ccc;">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>MNR No</label>
+                                            <select class="form-control my-select" id="ddlRefno" ng-model="ddlRefno" ng-options="item.MNRRefNo for item in MNRReferenceDropdown track by item.ID"></select>
+                                            
+                                          
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Current Status</label>
+                                            <select class="form-control my-select" ng-model="ddlOldMNRStatus" id="ddlOldMNRStatus" disabled ng-options="item.GeneralName for item in MNRStatusList track by item.ID" required></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>New Status</label>
+                                            <select class="form-control my-select" ng-model="ddlMNRNewStatus" id="ddlMNRNewStatus" ng-options="item.MNRStatus for item in MNRStatusDropdown track by item.ID" required></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content">
+                                    <div class="tab-pane pt-3 active show" role="tabpanel">
+
+                                        <div class="row">
+
+
+                                            @*<div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>MNR Status</label>
+                                            <select class="form-control my-select"  ng-model="ddlMNRStatus" id="ddlMNRStatus" ng-options="item.GeneralName for item in MNRStatusList track by item.ID" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Location </label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlLocation" id="ddlLocation" ng-options="item.PortName for item in PortList track by item.ID" required>
+                                                            </select>
+                                                         
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Depot</label>
+                                                            <select id="ddlDepot" ng-model="ddlDepot" disabled class="form-control my-select" ng-options="item.DepName for item in DepotValue  track by item.ID"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Agency</label>
+
+                                                            <select class="form-control my-select" id="ddlAgency" disabled ng-model="ddlAgency" ng-options="item.AgencyName for item in AgencyMaster track by item.ID">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Consignee</label>
+                                                            <input type="text" autocomplete="off" disabled id="txtConsignee" ng-model="txtConsignee" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Container No</label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Container Type</label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>BLNumber</label>
+                                                            <input type="text" autocomplete="off" disabled id="txtBLNumber" ng-model="txtBLNumber" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+                                        <div class="col-md-4 leg cardtitle">Empty In & Survey</div>
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content">
+                                    <div class="tab-pane pt-3 active show" role="tabpanel">
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Empty In
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtEmptyDate" ng-model="txtEmptyDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Survey Completion
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtSurveyDate" ng-model="txtSurveyDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+               
+
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+                                        <div class="col-md-4 leg cardtitle">     Estimation, Approval and Repair </div>
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content">
+                                    <div class="tab-pane pt-3 active show" role="tabpanel">
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Estimation Date
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtEstDate" ng-model="txtEstDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Approval Date
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtApprDate" ng-model="txtApprDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                MNR Completion Date
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtMCDate" ng-model="txtMCDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label class="str">
+                                                                Estimation Amount
+                                                            </label>
+                                                            <input type="text" autocomplete="off" disabled id="txtEstAmt" ng-model="txtEstAmt" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label class="str">
+                                                                Approval Amount
+                                                            </label>
+                                                            <input type="text" autocomplete="off" disabled id="txtApprAmt" ng-model="txtApprAmt" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+             
+                   
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

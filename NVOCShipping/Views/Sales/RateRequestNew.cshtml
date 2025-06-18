@@ -1,0 +1,105 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.OnPagetab = function (val) {
+            if (val == "1") {
+                alert(val);
+                window.location.href = "/Sales/RateRequestNew";
+             
+
+            }
+            if (val == "2") {
+                alert(val);
+                window.location.href = "/Sales/ContDetails";
+              
+            }
+        }
+    });
+</script>
+<style>
+.nav-tabs { border-bottom: 2px solid #DDD;padding: 8px 15px;background-color: #bdbbbb2b; }
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover { border-width: 0; }
+    .nav-tabs > li > a { border: none; color: #0000!important; }
+        .nav-tabs > li.active > a{ 
+            border: none;
+    color: #ffffff !important;
+    background: #e91e63;
+    padding: 13px 44px;
+    border-radius: 5px;
+        }
+        .nav-tabs > li > a {
+    border: none;
+    color: #000000f7!important;
+}
+        .nav-tabs > li > a::after { content: ""; background: #5a4080; height: 2px; position: absolute; width: 100%; left: 0px; bottom: -1px; transition: all 250ms ease 0s; transform: scale(0); }
+    .nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after { transform: scale(1); }
+    .tab-nav > li > a::after { background: ##5a4080 none repeat scroll 0% 0%; color: #fff; }
+.tab-pane { padding: 15px 0; }
+.tab-content{padding:20px}
+.nav-tabs > li  {width:20%; text-align:center;}
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Sales/RaterequestView" type="submit" ng-click="back();" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </a>
+                @*<a href="/Sales/RaterequestView" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+                </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Rate Request</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12">
+                                 <div class="card">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#RateRequest" data-toggle="tab" ng-click="OnPageTab(1);">Rate Request</a></li>
+                                        <li role="presentation"><a href="#ContDetails" data-toggle="tab"  ng-click="OnPageTab(2);">Container Details</a></li>
+                                       
+                                    </ul>
+
+                                    <!-- Tab panes -->
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane active" id="home">fdssad</div>
+                                       
+                                    </div>
+                                </div>
+                              
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // Initialise the wizard
+        demo.initMaterialWizard();
+        setTimeout(function () {
+            //$('.card.card-wizard').addClass('active');
+        }, 600);
+
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>

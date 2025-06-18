@@ -1,0 +1,3477 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+
+    .topbox .col, .topbox .col-1, .topbox .col-2, .topbox .col-3, .topbox .col-4, .topbox .col-5, .topbox .topbox .col-6, .topbox .col-7, .topbox .col-8, .topbox .col-9, .topbox .col-10, .topbox .col-11, .topbox .col-12, .topbox .col-auto, .topbox .col-lg, .topbox .col-lg-1, .topbox .col-lg-2, .topbox .col-lg-3, .topbox .col-lg-4, .topbox .col-lg-5, .topbox .col-lg-6, .topbox .col-lg-7, .topbox .col-lg-8, .topbox .col-lg-9, .topbox .col-lg-10, .topbox .col-lg-11, .topbox .col-lg-12, .topbox .col-lg-auto, .topbox .col-md, .topbox .col-md-1, .topbox .col-md-2, .topbox .col-md-3, .topbox .col-md-4, .topbox .col-md-5, .topbox .col-md-6, .topbox .col-md-7, .topbox .col-md-8, .topbox .col-md-9, .topbox .col-md-10, .topbox .col-md-11, .topbox .col-md-12, .topbox .col-md-auto, .topbox .col-sm, .topbox .col-sm-1, .topbox .col-sm-2, .topbox .col-sm-3, .topbox .col-sm-4, .topbox .col-sm-5, .topbox .col-sm-6, .topbox .col-sm-7, .topbox .col-sm-8, .topbox .col-sm-9, .topbox .col-sm-10, .topbox .col-sm-11, .topbox .col-sm-12, .topbox .col-sm-auto, .topbox .col-xl, .topbox .col-xl-1, .topbox .col-xl-2, .topbox .col-xl-3, .topbox .col-xl-4, .topbox .col-xl-5, .topbox .col-xl-6, .topbox .col-xl-7, .topbox .col-xl-8, .topbox .col-xl-9, .topbox .col-xl-10, .topbox .col-xl-11, .topbox .col-xl-12, .topbox .col-xl-auto {
+        width: 210px !important;
+    }
+
+    .topbox .col-lg-2 {
+        max-width: initial !important;
+    }
+
+    .topbox .col-md-2 {
+        max-width: initial !important;
+    }
+
+    .topbox .col-sm-2 {
+        max-width: initial !important;
+    }
+
+    .select2-container {
+        width: 326px !important;
+    }
+
+    .form-control {
+        /* width: 326px !important;*/
+    }
+
+    .boxsmall.overdueAR img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.overdueAR .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.overdueAR .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.overdueAR .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.overdueAR .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+
+    .boxsmall.overdueAP img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.overdueAP .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.overdueAP .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.overdueAP .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.overdueAP .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .boxsmall.CashInFlow img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.CashInFlow .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.CashInFlow .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.CashInFlow .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.CashInFlow .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .boxsmall.CashOutFlow img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.CashOutFlow .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.CashOutFlow .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.CashOutFlow .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.CashOutFlow .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .boxsmall.pending img {
+        width: 48px;
+        /* position: absolute;*/
+        margin-top: -66px;
+        /*margin-left: 17px;*/
+        float: right;
+        opacity: 0.5;
+    }
+
+    .boxsmall.pending .foot {
+        background-color: #fff;
+        padding-bottom: 2px;
+        padding-left: 23px;
+    }
+
+    .boxsmall.pending .bodybox {
+        padding-top: 17px;
+    }
+
+    .boxsmall.pending .foot a {
+        font-size: 14px;
+        color: #969697;
+    }
+
+    .boxsmall.pending .foot i {
+        position: absolute;
+        color: #969697;
+        top: 3px;
+        right: 23px;
+        font-size: 17px;
+    }
+
+    .cntpopup .form-group {
+        margin-bottom: 4px !important;
+    }
+
+    .boxsmall.overdueAR {
+        /*background-color: #8892d6 !important;*/
+        background-color: #0088e9;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.overdueAP {
+        /*background-color: #8892d6 !important;*/
+        background-color: #8b8b8b;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.CashInFlow {
+        /*background-color: #8892d6 !important;*/
+        background-color: #e96a6c;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.CashOutFlow {
+        /*background-color: #8892d6 !important;*/
+        background-color: #bfbbbb;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall.pending {
+        /*background-color: #8892d6 !important;*/
+        background-color: #3dbfc5;
+        margin-bottom: 13px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .boxsmall {
+        height: 113px;
+        /*background-color: #5bbc6b;*/
+        padding-top: 0px;
+        /*border: 1px solid #faf9f9;*/
+        border-radius: .25rem;
+        box-shadow: 0 2px 7px 0 rgba(0,0,0,.14);
+    }
+
+        .boxsmall i {
+            position: absolute;
+            color: #ffffff6b;
+            top: 21px;
+            right: 13px;
+            font-size: 49px;
+        }
+
+        .boxsmall h4 {
+            color: #fff;
+            text-align: left;
+            font-size: 16px !important;
+        }
+
+        .boxsmall p {
+            color: #fff;
+            text-align: left;
+            font-size: 13px !important;
+            /*text-transform:uppercase;*/
+        }
+
+    .modal-dialog .modal-content.divsurvey .close {
+        margin: 1px 15px !important;
+    }
+
+    .poptable.table-responsive {
+        display: inline-table !important;
+    }
+    /* .modal .modal-dialog.dialog1300 {
+        width: 1300px !important;
+    }*/
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout, Upload) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrNo();
+
+        $scope.MNRStatusList = null;
+        $scope.fillMNRStatusList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRNewStatus/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRStatusList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRStatusList();
+
+        $scope.MNRCostToList = null;
+        $scope.fillMNRCostToList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRBindCostToDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCostToList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRCostToList();
+
+        $scope.MNRItemList = null;
+        $scope.fillMNRItemList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRLineItemDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRItemList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRItemList();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+
+        $scope.AgencyMaster = null;
+        $scope.FillAgencyMaster = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMaster = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillAgencyMaster();
+
+        //$scope.MNRSurveyStatusList = null;
+        //$scope.fillMNRSurveyStatusList = function () {
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/MNRNewApi/BindMNRSurveyStatus/',
+        //        data: {}
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            $scope.MNRSurveyStatusList = result.data;
+
+        //        });
+        //    }, function (result) {
+
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+        //        }
+        //    });
+
+        //};
+
+        $scope.MNRSurveyStatusList = [
+            { 'Name': 'No Repair', 'ID': 1 },
+            { 'Name': 'Pending Estimate ', 'ID': 2 }
+        ];
+
+
+        $scope.CurrencyValuesList = null;
+        $scope.FillCurrencyValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValuesList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillCurrencyValues();
+
+        $scope.MNRAttachTypeList = null;
+        $scope.fillMNRAttachTypeList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRAttachTypeEstimate/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRAttachTypeList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRAttachTypeList();
+
+        $scope.MNRAttachTypeComleteList = null;
+        $scope.filMNRAttachTypeComleteList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRAttachTypeComplete/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRAttachTypeComleteList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.filMNRAttachTypeComleteList();
+
+
+        $scope.fillMNRStatusCount = function () {
+            var BussData = {}
+            BussData.UserID = localStorage.getItem("UserID");
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRStatusCountDepot/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.PendingSurvey = result.data[0].PendingSurvey;
+                    $scope.PendingEstimate = result.data[0].PendingEstimate;
+                    $scope.PendingApproval = result.data[0].PendingApproval;
+                    $scope.PendingMNR = result.data[0].PendingMNR;
+
+                    $('#overlay').hide();
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillMNRStatusCount();
+
+        $scope.MNRRepairecords = null;
+
+        $scope.MNRRepairecords = function () {
+            var BussData = {}
+
+            BussData.Status = $("#ddlMNRStatus").val();
+            BussData.CntrID = $("#ddlCntrNo").val();
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.CntrTypeID = $("#ddlSizeType").val();
+            BussData.MNRStatusID = $("#ddlMNRStatus").val();
+
+            if (localStorage.getItem("UserID") != "1") {
+                //document.getElementById("ddlAgency").disabled = true;
+               // BussData.AgencyID = localStorage.getItem("AgencyID");
+                document.getElementById("btnApprove").disabled = true;
+                document.getElementById("btnApprove").style.cursor = 'not-allowed';
+            }
+            else {
+                //document.getElementById("ddlAgency").disabled = false;
+                document.getElementById("btnApprove").disabled = false;
+                document.getElementById("btnApprove").style.cursor = 'allowed';
+               // BussData.AgencyID = $("#ddlAgency").val();
+
+            }
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRNewApi/MNRNewManagementDepot",
+                data: JSON.stringify(BussData),
+                // data: {},
+            }).then(function (result) {
+                $scope.MNRRepairReqView = result.data;
+
+                $scope.totalItems = $scope.MNRRepairReqView.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.MNRRepairReqView.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.CheckBoxHeadChecked = function (checked) {
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                $scope.MNRRepairReqView[i].ChkFlag = checked;
+            }
+
+        };
+        $scope.MNRRepairViewRecords = function () {
+
+            $scope.MNRRepairecords();
+        }
+        $scope.ClearRecords = function () {
+
+
+            $("#ddlMNRStatus").val(null).trigger("change");
+            $("#ddlCntrNo").val(null).trigger("change");
+            //$("#ddlDepot").val(null).trigger("change");
+            $("#ddlSizeType").val(null).trigger("change");
+            $("#ddlAgency").val(null).trigger("change");
+            $scope.MNRRepairecords();
+        }
+        $scope.MNRRepairecords();
+
+
+        $scope.onSurveyClick = function () {
+
+            var validation = "";
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if (this.MNRRepairReqView[i].ChkFlag == 1) {
+                    IntRow = 1;
+
+                    break;
+
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    if ($scope.MNRRepairReqView[i].MNRStatus != 'Pending Survey' && $scope.MNRRepairReqView[i].MNRStatus != 'Pending Estimate') {
+                        validation += "<span style='color:red;'>*</span> <span>Please Check Pending Survey or Pending Estimate </span></br>"
+                    }
+
+                }
+
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#SurveyClick').modal('show');
+            var BussData = {}
+            var ItemsCntrs = [];
+            var CntrIDv = 0;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    ItemsCntrs.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = ItemsCntrs.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailsSurveyEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNRSurveyList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+        }
+        $scope.OnSubmitSurvey = function () {
+
+            var validation = "";
+
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.dsMNRSurveyList.length; i++) {
+
+                if ($scope.dsMNRSurveyList[i].ChkFlag == 1) {
+                    IntRow = 1;
+
+                    break;
+
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            for (var i = 0; i < $scope.dsMNRSurveyList.length; i++) {
+                if ($scope.dsMNRSurveyList[i].ChkFlag == 1) {
+
+                    if ($("#ddlMnrStatusV" + i).val() == "?") {
+                        validation += "<span style='color:red;'>*</span> <span>Please Select MNR Status  </span></br>"
+                    }
+                }
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var ItemsSurvey = [];
+            for (var i = 0; i < $scope.dsMNRSurveyList.length; i++) {
+                if ($scope.dsMNRSurveyList[i].ChkFlag == 1) {
+
+                    if ($("#ddlMnrStatusV" + i).val() != "?") {
+
+                        ItemsSurvey.push('Insert:' + $scope.dsMNRSurveyList[i].MNRID, $scope.dsMNRSurveyList[i].CntrNo, $scope.dsMNRSurveyList[i].ID, $scope.dsMNRSurveyList[i].MNRRefNo, $scope.dsMNRSurveyList[i].MNRStatus,
+                            $("#ddlMnrStatusV" + i).val(), $scope.dsMNRSurveyList[i].LocationID, $scope.dsMNRSurveyList[i].DepotID, $scope.dsMNRSurveyList[i].AgencyID, $scope.dsMNRSurveyList[i].EmptyGateIN, $("#ddlMnrStatusV option:selected" + i).text(), $scope.dsMNRSurveyList[i].CntrTypeID, $scope.dsMNRSurveyList[i].BLID);
+                    }
+                }
+
+            };
+            var BussData = {}
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.ItemsSurvey = ItemsSurvey.toString();
+            BussData.SessionFinYear = new Date().getFullYear();
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRSurveyUpdate/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    $('#SurveyClick').modal('hide');
+                    $scope.MNRRepairecords();
+                    $scope.fillMNRStatusCount();
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+        }
+
+        $scope.onEstimateClick = function () {
+
+            var validation = "";
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    IntRow = 1;
+
+                    break;
+
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+
+                    if ($scope.MNRRepairReqView[i].MNRStatus != 'Pending Estimate') {
+                        validation += "<span style='color:red;'>*</span> <span>Please Check Pending Estimate Only</span></br>"
+                    }
+
+                }
+
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $('#EstimateClick').modal('show');
+            var BussData = {}
+            var ItemsCntrs = [];
+            var CntrIDv = 0;;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    ItemsCntrs.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = ItemsCntrs.toString();
+            $scope.ItemsCntrIDs = ItemsCntrs.toString();
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailsEstimateEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNREstimateList = result.data;
+                    $scope.dsMNREstimateListforAttach = result.data;
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.onEstimateClickBindForAttach = function (ItemsCntrIDs) {
+
+
+            var BussData = {}
+            var ItemsCntrs = [];
+            var CntrIDv = 0;;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    ItemsCntrs.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = ItemsCntrs.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailsEstimateEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNREstimateListforAttach = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.OnSubmitEstimate = function () {
+
+            var validation = "";
+
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.dsMNREstimateList.length; i++) {
+
+                if ($scope.dsMNREstimateList[i].ChkFlag == 1) {
+                    IntRow = 1;
+
+                    break;
+
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            for (var i = 0; i < $scope.dsMNREstimateList.length; i++) {
+                if ($scope.dsMNREstimateList[i].ChkFlag == 1) {
+
+                    if ($scope.dsMNREstimateList[i].Estimate == "") {
+                        validation += "<span style='color:red;'>*</span> <span>Please Enter Estimate Amount </span></br>"
+                    }
+                    if ($scope.dsMNREstimateList[i].MNRCurrencyID == 0) {
+                        validation += "<span style='color:red;'>*</span> <span>Please Select Currency  </span></br>"
+                    }
+
+                }
+            }
+            for (var i = 0; i < $scope.dsMNREstimateListforAttach.length; i++) {
+                if ($scope.dsMNREstimateList[i].ChkFlag == 1) {
+
+
+                    if ($scope.dsMNREstimateListforAttach[i].AttachCount == 0) {
+                        validation += "<span style='color:red;'>*</span> <span>Please Upload Quoation </span></br>"
+                    }
+
+                    if ($scope.dsMNREstimateListforAttach[i].AttachCountPh == 0) {
+                        validation += "<span style='color:red;'>*</span> <span>Please Upload Photos </span></br>"
+                    }
+
+                }
+
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var BussData = {}
+            var ItemsEstimate = [];
+            var ItemsEstimateForEmail = [];
+            for (var i = 0; i < $scope.dsMNREstimateList.length; i++) {
+                if ($scope.dsMNREstimateList[i].ChkFlag == 1) {
+
+                    ItemsEstimate.push('Insert:' + $scope.dsMNREstimateList[i].MNRID, $scope.dsMNREstimateList[i].CntrNo, $scope.dsMNREstimateList[i].ID, $scope.dsMNREstimateList[i].MNRRefNo, $scope.dsMNREstimateList[i].MNRStatus,
+                        $("#ddlMNRCurrency" + i).val(), $scope.dsMNREstimateList[i].Estimate, 'Pending Approval')
+
+                    var Id = $scope.dsMNREstimateList[i].MNRID;
+                    ItemsEstimateForEmail.push(Id);
+                };
+            }
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.ItemsEstimate = ItemsEstimate.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNREstimateUpdate/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    $('#EstimateClick').modal('hide');
+                    $scope.MNRRepairecords();
+                    $scope.fillMNRStatusCount();
+                    if (result.data[0].AlertMegId == "2") {
+                        $scope.btnSendEmailAlert(ItemsEstimateForEmail.toString());
+                    }
+
+                });
+
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+
+        $scope.onApprovalClick = function () {
+            var validation = "";
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    IntRow = 1;
+
+                    break;
+
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+
+                    if ($scope.MNRRepairReqView[i].MNRStatus != 'Pending Approval') {
+                        validation += "<span style='color:red;'>*</span> <span>Please Select Pending Approval only  </span></br>"
+                    }
+                }
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#ApprovalClick').modal('show');
+
+            var BussData = {}
+            var Items = [];
+            var CntrIDv = 0;;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    Items.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = Items.toString();
+            $scope.ItemsCntrIDs = Items.toString();
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailsApproveEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNRApproveList = result.data;
+                    $scope.dsMNRApproveListForRecovery = result.data;
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+
+        }
+
+        $scope.onApprovalClickForRecovery = function () {
+
+
+
+            var BussData = {}
+            var Items = [];
+            var CntrIDv = 0;;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    Items.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailsApproveEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNRApproveListForRecovery = result.data;
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+
+        }
+
+        $scope.OnSubmitApproval = function () {
+            var validation = "";
+
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.dsMNRApproveList.length; i++) {
+
+                if ($scope.dsMNRApproveList[i].ChkFlag == 1) {
+                    IntRow = 1;
+                    break;
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var ApprovedV = "";
+            var RecoveryPrincipalV = "";
+            var RecoveryAgentV = "";
+            var RecoveryCustomerV = "";
+            for (var i = 0; i < $scope.dsMNRApproveList.length; i++) {
+                if ($scope.dsMNRApproveList[i].ChkFlag == 1) {
+
+                    ApprovedV = $scope.dsMNRApproveList[i].Approved
+                    RecoveryPrincipalV = $scope.dsMNRApproveList[i].RecoveryPrincipal
+                    RecoveryAgentV = $scope.dsMNRApproveList[i].RecoveryAgent
+                    RecoveryCustomerV = $scope.dsMNRApproveList[i].RecoveryCustomer
+
+                    if (ApprovedV == "") {
+                        validation += "<span style='color:red;'>*</span> <span>Please Enter Approved Amount </span></br>"
+                    }
+                    //if (RecoveryPrincipalV != "0") {
+                    //    if (RecoveryPrincipalV == "" || RecoveryPrincipalV == null) {
+                    //        validation += "<span style='color:red;'>*</span> <span>Please Enter Principal Amount  </span></br>"
+                    //    }
+                    //}
+                    //if (RecoveryAgentV != "0") {
+                    //    if (RecoveryAgentV == "" || RecoveryAgentV == null) {
+                    //        validation += "<span style='color:red;'>*</span> <span>Please Enter Agent Amount  </span></br>"
+                    //    }
+
+                    //}
+                    //if (RecoveryCustomerV != "0") {
+                    //    if (RecoveryCustomerV == "" || RecoveryCustomerV == null) {
+                    //        validation += "<span style='color:red;'>*</span> <span>Please Enter Customer Amount  </span></br>"
+                    //    }
+
+                    //}
+
+                }
+            }
+            for (var i = 0; i < $scope.dsMNRApproveListForRecovery.length; i++) {
+
+                if ($scope.dsMNRApproveListForRecovery[i].RecoveryCount == 0 ) {
+                    validation += "<span style='color:red;'>*</span> <span>Please Add Recovery Details </span></br>"
+                }
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var AprAmountCheck = 0;
+
+            var RecoveryTotalAmt = 0;
+            var RecoveryCusAmt = "0";
+            for (var i = 0; i < $scope.dsMNRApproveList.length; i++) {
+                if ($scope.dsMNRApproveList[i].ChkFlag == 1) {
+                    if ($scope.dsMNRApproveList[i].RecoveryCustomer == "") {
+                        RecoveryCusAmt = "0";
+                    }
+                    else {
+                        RecoveryCusAmt = $scope.dsMNRApproveList[i].RecoveryCustomer;
+                    }
+                    AprAmountCheck = parseFloat($scope.dsMNRApproveList[i].Approved);
+                    RecoveryTotalAmt = (parseFloat($scope.dsMNRApproveList[i].RecoveryPrincipal) + parseFloat($scope.dsMNRApproveList[i].RecoveryAgent) + parseFloat(RecoveryCusAmt))
+                }
+
+            }
+
+            //if (RecoveryTotalAmt != AprAmountCheck) {
+
+            //    Swal.fire("Recovery Amount Must Match Approved Amount,Please Check.");
+            //    return;
+            //}
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var BussData = {}
+            var ItemsApprove = [];
+            var ItemsApproveEmail = [];
+            var RecoveryCustomervalue = "0";
+            for (var i = 0; i < $scope.dsMNRApproveList.length; i++) {
+
+                RecoveryCustomervalue = $scope.dsMNRApproveList[i].RecoveryCustomer;
+
+                if (RecoveryCustomervalue == "") {
+                    RecoveryCustomervalue = "0";
+                }
+                else {
+                    RecoveryCustomervalue = $scope.dsMNRApproveList[i].RecoveryCustomer;
+                }
+
+                if ($scope.dsMNRApproveList[i].ChkFlag == 1) {
+
+                    ItemsApprove.push('Insert:' + $scope.dsMNRApproveList[i].MNRID, $scope.dsMNRApproveList[i].CntrNo, $scope.dsMNRApproveList[i].ID,
+                        $scope.dsMNRApproveList[i].MNRRefNo, $scope.dsMNRApproveList[i].MNRStatus, $scope.dsMNRApproveList[i].MNRCurrencyID, $scope.dsMNRApproveList[i].Estimate, 'Pending MNR', $scope.dsMNRApproveList[i].Approved, 0, 0, 0);
+
+                    var Id = $scope.dsMNRApproveList[i].MNRID;
+                    ItemsApproveEmail.push(Id);
+                }
+
+            };
+
+
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.ItemsApprove = ItemsApprove.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRApproveUpdate/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    $('#ApprovalClick').modal('hide');
+                    $scope.MNRRepairecords();
+                    $scope.fillMNRStatusCount();
+                    $scope.btnSendEmailAlertApproved(ItemsApproveEmail.toString());
+
+                });
+
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.onStatusClick = function () {
+
+            var validation = "";
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    IntRow = 1;
+
+                    break;
+
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+
+                    if ($scope.MNRRepairReqView[i].MNRStatus != 'Pending MNR' && $scope.MNRRepairReqView[i].MNRStatus != 'MNR Complete') {
+                        validation += "<span style='color:red;'>*</span> <span>Please Select Pending MNR only  </span></br>"
+                    }
+                }
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#StatusClick').modal('show');
+            var BussData = {}
+            var Items = [];
+            var CntrIDv = 0;;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    Items.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = Items.toString();
+            $scope.ItemsCntrIDsv = Items.toString();
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailCompleteEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNRCompleteList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+        }
+
+        $scope.onStatusClickAttachments = function (ItemsCntrIDs) {
+
+
+            var BussData = {}
+            var Items = [];
+            var CntrIDv = 0;;
+
+            for (var i = 0; i < $scope.MNRRepairReqView.length; i++) {
+
+                if ($scope.MNRRepairReqView[i].ChkFlag == 1) {
+                    var CntrIDv = $scope.MNRRepairReqView[i].ID;
+                    Items.push(CntrIDv);
+                }
+
+            }
+            BussData.ItemsCntrIDs = ItemsCntrIDs.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRDetailCompleteEdit/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.dsMNRCompleteList = result.data;
+                    //alert()
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+        }
+
+
+        $scope.OnSubmitComplete = function () {
+
+            var validation = "";
+
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.dsMNRCompleteList.length; i++) {
+
+                if ($scope.dsMNRCompleteList[i].ChkFlag == 1) {
+                    IntRow = 1;
+                    break;
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            for (var i = 0; i < $scope.dsMNRCompleteList.length; i++) {
+                if ($scope.dsMNRCompleteList[i].ChkFlag == 1) {
+
+                    if ($scope.dsMNRCompleteList[i].AttachCountPostRep == 0) {
+                        validation += "<span style='color:red;'>*</span> <span>Please Upload Post Repaired Photos </span></br>"
+                    }
+
+                }
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+            var ItemsMNRComplete = [];
+
+            var BussData = {}
+
+            for (var i = 0; i < $scope.dsMNRCompleteList.length; i++) {
+                if ($scope.dsMNRCompleteList[i].ChkFlag == 1) {
+                    ItemsMNRComplete.push('Insert:' + $scope.dsMNRCompleteList[i].MNRID, $scope.dsMNRCompleteList[i].CntrNo, $scope.dsMNRCompleteList[i].ID, $scope.dsMNRCompleteList[i].MNRRefNo,
+                        $scope.dsMNRCompleteList[i].MNRStatus, $scope.dsMNRCompleteList[i].MNRCurrencyID, $scope.dsMNRCompleteList[i].Estimate, 'MNR Complete', $scope.dsMNRCompleteList[i].DepotID, $scope.dsMNRCompleteList[i].AgencyID, $scope.dsMNRCompleteList[i].LocationID);
+                };
+            }
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.ItemsMNRComplete = ItemsMNRComplete.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRCompleteUpdate/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    $('#StatusClick').modal('hide');
+                    $scope.MNRRepairecords();
+                    $scope.fillMNRStatusCount();
+                });
+
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.btnUpLoad = function (CntrID, MNRID, CntrNo) {
+
+            $scope.GridCntrID = CntrID;
+            $scope.GridMNRID = MNRID;
+            $scope.GridCntrNo = CntrNo;
+            $('#Attachment').modal('show');
+            $scope.BindAttachmentDetails(CntrID, MNRID);
+        }
+        $scope.btnUpLoadComplete = function (CntrID, MNRID, CntrNo) {
+
+            $scope.GridCntrID = CntrID;
+            $scope.GridMNRID = MNRID;
+            $scope.GridCntrNo = CntrNo;
+            $('#AttachmentComplete').modal('show');
+            $scope.BindAttachmentCompleteDetails(CntrID, MNRID);
+        }
+
+        $scope.btnAprDownload = function (CntrID, MNRID, CntrNo) {
+
+            $scope.GridCntrID = CntrID;
+            $scope.GridMNRID = MNRID;
+            $scope.GridCntrNo = CntrNo;
+            $('#AttachmentDownload').modal('show');
+            $scope.BindAttachmetDownloadDetails(CntrID, MNRID);
+        }
+
+
+        $scope.btnAprRecovery = function (CntrID, MNRID, CntrNo) {
+
+            $scope.GridCntrID = CntrID;
+            $scope.GridMNRID = MNRID;
+            $scope.GridCntrNo = CntrNo;
+            $('#RecoveryPopUp').modal('show');
+           /// $scope.BindAttachmetDownloadDetails(CntrID, MNRID);
+        }
+
+
+        $scope.UploadFiles = function (files) {
+            $scope.SelectedFiles = files;
+            if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                    Upload.upload({
+                        url: '/MNR/Upload/',
+                        data: {
+                            files: $scope.SelectedFiles
+
+                        }
+                    })
+                        .then(function (response) {
+                            $timeout(function () {
+
+                                $scope.FileName = response.data;
+                                $('#UploadMBL').text("");
+
+
+                            });
+                        }, function (response) {
+                            if (response.status > 0) {
+                                var errorMsg = response.status + ': ' + response.data;
+
+                            }
+                        }, function (evt) {
+                            var element = angular.element(document.querySelector('#dvProgress'));
+                            $scope.Progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                            element.html('<div style="width: ' + $scope.Progress + '%">' + $scope.Progress + '%</div>');
+                        });
+                }
+            }
+
+        }
+
+        $scope.UploadFilesComplete = function (files) {
+            $scope.SelectedFiles = files;
+            if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                    Upload.upload({
+                        url: '/MNR/Upload/',
+                        data: {
+                            files: $scope.SelectedFiles
+
+                        }
+                    })
+                        .then(function (response) {
+                            $timeout(function () {
+
+                                $scope.FileName = response.data;
+                                $('#UploadMBL').text("");
+
+
+                            });
+                        }, function (response) {
+                            if (response.status > 0) {
+                                var errorMsg = response.status + ': ' + response.data;
+
+                            }
+                        }, function (evt) {
+                            var element = angular.element(document.querySelector('#dvProgress'));
+                            $scope.Progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                            element.html('<div style="width: ' + $scope.Progress + '%">' + $scope.Progress + '%</div>');
+                        });
+                }
+            }
+
+        }
+
+
+        $scope.DynamicGrid = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "" }];
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.DynamicGridC = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "" }];
+        $scope.DynamicGridC.splice(0, 1);
+
+        $scope.Add = function (DynamicGrid) {
+
+            var validation = "";
+
+
+            var FileName = $('#FileName').val();
+            if (FileName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Upload File</span></br>"
+            }
+            var ddlAttachType = $('#ddlAttachType').val();
+            if (ddlAttachType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Attachment Type </span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+
+            var val = {
+
+                'FileName': $scope.FileName,
+                'AttachmentTypeID': $("#ddlAttachType").val(),
+                'AttachmentType': $("#ddlAttachType option:selected").text(),
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGrid.push(val);
+            }
+            $("#ddlAttachType").val("");
+            $scope.txtFileMBL = "";
+            $scope.HDArrayIndex = "";
+            $scope.AID = 0;
+
+        }
+
+        $scope.AddComplete = function (DynamicGridC) {
+
+            var validation = "";
+
+
+            var FileNameV = $('#FileNameV').val();
+            if (FileNameV.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Upload File</span></br>"
+            }
+            var ddlAttachTypeV = $('#ddlAttachTypeV').val();
+            if (ddlAttachTypeV == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Attachment Type </span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var val = {
+
+                'FileName': $scope.FileName,
+                'AttachmentTypeID': $("#ddlAttachTypeV").val(),
+                'AttachmentType': $("#ddlAttachTypeV option:selected").text(),
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGridC[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGridC.push(val);
+            }
+            $("#ddlAttachTypeV").val("");
+            $scope.txtFileMBL = "";
+            $scope.HDArrayIndex = "";
+            $scope.AID = 0;
+
+        }
+
+        $scope.SaveAttachedFile = function (data) {
+            var validation = "";
+            var filenameV = "";
+            var attachV = "";
+
+            angular.forEach(data, function (value, key) {
+
+                filenameV = data[key].FileName;
+                attachV = data[key].AttachmentTypeID;
+            });
+
+            if (filenameV == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Upload File</span></br>"
+            }
+            if (attachV == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Attachment Type</span></br> "
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+
+            BussData.CntrID = $scope.GridCntrID;
+            BussData.MNRID = $scope.GridMNRID;
+            BussData.UserID = localStorage.getItem("UserID");
+            var ItemsAttachments = []
+
+
+            angular.forEach(data, function (value, key) {
+
+                ItemsAttachments.push('Insert:' + data[key].FileName, data[key].AttachmentTypeID, data[key].AttachmentType,
+
+                );
+            });
+
+            BussData.ItemsAttachments = ItemsAttachments.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRNewUploadDocuments',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.onEstimateClickBindForAttach($scope.ItemsCntrIDs);
+
+                    if (result.data.length > 0) {
+
+                        //$scope.RegId = result.data[0].ID;
+                        ShowPopup(result.data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                    else {
+
+                        ShowPopup(data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                    $('#Attachment').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.SaveAttachedFileComplete = function (data) {
+            var validation = "";
+            var filenameV = "";
+            var attachV = "";
+
+            angular.forEach(data, function (value, key) {
+
+                filenameV = data[key].FileName;
+                attachV = data[key].AttachmentTypeID;
+            });
+
+            if (filenameV == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Upload File</span></br>"
+            }
+            if (attachV == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Attachment Type</span></br> "
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+
+            BussData.CntrID = $scope.GridCntrID;
+            BussData.MNRID = $scope.GridMNRID;
+            BussData.UserID = localStorage.getItem("UserID");
+            var ItemsAttachments = []
+
+
+            angular.forEach(data, function (value, key) {
+
+                ItemsAttachments.push('Insert:' + data[key].FileName, data[key].AttachmentTypeID, data[key].AttachmentType,
+
+                );
+            });
+
+            BussData.ItemsAttachments = ItemsAttachments.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRNewUploadDocuments',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.onStatusClickAttachments($scope.ItemsCntrIDsv);
+                    if (result.data.length > 0) {
+
+                        //$scope.RegId = result.data[0].ID;
+                        ShowPopup(result.data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                    else {
+
+                        ShowPopup(data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                    $('#AttachmentComplete').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.BindAttachmentDetails = function (CntrID, MNRID) {
+            $scope.DynamicGrid = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "" }];
+            var Datavalue = {};
+
+            Datavalue.CntrID = CntrID;
+            Datavalue.MNRID = MNRID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRNewDocumentsEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        console.log(result.data);
+                        if (result.data[0].AttachTypeID != "") {
+                            $scope.DynamicGrid.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGrid.push({
+                                'AID': result.data[key].AID,
+                                'FileName': result.data[key].FileName,
+                                'AttachmentType': result.data[key].AttachmentType,
+                                'AttachmentTypeID': result.data[key].AttachTypeID,
+
+                            });
+
+                        });
+
+                    }
+                    else {
+
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+        $scope.BindAttachmetDownloadDetails = function (CntrID, MNRID) {
+            $scope.DynamicGrid = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "" }];
+            var Datavalue = {};
+
+            Datavalue.CntrID = CntrID;
+            Datavalue.MNRID = MNRID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRNewDocumentsEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        if (result.data[0].AttachTypeID != "") {
+                            $scope.DynamicGrid.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGrid.push({
+                                'AID': result.data[key].AID,
+                                'FileName': result.data[key].FileName,
+                                'AttachmentType': result.data[key].AttachmentType,
+                                'AttachmentTypeID': result.data[key].AttachTypeID,
+
+                            });
+
+                        });
+
+                    }
+                    //$scope.onEstimateClickBindForAttach($scope.ItemsCntrIDs);
+                    else {
+
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+        $scope.BindAttachmentCompleteDetails = function (CntrID, MNRID) {
+            $scope.DynamicGridC = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "" }];
+            var Datavalue = {};
+
+            Datavalue.CntrID = CntrID;
+            Datavalue.MNRID = MNRID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRNewDocumentsEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].AttachTypeID != "") {
+                            $scope.DynamicGridC.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridC.push({
+                                'AID': result.data[key].AID,
+                                'FileName': result.data[key].FileName,
+                                'AttachmentType': result.data[key].AttachmentType,
+                                'AttachmentTypeID': result.data[key].AttachTypeID,
+
+                            });
+
+                        });
+
+                    }
+                    else {
+
+                        $scope.DynamicGridC.splice(0, 1);
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+        $scope.DownloadFile = function (fileName) {
+
+                window.location.href = '@Url.Action("DownloadAttachment", "MNR")?fileName=' + fileName;
+
+        };
+
+        $scope.btnSendEmailAlert = function (MNRIDs) {
+
+            $("#overlay").show();
+            var Datavalue = {};
+            Datavalue.ItemsMNRIDs = MNRIDs;
+            console.log('tes',MNRIDs);
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            Datavalue.To = $scope.txtTo;
+            Datavalue.CC = $scope.txtCC;
+            Datavalue.BCC = $scope.txtBCC;
+            Datavalue.Message = $scope.txtMessage;
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/EmailsendingEstimate/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        ShowPopup(result.data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                });
+                $("#overlay").hide();
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.btnSendEmailAlertApproved = function (MNRIDs) {
+
+            $("#overlay").show();
+            var Datavalue = {};
+            Datavalue.ItemsMNRIDs = MNRIDs;
+            console.log('tes', MNRIDs);
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            Datavalue.To = $scope.txtTo;
+            Datavalue.CC = $scope.txtCC;
+            Datavalue.BCC = $scope.txtBCC;
+            Datavalue.Message = $scope.txtMessage;
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/EmailsendingApproved/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        ShowPopup(result.data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                });
+                $("#overlay").hide();
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.DeleteAttachments = function (DynamicGrid, index, AID) {
+           // alert(AID);
+            var Datavalue = {}
+            Datavalue.AID = AID;
+            $scope.DynamicGrid.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRAttachmentsDelete/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGrid.splice(index, AID);
+                    ShowPopup(result.data[0].AlertMessage);
+                    $scope.BindAttachmentDetails($scope.GridCntrID, $scope.GridMNRID);
+                });
+            });
+
+        }
+
+        $scope.RemoveComplete = function (DynamicGridC, index, AID) {
+            // alert(AID);
+            var Datavalue = {}
+            Datavalue.AID = AID;
+            $scope.DynamicGridC.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRAttachmentsDelete/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGridC.splice(index, AID);
+                    ShowPopup(result.data[0].AlertMessage);
+                    $scope.BindAttachmentCompleteDetails($scope.GridCntrID, $scope.GridMNRID);
+                });
+            });
+
+        }
+
+
+        $scope.btnAprRecovery = function (CntrID, MNRID, CntrNo) {
+            var validation = "";
+
+            var IntRow = 0;
+
+            for (var i = 0; i < $scope.dsMNRApproveList.length; i++) {
+
+                if ($scope.dsMNRApproveList[i].ChkFlag == 1) {
+                    IntRow = 1;
+                    break;
+                }
+                else {
+
+                    IntRow = 0;
+                }
+
+            }
+            if (IntRow == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atlease One  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var ApprovedV = "";
+
+            for (var i = 0; i < $scope.dsMNRApproveList.length; i++) {
+                if ($scope.dsMNRApproveList[i].ChkFlag == 1) {
+
+                    ApprovedV = $scope.dsMNRApproveList[i].Approved
+                    $scope.ApprovedValue = ApprovedV;
+                }
+            }
+            if (ApprovedV == "" || ApprovedV == null ) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Approved Amount </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $scope.GridCntrID = CntrID;
+            $scope.GridMNRID = MNRID;
+            $scope.GridCntrNo = CntrNo;
+            $scope.GridApprovedAmt = ApprovedV;
+            $('#RecoveryPopUp').modal('show');
+            $scope.BindRecoveryDetails(CntrID, MNRID);
+        }
+
+
+
+        $scope.DynamicGridRecovery = [{ RID: "", Accountability: "", AccountabilityID: "", ItemNo: "", ItemNoID: "", RecoveryAmount: "" }];
+        $scope.DynamicGridRecovery.splice(0, 1);
+
+        $scope.AddRecovery = function (DynamicGridRecovery) {
+
+            var validation = "";
+
+
+            var ddlAcct = $('#ddlAcct').val();
+            if (ddlAcct == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Accountability </span></br>"
+            }
+            var ddlLineItem = $('#ddlLineItem').val();
+            if (ddlLineItem == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Line Item </span></br>"
+            }
+
+            var txtRecoveryAmount = $('#txtRecoveryAmount').val();
+            if (txtRecoveryAmount.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Recovery Amount</span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            for (var i = 0; i < $scope.DynamicGridRecovery.length; i++) {
+
+                if ($scope.DynamicGridRecovery[i].AccountabilityID == $('#ddlAcct').val() ) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Accountability Already Exists </span></br>"
+                }
+
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var RIDValue;
+
+            RIDValue = ($scope.RID == "") ? 0 : $scope.RID;
+
+            var val = {
+                'RID': RIDValue,
+                'AccountabilityID': $("#ddlAcct").val(),
+                'Accountability': $("#ddlAcct option:selected").text(),
+                'ItemNoID': $("#ddlLineItem").val(),
+                'ItemNo': $("#ddlLineItem option:selected").text(),
+                'RecoveryAmount': $("#txtRecoveryAmount").val(),
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGridRecovery[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGridRecovery.push(val);
+            }
+            $("#ddlAcct").val("");
+            $("#ddlLineItem").val("");
+            $("#txtRecoveryAmount").val("");
+            $scope.HDArrayIndex = "";
+            $scope.RID = 0;
+
+        }
+
+        //$scope.Selectvalues = function (DynamicGridRecovery, index) {
+        //    alert('test');
+        //    $scope.HDArrayIndex = index;
+        //    $scope.RID = $scope.DynamicGridRecovery[index].RID;
+        //    $scope.Accountability = { ID: $scope.DynamicGridRecovery[index].AccountabilityID };
+        //    $scope.ItemNo = { ID: $scope.DynamicGridRecovery[index].ItemNoID };
+        //    $scope.RecoveryAmount = $scope.DynamicGridRecovery[index].RecoveryAmount;
+
+        //}
+        $scope.SaveRecovery = function (DynamicGridRecovery) {
+            var validation = "";
+
+            var Datav = "undefined";
+
+            angular.forEach(DynamicGridRecovery, function (value, key) {
+                Datav += DynamicGridRecovery[key].Accountability.ID;
+
+            });
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Add Recovery Details</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var RecoveryTotalAmt = 0;
+
+            for (var i = 0; i < $scope.DynamicGridRecovery.length; i++) {
+
+                RecoveryTotalAmt += parseFloat($scope.DynamicGridRecovery[i].RecoveryAmount);
+
+            }
+
+            if (RecoveryTotalAmt != $scope.ApprovedValue) {
+
+                Swal.fire("Recovery Amount Must Match Approved Amount,Please Check.");
+                return;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+
+            BussData.CntrID = $scope.GridCntrID;
+            BussData.MNRID = $scope.GridMNRID;
+            BussData.UserID = localStorage.getItem("UserID");
+
+            var ItemsRecovery = []
+            angular.forEach(DynamicGridRecovery, function (value, key) {
+
+                var intRID = DynamicGridRecovery[key].RID;
+                if (typeof DynamicGridRecovery[key].RID == "undefined") {
+                    intRID = 0;
+                }
+                ItemsRecovery.push('Insert:' + intRID, DynamicGridRecovery[key].AccountabilityID, DynamicGridRecovery[key].Accountability, DynamicGridRecovery[key].ItemNoID,
+                    DynamicGridRecovery[key].ItemNo, DynamicGridRecovery[key].RecoveryAmount
+                );
+            });
+            BussData.ItemsRecovery = ItemsRecovery.toString();
+            $http({
+                method: 'POST',
+                url: "/api/MNRNewApi/InsertMNRRecoveryDetails",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    $scope.BindRecoveryDetails($scope.GridCntrID, $scope.GridMNRID);
+                    $scope.onApprovalClickForRecovery($scope.ItemsCntrIDs);
+                        $('#RecoveryPopUp').modal('hide');
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.BindRecoveryDetails = function (CntrID,MNRID) {
+            $scope.DynamicGridRecovery = [{ RID: "", Accountability: "", AccountabilityID: "", ItemNo: "", ItemNoID: "", RecoveryAmount: "" }];
+            var Datavalue = {};
+
+            Datavalue.CntrID = CntrID;
+            Datavalue.MNRID = MNRID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRRecoveryDetailsEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        console.log(result.data);
+                        if (result.data[0].AccountabilityID != "") {
+                            $scope.DynamicGridRecovery.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridRecovery.push({
+                                'RID': result.data[key].RID,
+                                'AccountabilityID': result.data[key].AccountabilityID,
+                                'Accountability': result.data[key].Accountability,
+                                'ItemNoID': result.data[key].ItemNoID,
+                                'ItemNo': result.data[key].ItemNo,
+                                'RecoveryAmount': result.data[key].RecoveryAmount,
+                            });
+
+                        });
+
+                    }
+                    else {
+
+                        $scope.DynamicGridRecovery.splice(0, 1);
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+        $scope.RemoveRecovery = function (DynamicGridRecovery, index, RID) {
+            // alert(AID);
+            var Datavalue = {}
+            Datavalue.RID = RID;
+            $scope.DynamicGridRecovery.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRRecoveryDelete/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGridRecovery.splice(index, RID);
+                    ShowPopup(result.data[0].AlertMessage);
+                    $scope.BindRecoveryDetails($scope.GridCntrID, $scope.GridMNRID);
+                });
+            });
+
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        /* //  background-color: #12759a !important;*/
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 createnew" style="text-align:right;">
+            @*//  Create New*@
+            @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">add</i>
+
+                </button>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        CONTAINER MAINTENANCE & REPAIR
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 topbox" style="border-bottom: 2px solid #ccc;margin-top:10px!important">
+                            <div class="row" style="margin-left:0;">
+                                <div class="col-md-3 col-xs-3 col-lg-3 col-sm-2 padlr0">
+                                    <div class="col-md-12 col-xs-12 boxsmall overdueAR padlr0">
+                                        <div class="col-md-12 bodybox">
+                                            <h4>
+                                                <span ng-bind="PendingSurvey" class="counter-count">   </span>
+                                                <span style="padding-left:5px;"> </span>
+                                            </h4>
+
+                                            <p>PENDING-SURVEY</p>
+                                            <img src="~/assets/img/pageicons/cube.png" />
+
+                                        </div>
+                                        <div class="col-md-12 foot padlr0">
+                                            <div class="row">
+                                                <div class="col-md-6 padl0"><a data-toggle="modal" data-target="#DLContainers" href="#">View Details</a></div>
+                                                <div class="col-md-6"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-3 col-xs-3 col-lg-3 col-sm-2 padr0">
+                                    <div class="col-md-12 col-xs-12 boxsmall overdueAP padlr0">
+                                        <div class="col-md-12 bodybox">
+                                            <h4><span ng-bind="PendingEstimate" class="counter-count"> </span><span style="padding-left:5px;"> </span></h4>
+                                            <p>PENDING-ESTIMATE</p>
+                                            <img src="~/assets/img/pageicons/hour-glass.png" />
+
+                                        </div>
+                                        <div class="col-md-12 foot padlr0">
+                                            <div class="row">
+                                                <div class="col-md-6 padl0"><a href="#">View Details</a></div>
+                                                <div class="col-md-6"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-3 col-xs-3 col-lg-3 col-sm-2 padr0">
+                                    <div class="col-md-12 col-xs-12 boxsmall CashInFlow padlr0">
+                                        <div class="col-md-12 bodybox">
+                                            <h4><span ng-bind="PendingApproval" class="counter-count"> </span><span style="padding-left:5px;"> </span></h4>
+                                            <p>PENDING-APPROVAL</p>
+                                            <img src="~/assets/img/pageicons/badge.png" />
+
+                                        </div>
+                                        <div class="col-md-12 foot padlr0">
+                                            <div class="row">
+                                                <div class="col-md-6 padl0"><a href="#">View Details</a></div>
+                                                <div class="col-md-6"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-3 col-xs-3 col-lg-3 col-sm-2 padr0">
+                                    <div class="col-md-12 col-xs-12 boxsmall CashOutFlow padlr0">
+                                        <div class="col-md-12 bodybox">
+                                            <h4><span ng-bind="PendingMNR" class="counter-count">  </span><span style="padding-left:5px;"> </span></h4>
+                                            <p>PENDING-MNR</p>
+                                            <img src="~/assets/img/pageicons/repair.png" />
+
+                                        </div>
+                                        <div class="col-md-12 foot padlr0">
+                                            <div class="row">
+                                                <div class="col-md-6 padl0"><a href="#">View Details</a></div>
+                                                <div class="col-md-6"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                @*<div class="col-md-2 col-xs-2 col-lg-2 col-sm-2 padr0">
+                                        <div class="col-md-12 col-xs-12 boxsmall pending padlr0">
+                                            <div class="col-md-12 bodybox">
+                                                <h4><span ng-bind="Repaired" class="counter-count"> </span><span style="padding-left:5px;"> </span></h4>
+                                                <p>Pending For AV</p>
+                                                <img src="~/assets/img/pageicons/sands-of-time.png" />
+
+                                            </div>
+                                            <div class="col-md-12 foot padlr0">
+                                                <div class="row">
+                                                    <div class="col-md-6 padl0"><a href="#">View Details</a></div>
+                                                    <div class="col-md-6"><i class="fa fa-arrow-right"></i></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row inventry">
+                        <div class="col-md-12 padlr0" style="padding-top:7px; padding-bottom:7px;margin-top:12px!important ">
+
+                            <div class="col-md-12">
+                                <div class="row">
+
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Container</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Container Type</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!--<div class="col-md-4">-->
+                                    @*<div class="form-group">
+            <div class="row">
+                <div class="col-md-4 lbl3"><label class="lable-fond">Agency</label></div>
+                <div class="col-md-1">:</div>
+                <div class="col-md-5">
+
+                    <select class="form-control my-select" id="ddlAgency" ng-model="ddlAgency" ng-options="item.AgencyName for item in AgencyMaster track by item.ID">
+                    </select>
+                </div>
+            </div>
+        </div>*@
+                                    <!--</div>
+    <div class="col-md-4">-->
+                                    @*<div class="form-group">
+            <div class="row">
+                <div class="col-md-4 lbl3"><label class="lable-fond">Depot</label></div>
+                <div class="col-md-1">:</div>
+                <div class="col-md-5">
+                    <select id="ddlDepot" ng-model="ddlDepot" class="form-control my-select" ng-options="item.DepName for item in DepotValue  track by item.ID"></select>
+                </div>
+            </div>
+        </div>*@
+                                    <!--</div>-->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond">Status</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlMNRStatus" id="ddlMNRStatus" ng-options="item.GeneralName for item in MNRStatusList track by item.ID" required>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="text-align: right; margin-top: 8px; padding-right: 85px!important;">
+                                        <button type="submit" style="margin-left: 154px!important;" class="btn btn-primary btn-raised btn-default cntbtn mb-0" ng-click="MNRRepairViewRecords()">Search<div class="ripple-container"></div></button>
+                                        <button type="submit" class="btn btn-danger btn-raised cntbtn mb-0" ng-click="ClearRecords()">Clear<div class="ripple-container"></div></button>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row alogtop">
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-12" style="text-align:right; margin-top:8px;">
+                        <div class="col-md-12">
+                            <button type="submit" ng-click="onSurveyClick();" class="btn btn-fill btn-danger">
+                                Survey
+                            </button>
+                            <button type="submit" class="btn btn-fill btn-info" ng-click="onEstimateClick();">
+                                Estimate
+                            </button>
+                            <button type="submit" class="btn btn-fill btn-primary" id="btnApprove" ng-click="onApprovalClick();">
+                                Approval
+                            </button>
+                            <button type="submit" class="btn btn-fill btn-success" ng-click="onStatusClick();">
+                                MNR Status
+                            </button>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Container's</h4>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">S.No.</th>
+                                            <th rowspan="2">Location</th>
+                                            <th rowspan="2">Depot</th>
+                                            <th rowspan="2">Agency</th>
+                                            <th rowspan="2">Container#</th>
+                                            <th rowspan="2">Size & Type</th>
+                                            <th rowspan="2">Empty In</th>
+                                            <th rowspan="2">MNR No</th>
+                                            <th rowspan="2">MNR Status</th>
+                                            <th colspan="3" style="text-align:center;">MNR Amount</th>
+                                            <th colspan="4" style="text-align:center;">Recovery</th>
+                                            <th rowspan="2">
+                                                Select
+                                                <input type="checkbox" ng-change="CheckBoxHeadChecked(CntrIDCheck);" ng-true-value="1" ng-false-value="0" ng-model="CntrIDCheck" id="CntrIDCheck" />
+                                            </th>
+                                        </tr>
+                                        <tr>
+
+                                            <th>Curr.</th>
+                                            <th>Estimate</th>
+                                            <th>Approved</th>
+                                            <th>Curr.</th>
+                                            <th>Principal</th>
+                                            <th>Customer</th>
+                                            <th>Agent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="dataItem in MNRRepairReqView | filter : paginate | orderBy:'-Statusv'">
+                                            <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+
+                                            <td>{{dataItem.Location}}</td>
+                                            <td>{{dataItem.Depot}}</td>
+                                            <td>{{dataItem.Agency}}</td>
+                                            <td>{{dataItem.CntrNo}}</td>
+                                            <td>{{dataItem.CntrType}}</td>
+                                            <td>{{dataItem.EmptyGateDate}}</td>
+                                            <td>{{dataItem.MNRRefNo}}</td>
+                                            <td>{{dataItem.MNRStatus}}</td>
+                                            <td>{{dataItem.MNRCurrency}}</td>
+                                            <td>{{dataItem.Estimate}}</td>
+                                            <td>{{dataItem.Approved}}</td>
+                                            <td>{{dataItem.MNRCurrency}}</td>
+                                            <td>{{dataItem.RecoveryPrincipal}}</td>
+                                            <td>{{dataItem.RecoveryCustomer}}</td>
+                                            <td>{{dataItem.RecoveryAgent}}</td>
+
+
+                                            <td>
+                                                <input type="checkbox" id="ChkFlag" ng-model="dataItem.ChkFlag" ng-true-value="1" ng-false-value="0" />
+
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                                        </div>
+                                        <div class="col-md-7" style="text-align:right;">
+                                            <pagination total-items="totalItems" ng-model="currentPage"
+                                                        max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                            </pagination>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade seminor-login-modal " data-backdrop="static" id="SurveyClick">
+        <div class="modal-dialog modal-dialog-centered dialog1100">
+            <div class="modal-content divsurvey">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!--Modal body-->
+                <div class="modal-body seminor-login-modal-body cntpopup ">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">Survey Status</h5>
+
+                    <div class="row alogtop">
+
+                        <div class="col-md-12 bkglvl">
+                            <table id="datatable-buttons" class="table table-responsive table-striped table-bordered w-100 dataTable no-footer poptable" role="grid" aria-describedby="datatable-buttons_info">
+                                <thead>
+                                    <tr>
+                                        <th class="actwid">S.No.</th>
+                                        <th style="width:20%;">Location</th>
+                                        <th>Depot</th>
+                                        <th>Agency</th>
+                                        <th>Cntr. No</th>
+                                        <th>Cntr. Type</th>
+                                        <th>Empty In</th>
+                                        <th>BLNumber</th>
+                                        <th>MNR Status</th>
+                                        <th class="actwid">Select</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="gRow in dsMNRSurveyList">
+                                        <td>{{$index+1}}</td>
+                                        <td>{{gRow.Location}}</td>
+                                        <td>{{gRow.Depot}}</td>
+                                        <td>{{gRow.Agency}}</td>
+                                        <td>{{gRow.CntrNo}}</td>
+                                        <td>{{gRow.CntrType}}</td>
+                                        <td>{{gRow.EmptyGateDate}}</td>
+                                        <td>{{gRow.BLNumber}}</td>
+
+                                        <td>
+
+
+                                            <select class="form-control" ng-model="gRow.MNRStatusID" id="ddlMnrStatusV{{$index}}" ng-options="item.Name for item in MNRSurveyStatusList track by item.ID" required>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" id="ChkFlag" ng-model="gRow.ChkFlag" name="mysurveySelect" ng-true-value="1" ng-false-value="0" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row alogtop">
+                        <div class="col-md-12" style="text-align:center; margin-top:12px!important;">
+                            <button type="submit" ng-click="OnSubmitSurvey();" class="btn btn-primary btn-raised btn-success cntbtn mb-0">Save<div class="ripple-container"></div></button>
+                            @*<button type="submit" class="btn btn-danger btn-raised cntbtn mb-0">Cancel<div class="ripple-container"></div></button>*@
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade seminor-login-modal" data-backdrop="static" id="EstimateClick">
+        <div class="modal-dialog modal-dialog-centered dialog1100">
+            <div class="modal-content divsurvey" style="width:1300px!important">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!--Modal body-->
+                <div class="modal-body seminor-login-modal-body cntpopup">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">Estimation</h5>
+
+                    <div class="row">
+                        <div class="col-md-12 bkglvl">
+                            <table id="datatable-buttons" class="table table-responsive table-striped table-bordered w-100 dataTable no-footer poptable" role="grid" aria-describedby="datatable-buttons_info">
+                                <thead>
+                                    <tr>
+                                        <th class="actwid" rowspan="2">S.No.</th>
+                                        <th rowspan="2">Location</th>
+                                        <th rowspan="2">Depot</th>
+                                        <th rowspan="2">Agency</th>
+                                        <th rowspan="2">Cntr.<br /> No</th>
+                                        <th rowspan="2">Cntr.<br /> Type</th>
+                                        <th rowspan="2">Empty<br /> In</th>
+                                        <th rowspan="2">BLNumber</th>
+                                        <th colspan="2" style="text-align:center;">MNR Estimation</th>
+                                        <th rowspan="2">Attachments</th>
+                                        <th rowspan="2" class="actwid">Select</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Curr.</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="gRow in dsMNREstimateList">
+
+                                        <td>{{$index+1}}</td>
+                                        <td>{{gRow.Location}}</td>
+                                        <td>{{gRow.Depot}}</td>
+                                        <td>{{gRow.Agency}}</td>
+                                        <td>{{gRow.CntrNo}}</td>
+                                        <td>{{gRow.CntrType}}</td>
+                                        <td>{{gRow.EmptyGateDate}}</td>
+                                        <td>{{gRow.BLNumber}}</td>
+                                        <td>
+
+                                            <select class="form-control" ng-model="gRow.MNRCurrencyID" id="ddlMNRCurrency{{$index}}" ng-options="item.Currency for item in CurrencyValuesList track by item.ID" required></select>
+                                        </td>
+
+                                        <td>
+                                            <input type="number" class="form-control" style="width: 100px!important" id="txtEstAmt" ng-model="gRow.Estimate" />
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-primary btn-round uploadbtn" id="btnUpload" ng-click="btnUpLoad(gRow.ID,gRow.MNRID,gRow.CntrNo);">Upload </a>
+
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" id="ChkFlag" ng-model="gRow.ChkFlag" name="mysurveySelect" ng-true-value="1" ng-false-value="0" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row alogtop">
+                        <div class="col-md-12" style="text-align:center; margin-top:12px!important;">
+                            <button type="submit" ng-click="OnSubmitEstimate()" class="btn btn-primary btn-raised btn-success cntbtn mb-0">Save<div class="ripple-container"></div></button>
+                            @*<button type="submit" class="btn btn-danger btn-raised btn-default cntbtn mb-0">Cancel<div class="ripple-container"></div></button>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade seminor-login-modal" data-backdrop="static" id="ApprovalClick">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content divsurvey" style="margin:0 auto; width:1300px!important;">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+
+                <!--Modal body-->
+                <div class="modal-body seminor-login-modal-body cntpopup">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">MNR Approval</h5>
+
+                    <div class="row">
+                        @*<div class="col-md-12" style="text-align:right; margin-top:12px!important;">
+                                <button type="submit" class="btn btn-primary btn-raised btn-default cntbtn mb-0">Download Estimate<div class="ripple-container"></div></button>
+                            </div>*@
+                        <div class="col-md-12 bkglvl">
+                            <table id="datatable-buttons" class="table table-responsive table-striped table-bordered w-100 dataTable no-footer poptable" role="grid" aria-describedby="datatable-buttons_info">
+                                <thead>
+                                    <tr>
+                                        <th class="actwid" rowspan="2">S.No.</th>
+                                        <th rowspan="2">Location</th>
+                                        <th rowspan="2">Depot</th>
+                                        <th rowspan="2">Agency</th>
+                                        <th rowspan="2">Cntr.<br /> No</th>
+                                        <th rowspan="2">Cntr.<br /> Type</th>
+                                        <th rowspan="2">Empty<br /> In</th>
+                                        <th rowspan="2">BLNumber</th>
+                                        <th colspan="2" style="text-align:center;">MNR Estimation</th>
+                                        <th colspan="2" style="text-align:center;">MNR Approved</th>
+                                        @*<th colspan="3" style="text-align:center;">Recovery</th>*@
+                                        <th rowspan="2">Recovery</th>
+                                        <th rowspan="2">Download</th>
+                                        <th class="actwid" rowspan="2">Select</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Curr.</th>
+                                        <th>Amount</th>
+                                        <th>Curr</th>
+                                        <th>Amount</th>
+                                        @*<th>Principal</th>
+                                            <th>Agent</th>
+                                            <th>Customer</th>*@
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="gRow in dsMNRApproveList">
+                                        <td>{{$index+1}}</td>
+                                        <td>{{gRow.Location}}</td>
+                                        <td>{{gRow.Depot}}</td>
+                                        <td>{{gRow.Agency}}</td>
+                                        <td>{{gRow.CntrNo}}</td>
+                                        <td>{{gRow.CntrType}}</td>
+                                        <td>{{gRow.EmptyGateDate}}</td>
+                                        <td>{{gRow.BLNumber}}</td>
+                                        <td>{{gRow.MNRCurrency}}</td>
+                                        <td>{{gRow.Estimate}}</td>
+                                        <td>{{gRow.MNRCurrency}}</td>
+                                        <td><input type="number" class="form-control" style="width: 100px!important" id="txtApprAmt" ng-model="gRow.Approved" />  </td>
+                                        @*<td>   <input type="number" class="form-control" style="width: 100px!important" id="txtRecPrincipal" ng-model="gRow.RecoveryPrincipal" />  </td>
+                                            <td>   <input type="number" class="form-control" style="width: 100px!important" id="txtRecAgent" ng-model="gRow.RecoveryAgent" />  </td>
+                                            <td>   <input type="number" class="form-control" style="width: 100px!important" id="txtRecCustomer" ng-model="gRow.RecoveryCustomer" />  </td>*@
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-round uploadbtn" id="btnAprUpload" ng-click="btnAprRecovery(gRow.ID,gRow.MNRID,gRow.CntrNo);">Recovery </a>
+
+                                        </td>
+                                        <td>
+                                            <a href="#" class="btn btn-primary btn-round uploadbtn" id="btnAprUpload" ng-click="btnAprDownload(gRow.ID,gRow.MNRID,gRow.CntrNo);">Download </a>
+
+                                        </td>
+                                        <td> <input type="checkbox" id="ChkFlag" ng-model="gRow.ChkFlag" name="mysurveySelect" ng-true-value="1" ng-false-value="0" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row alogtop">
+                        <div class="col-md-12" style="text-align:center; margin-top:12px!important;">
+                            <button type="submit" ng-click="OnSubmitApproval()" class="btn btn-primary btn-raised btn-success cntbtn mb-0">Save<div class="ripple-container"></div></button>
+                            @*<button type="submit" class="btn btn-danger btn-raised btn-default cntbtn mb-0">Cancel<div class="ripple-container"></div></button>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade seminor-login-modal" data-backdrop="static" id="StatusClick">
+        <div class="modal-dialog modal-dialog-centered dialog1100">
+            <div class="modal-content divsurvey">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!--Modal body-->
+                <div class="modal-body seminor-login-modal-body cntpopup">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">MNR Status</h5>
+
+                    <div class="row">
+                        <div class="col-md-12 bkglvl">
+                            <table id="datatable-buttons" class="table table-responsive table-striped table-bordered w-100 dataTable no-footer poptable" role="grid" aria-describedby="datatable-buttons_info">
+                                <thead>
+                                    <tr>
+                                        <th class="actwid" rowspan="2">S.No.</th>
+                                        <th rowspan="2">Location</th>
+                                        <th rowspan="2">Depot</th>
+                                        <th rowspan="2">Agency</th>
+                                        <th rowspan="2">Cntr.<br /> No</th>
+                                        <th rowspan="2">Cntr.<br /> Type</th>
+                                        <th rowspan="2">Empty<br /> In</th>
+                                        <th rowspan="2">BLNumber</th>
+                                        <th colspan="3">MNR</th>
+                                        <th rowspan="2">Upload <br />Photos</th>
+                                        <th class="actwid" rowspan="2">Select</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Curr.</th>
+                                        <th>Estimation</th>
+                                        <th>Approved</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="gRow in dsMNRCompleteList">
+
+                                        <td>{{i+1}}</td>
+                                        <td>{{gRow.Location}}</td>
+                                        <td>{{gRow.Depot}}</td>
+                                        <td>{{gRow.Agency}}</td>
+                                        <td>{{gRow.CntrNo}}</td>
+                                        <td>{{gRow.CntrType}}</td>
+                                        <td>{{gRow.EmptyGateDate}}</td>
+                                        <td>{{gRow.BLNumber}}</td>
+                                        <td>{{gRow.MNRCurrency}}</td>
+                                        <td>{{gRow.Estimate}}</td>
+                                        <td>{{gRow.Approved}}</td>
+                                        <td>
+                                            <a href="#" class="btn btn-primary btn-round uploadbtn" id="btnUpload" ng-click="btnUpLoadComplete(gRow.ID,gRow.MNRID,gRow.CntrNo);">Upload </a>
+
+                                        </td>
+                                        <td> <input type="checkbox" id="ChkFlag" ng-model="gRow.ChkFlag" name="mysurveySelect" ng-true-value="1" ng-false-value="0" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row alogtop">
+                        <div class="col-md-12" style="text-align:center; margin-top:12px!important;">
+                            <button type="submit" ng-click="OnSubmitComplete()" class="btn btn-primary btn-raised btn-success cntbtn mb-0">MNR Complete<div class="ripple-container"></div></button>
+                            @*<button type="submit" class="btn btn-danger btn-raised btn-default cntbtn mb-0">Cancel<div class="ripple-container"></div></button>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="Attachment">
+        <div class="modal-dialog">
+            <div class="modal-content divsurvey" style="margin:0 auto; width:700px!important;">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body seminor-login-modal-body cntpopup">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">Upload Attachments</h5>
+
+                    <div class="row">
+                        <div class="col-md-12 tbl" style="margin-top:20px!important;">
+                            <div class="material-datatables">
+                                <h5 class="cardtitle" style="text-align: center;font-weight:bold">Attachment Details</h5>
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Attach File</th>
+                                            <th>Attachment Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+
+                                            <td>{{$index+1}}</td>
+                                            <td style="width:70%!important">
+                                                <span class="input-group-addon"><i class="fa fa-upload"></i></span>
+                                                <input ng-model="FileName" id="FileName" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40" ngf-select="UploadFiles($files)" onchange='$("#upload-file-info").html($(this).val());' />
+
+                                                <span class='label label-info' id="upload-file-info"></span>
+                                            </td>
+                                            <td>
+                                                <select class="form-control des" ng-model="ddlAttachType" id="ddlAttachType" ng-options="item.MNRAttachType for item in MNRAttachTypeList track by item.ID">
+                                                </select>
+                                            </td>
+                                            <td class="td-actions text-right entrygrid">
+                                                <button type="button" rel="tooltip" ng-click="Add(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">add</i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                        <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                            <td>{{$index+1}}</td>
+
+
+                                            <td>
+                                                <a href="#" ng-click="DownloadFile(gRow.FileName);" style="text-decoration:underline;">{{gRow.FileName}}</a>
+
+                                                <input type="hidden" id="HDAttachmentTypeID" class="form-control" ng-model="gRow.AttachmentTypeID" />
+                                            </td>
+                                            <td>
+                                                {{gRow.AttachmentType}}
+
+                                                <input type="hidden" id="HDID" class="form-control" ng-model="gRow.AID" />
+                                            </td>
+                                            <td class="td-actions text-right bindgrid">
+                                                <button type="button" rel="tooltip" ng-click="DeleteAttachments(DynamicGrid,$index,gRow.AID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                                <input type="hidden" id="HDAttach" ng-model="HDAttach" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="text-align:center; margin-top:12px!important;">
+                        <button type="submit" class="btn btn-fill btn-success" style="padding: 7px 30px;" ng-click="SaveAttachedFile(DynamicGrid);">
+
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="AttachmentDownload">
+        <div class="modal-dialog">
+
+
+            <div class="modal-content divsurvey" style="margin:0 auto; width:700px!important;">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body seminor-login-modal-body cntpopup">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">Download Attachments</h5>
+
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;">
+                            <div class="card-header card-header-primary card-header-text">
+                                <div class="card-text">
+                                    @*<h4 class="card-title" style="text-align: center;font-weight:bold"><b>Download Attachments</b></h4>*@
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-12 tbl">
+                            <div class="material-datatables">
+                                <h5 class="cardtitle" style="text-align: center;font-weight:bold">Attachment Details</h5>
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Attach File</th>
+                                            <th>Attachment Type</th>
+                                            @*<th>Action</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                            <td>{{$index+1}}</td>
+
+
+                                            <td>
+                                                <a href="#" ng-click="DownloadFile(gRow.FileName);" style="text-decoration:underline;">{{gRow.FileName}}</a>
+
+                                                <input type="hidden" id="HDAttachmentTypeID" class="form-control" ng-model="gRow.AttachmentTypeID" />
+                                            </td>
+                                            <td>
+                                                {{gRow.AttachmentType}}
+
+                                                <input type="hidden" id="HDID" class="form-control" ng-model="gRow.AID" />
+                                            </td>
+                                            <!--<td class="td-actions text-right bindgrid">-->
+                                            @*<button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index,gRow.AID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>*@
+                                            <!--<input type="hidden" id="HDAttach" ng-model="HDAttach" />
+                                            </td>-->
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <div class="modal fade" id="AttachmentComplete">
+        <div class="modal-dialog">
+            <div class="modal-content" style="margin:0 auto; width:500px;">
+
+                <!-- Modal Header -->
+                <!-- Modal body -->
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;">
+                            <div class="card-header card-header-primary card-header-text" style=" margin-bottom: 20px;">
+                                <div class="card-text">
+                                    <h4 class="card-title" style="text-align: center;font-weight:bold"><b>Upload Attachments</b></h4>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-12 tbl">
+                            <div class="material-datatables">
+                                <h5 class="cardtitle" style="text-align: center;font-weight:bold">Attachment Details</h5>
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Attach File</th>
+                                            <th>Attachment Type</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+
+                                            <td>{{$index+1}}</td>
+                                            <td style="width:70%!important">
+                                                <span class="input-group-addon"><i class="fa fa-upload"></i></span>
+                                                <input ng-model="FileNameV" id="FileNameV" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40" ngf-select="UploadFilesComplete($files)" onchange='$("#upload-file-infoV").html($(this).val());' />
+
+                                                <span class='label label-info' id="upload-file-infoV"></span>
+                                            </td>
+                                            <td>
+                                                <select class="form-control des" ng-model="ddlAttachTypeV" id="ddlAttachTypeV" ng-options="item.MNRAttachType for item in MNRAttachTypeComleteList track by item.ID">
+                                                </select>
+                                            </td>
+                                            <td class="td-actions text-right entrygrid">
+                                                <button type="button" rel="tooltip" ng-click="AddComplete(VRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">add</i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                        <tr class="gridbody1" ng-repeat="VRow in DynamicGridC">
+                                            <td>{{$index+1}}</td>
+
+
+                                            <td>
+                                                <a href="#" ng-click="DownloadFile(VRow.FileName);" style="text-decoration:underline;">{{VRow.FileName}}</a>
+
+                                                <input type="hidden" id="HDAttachmentTypeIDV" class="form-control" ng-model="VRow.AttachmentTypeID" />
+                                            </td>
+                                            <td>
+                                                {{VRow.AttachmentType}}
+
+                                                <input type="hidden" id="HDID" class="form-control" ng-model="VRow.AID" />
+                                            </td>
+                                            <td class="td-actions text-right bindgrid">
+                                                <button type="button" rel="tooltip" ng-click="RemoveComplete(DynamicGridC,$index,VRow.AID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                                <input type="hidden" id="HDAttach" ng-model="HDAttach" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" class="btn btn-fill btn-success" style="padding: 7px 30px;" ng-click="SaveAttachedFileComplete(DynamicGridC);">
+
+                                Save
+                            </button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="RecoveryPopUp">
+        <div class="modal-dialog">
+
+
+            <div class="modal-content divsurvey" style="margin:0 auto; width:700px!important;">
+                <div class="row">
+                    <div class="col-md-12 alrt">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span><i class="fa fa-times-circle" aria-hidden="true"></i></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body seminor-login-modal-body cntpopup">
+                    <h5 class="modal-title" style="text-align: center;font-weight:bold">Recovery Details</h5>
+
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;">
+                            <div class="card-header card-header-primary card-header-text">
+                                <div class="card-text">
+                                    @*<h4 class="card-title" style="text-align: center;font-weight:bold"><b>Download Attachments</b></h4>*@
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="col-md-12 tbl">
+                            <div class="material-datatables">
+                                @*<h5 class="cardtitle" style="text-align: center;font-weight:bold">Recovery Details</h5>*@
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Accountability </th>
+                                            <th>Item-No </th>
+                                            <th>Amount </th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr class="gridbody1">
+                                            <td></td>
+                                            <td>
+                                                <select class="form-control des" ng-model="ddlAcct" id="ddlAcct" ng-options="item.CostTo for item in MNRCostToList track by item.ID">
+                                                </select>
+                                                <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                <input type="hidden" id="HDRID" class="form-control" ng-model="HRow.RID" />
+                                            </td>
+                                            <td>
+                                                <select class="form-control des" ng-model="ddlLineItem" id="ddlLineItem" ng-options="item.LineItemNo for item in MNRItemList track by item.ID">
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" class="form-control" style="width: 100px!important" id="txtRecoveryAmount" ng-model="RecoveryAmount" />
+
+                                            </td>
+                                            <td class="td-actions text-right entrygrid">
+                                                <button type="button" rel="tooltip" ng-click="AddRecovery(HRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">add</i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                        <tr class="gridbody1" ng-repeat="HRow in DynamicGridRecovery">
+                                            <td>{{$index+1}}</td>
+
+
+                                            <td>
+                                                {{HRow.Accountability}}
+
+                                            </td>
+                                            <td>
+                                                {{HRow.ItemNo}}
+
+
+                                            </td>
+                                            <td>
+                                                {{HRow.RecoveryAmount}}
+
+
+                                            </td>
+                                            <td class="td-actions text-right bindgrid">
+                                                @*<button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGridRecovery,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>*@
+                                                <button type="button" rel="tooltip" ng-click="RemoveRecovery(DynamicGridRecovery,$index,HRow.RID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12" style="text-align:center; margin-top:12px!important;">
+                            <button type="submit" class="btn btn-fill btn-success" style="padding: 7px 30px;" ng-click="SaveRecovery(DynamicGridRecovery);">
+
+                                Save
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

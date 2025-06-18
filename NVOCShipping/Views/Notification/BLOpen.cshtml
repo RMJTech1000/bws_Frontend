@@ -1,0 +1,244 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<style>
+    .card-stats .card-header.card-header-icon i {
+        color: #ffffff !important;
+        font-size: 38px !important;
+    }
+
+    .card.card-stats.card-cancelled {
+        background-color: #f34394;
+        margin-bottom: 0;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.BLNumberlist = null;
+        $scope.fillBlNumber = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/BookingApi/BLOpenList/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data[0].AlertMessageID == "1")
+                        $scope.BLNumberlist = result.data;
+                    else
+                        ShowPopup(result.data[0].AlertMessage);
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillBlNumber();
+        $("#ddlBLNo").change(function () {
+            $('#overlay').show();
+            var Datavalue = {};
+            Datavalue.BLID = $("#ddlBLNo").val();
+            $http({
+                method: 'POST',
+                url: '/api/NotificationApi/NotificationBLOpenValues/',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.BindStatus = result.data[0].Status;
+                    $scope.BindPOL = result.data[0].POLStr;
+                    $scope.BindPOD = result.data[0].PODStr;
+                    $scope.BindParty = result.data[0].CustomerName;
+                    $scope.BindStatus = result.data[0].Status;
+                    $('#overlay').hide();
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        $scope.BLConfirmationCheck = function () {
+
+            $('#overlay').show();
+                var BussData = {}
+                BussData.BLID = $("#ddlBLNo").val();
+                BussData.status = 0;
+                BussData.UserID = localStorage.getItem("UserID");
+
+                $http({
+                    method: 'POST',
+                    url: '/api/NotificationApi/NotificationBLUpdate/',
+                    data: JSON.stringify(BussData),
+                }).then(function (result) {
+                    $timeout(function () {
+                 
+                        ShowPopup(result.data[0].Message);
+
+                    });
+                }, function (result) {
+                    if (result.status == 500) {
+                        ShowPopup("Sorry no internet connectivity Application Error.");
+                    }
+                    else if (result.status == 404) {
+                        ShowPopup("Sorry no internet connectivity page not found.");
+                    }
+                    if (result.status > 0) {
+                        var errorMsg = result.status + ': ' + result.data;
+                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                    }
+                }).catch(function (result)
+                {
+                    ShowPopup('There has been an error: ' + result);
+                });
+
+            $('#overlay').hide();
+            }
+        function ShowPopup(message) {
+            swal(message);
+        };
+    });
+</script>
+<style>
+    .modal-dialog {
+        max-width: 550px;
+    }
+
+    .modal-body .form-group {
+        margin-bottom: 0 !important;
+        padding-bottom: 0;
+    }
+
+    .modal-dialog .modal-header {
+        background-color: #057ba7;
+    }
+
+        .modal-dialog .modal-header .modal-title {
+            line-height: 0.5;
+            padding-bottom: 12px;
+            color: #fff;
+        }
+
+    .modal-body label {
+        color: #3e3d3d !important;
+        font-weight: bold !important;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        text-transform: uppercase;
+    }
+
+    .modal .modal-header .close {
+        color: #fff;
+    }
+
+    .modal-dialog .modal-body {
+        padding: 10px 24px 16px;
+    }
+
+    .card .card-body .form-group {
+        margin: 0px 0 0;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card ">
+                <div class="card-header card-header-primary card-header-text">
+                    <div class="card-text">
+                        <h4 class="card-title">BL OPEN</h4>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label>BL Number</label>
+                                        <select class="form-control my-select" ng-model="ddlBLNo" id="ddlBLNo" ng-options="item.BLNumber for item in BLNumberlist track by item.ID" required>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label>POL: </label>
+                                        <label><span ng-bind="BindPOL"></span></label>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label>POL: </label>
+                                        <label><span ng-bind="BindPOD"></span></label>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label>Booking Party: </label>
+                                        <label><span ng-bind="BindParty"></span></label>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                    <label>Status: </label>
+                                    <label><span ng-bind="BindStatus"></span></label>
+                                </div>
+
+                            </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="card-footer ">
+                    <div class="col-md-6" style="text-align:right;">
+                        <button type="submit" class="btn btn-fill btn-success" ng-click="BLConfirmationCheck();">
+                            MOVE TO DRAFT
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+

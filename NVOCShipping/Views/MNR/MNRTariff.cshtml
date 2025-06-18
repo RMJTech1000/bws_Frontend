@@ -1,0 +1,863 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "Search", allowClear: true, width: '100%',
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.VendorList = null;
+        $scope.fillVendorValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/VendorValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VendorList = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillVendorValues();
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.CurrencyValue = null;
+        $scope.fillCurrencyValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCurrencyValues();
+
+        $scope.MNRDamageList = null;
+        $scope.fillMNRDamageList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindDamage/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRDamageList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRDamageList();
+
+        $scope.MNRRepairList = null;
+        $scope.fillMNRRepairList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindRepair/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRRepairList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRRepairList();
+
+        $scope.MNRComponentList = null;
+        $scope.fillMNRComponentList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindComponent/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRComponentList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRComponentList();
+
+        $scope.MNRMaterialList = null;
+        $scope.fillMNRMaterialList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindMaterial/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRMaterialList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRMaterialList();
+
+        $scope.MNRLocationList = null;
+        $scope.fillMNRLocationList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindMNRLocation/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRLocationList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRLocationList();
+
+        $scope.DamageCodeChange = function (gRow) {
+            var Datavalue = {};
+
+            Datavalue.ID = gRow.DmgCode.ID
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/DamageDescriptionByCode/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    gRow.DmgDesc = result.data[0].DamageDescription;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $("#ddlDmgCodeSrh").change(function () {
+           
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlDmgCodeSrh").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/DamageDescriptionByCode/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.txtDmgDescSrh = result.data[0].DamageDescription;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+        
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["TariffID"] != null) {
+                $scope.HDRegId = queryString["TariffID"].toString();
+                $scope.BindMNRTariff(queryString["TariffID"].toString());
+                $scope.BindMNRTariffDtls(queryString["TariffID"].toString());
+            }
+        });
+
+
+        $scope.DynamicGridMNRTariffDtls = [{ TID: "", DmgCode: "", DmgDesc: "", RprCode: "", CompCode: "" ,MatCode: "", Length: "", Width: "", LocCode: "", LabHrs: "", LabCost: "", MatCost: "" }];
+
+
+        $scope.Add = function (DynamicGridMNRTariffDtls) {
+
+            //if (DynamicGridVoyDtls.PkUpLoc == "?") {
+            //    swal("Please Select ");
+            //    return;
+            //}
+            $scope.DynamicGridMNRTariffDtls.push({
+                'TID': "",
+                'DmgCode': "",
+                'DmgDesc': "",
+                'RprCode': "",
+                'CompCode': "",
+                'MatCode':"",
+                'Length': "",
+                'Width': "",
+                'LocCode': "",
+                'LabHrs': "",
+                'LabCost': "",
+                'MatCost': "",
+
+            });
+
+        }
+        $scope.Remove = function (DynamicGridMNRTariffDtls, index) {
+            $scope.DynamicGridMNRTariffDtls.splice(index, 1);
+        }
+
+        $scope.BindMNRTariff = function (TariffID) {
+
+
+            var Datavalue = {}
+            var id = TariffID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = TariffID;
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/MNRTariffEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    console.log(result);
+
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+                        $scope.ddlVendor = { ID: result.data[0].VendorID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlCurr = { ID: result.data[0].CurrencyID };
+                        $scope.txtValidFrom = result.data[0].DtValidFrom;
+                        $scope.txtValidTill = result.data[0].DtValidTill;
+
+                    }
+                    else {
+                        $('#ddlVendor').val('');
+                        $('#ddlCurr').val('');
+                        $('#ddlDepot').val('');
+                        $('#txtValidFrom').val('');
+                        $('#txtValidTill').val('');
+
+                    }
+                });
+            });
+
+        }
+
+        $scope.BindMNRTariffDtls = function (TariffID) {
+            var Datavalue = {};
+            Datavalue.ID = TariffID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/MNRTariffDtlsEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data[0].DamageID != "") {
+                        $scope.DynamicGridMNRTariffDtls.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGridMNRTariffDtls.push({
+
+                            'TID': result.data[key].TID,
+                            'DmgCode': { ID: result.data[key].DamageID },
+                            'DmgDesc': result.data[key].DamageDescription,
+                            'RprCode': { ID: result.data[key].RepairID },
+                            'CompCode': { ID: result.data[key].ComponentID },
+                            'Length': result.data[key].Length,
+                            'Width': result.data[key].Width,
+                            'LocCode': { ID: result.data[key].LocationID },
+                            'MatCode': { ID: result.data[key].MatID },
+                            'LabHrs': result.data[key].LabourHrs,
+                            'LabCost': result.data[key].LabourCostx100,
+                            'MatCost': result.data[key].MaterialCostx100,
+
+                        });
+
+                    });
+                    $scope.totalItems = $scope.DynamicGridMNRTariffDtls.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.DynamicGridMNRTariffDtls.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        //$scope.MNRTariffdtlsSearchRecords = function () {
+        //    var Datavalue = {};
+        //    Datavalue.DamageID = $("#ddlDmgCodeSrh").val();
+
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/MNRApi/MNRTariffDtlsSearch',
+        //        data: JSON.stringify(Datavalue),
+        //    }).then(function (result) {
+        //        $timeout(function () {
+
+        //            if (result.data[0].DamageID != "") {
+        //                $scope.DynamicGridMNRTariffDtls.splice(0, 1);
+        //            }
+
+        //            angular.forEach(result.data, function (value, key) {
+
+        //                $scope.DynamicGridMNRTariffDtls.push({
+
+        //                    'TID': result.data[key].TID,
+        //                    'DmgCode': { ID: result.data[key].DamageID },
+        //                    'DmgDesc': result.data[key].DamageDescription,
+        //                    'RprCode': { ID: result.data[key].RepairID },
+        //                    'CompCode': { ID: result.data[key].ComponentID },
+        //                    'Length': result.data[key].Length,
+        //                    'Width': result.data[key].Width,
+        //                    'LocCode': { ID: result.data[key].LocationID },
+        //                    'LabHrs': result.data[key].LabourHrs,
+        //                    'LabCost': result.data[key].LabourCostx100,
+        //                    'MatCost': result.data[key].MaterialCostx100,
+
+        //                });
+
+        //            });
+        //        });
+        //    }, function (result) {
+
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    });
+        //}
+
+        //$scope.ClearRecords = function () {
+        //    $("#ddlDmgCodeSrh").val(null).trigger("change");
+        //   // $("#ddlVendor").val(null).trigger("change");
+           
+        //    $scope.BindMNRTariffDtls($scope.HDRegId);
+        //}
+
+        $scope.Recordsave = function (data) {
+            var validation = "";
+
+            var ddlVendor = $('#ddlVendor').val();
+            if (ddlVendor == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Depot </span></br>"
+            }
+
+            var ddlDepot = $('#ddlDepot').val();
+            if (ddlDepot == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Depot </span></br>"
+            }
+
+            var ddlCurr = $('#ddlCurr').val();
+            if (ddlCurr == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Currency </span></br>"
+            }
+            var txtValidFrom = $('#txtValidFrom').val();
+            if (txtValidFrom.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid From</span></br>"
+
+            }
+            var txtValidTill = $('#txtValidTill').val();
+            if (txtValidTill.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid Till</span></br>"
+
+            }
+
+            var Datav = "undefined";
+
+            angular.forEach(data, function (value, key) {
+                Datav += data[key].DmgCode.ID;
+
+            });
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Tariff Details</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+           
+            BussData.VendorID = $("#ddlVendor").val();
+            BussData.DepotID = $("#ddlDepot").val();
+            BussData.CurrencyID = $("#ddlCurr").val();
+            BussData.DtValidFrom = $('#txtValidFrom').val();
+            BussData.DtValidTill = $('#txtValidTill').val();
+            BussData.UserID = localStorage.getItem("UserID");
+            var Items = []
+
+            angular.forEach(data, function (value, key) {
+                Items.push('Insert:' + data[key].TID, data[key].DmgCode.ID, data[key].DmgDesc, data[key].RprCode.ID,
+                    data[key].CompCode.ID, data[key].MatCode.ID,[key].Width, data[key].Length, data[key].LocCode.ID,
+                    data[key].LabHrs, data[key].LabCost, data[key].MatCost
+                );
+            });
+            BussData.Itemsv = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRTariff",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    // BussData.ID = result.data[0].ID;
+                    //alert(result.data[0].ID);
+                    if (BussData.ID != "") {
+                        ShowPopup("MNR Tariff Master Updated");
+                    }
+                    else {
+
+                        ShowPopup("MNR Tariff Master Saved Successfully");
+                    }
+                    setTimeout(function () { location.href = "/MNR/MNRTariffView" }, 1000);
+                   
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+        $scope.back = function () {
+
+            window.location = "/MNR/MNRTariffView";
+        }
+
+        $scope.FileUploadingWindows = function () {
+
+            var left = (screen.width / 2) - (400 / 2);
+            var top = (screen.height / 2) - (300 / 2);
+            return window.open("../MNRUploadNew.aspx?ID=" + $scope.HDRegId, 'window', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=300, top=' + top + ', left=' + left);
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<style>
+    .btn-primary.btnuploadn {
+        padding: 8px 30px;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">MNR Tariff</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vendor Name </label>
+                                            <select id="ddlVendor" ng-model="ddlVendor" class="form-control my-select" ng-options="item.Vendor for item in VendorList track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Depot</label>
+
+                                            <select id="ddlDepot" ng-model="ddlDepot" class="form-control my-select" ng-options="item.DepName for item in DepotValue  track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Currency</label>
+
+                                            <select id="ddlCurr" ng-model="ddlCurr" class="form-control my-select" ng-options="item.Currency for item in CurrencyValue track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid From</label>
+                                            <input id="txtValidFrom" type="text" ng-model="txtValidFrom" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid Till</label>
+                                            <input id="txtValidTill" type="text" ng-model="txtValidTill" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="material-datatables">
+                            <h5 class="cardtitle">Tariff Details</h5>
+                            <!--<table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>DM CODE</th>
+                                        <th>DAMAGE DESCRIPION</th>                                       
+                                        <th>REPAIR CODE</th>
+                                        <th>COMPONENT CODE</th>
+                                        <th>LOCATION</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        
+                                        <td>
+                                            <select class="form-control my-select" ng-model="ddlDmgCodeSrh" id="ddlDmgCodeSrh" ng-options="item.DamageCode for item in MNRDamageList track by item.ID" ng-change="DamageCodeChangeSearch()" required>
+                                                <option value="" disabled selected>Search</option>
+                                            </select>
+                                        </td>
+                                        <td style="width:160px;" colspan="2"><input type="text" id="txtDmgDescSrh" ng-model="txtDmgDescSrh" class="form-control" placeholder="Search" /></td>
+
+                                        <td style="width:80px;">
+                                            <select class="form-control my-select" ng-model="ddlRprCodeSrh" id="ddlRprCodeSrh" ng-options="item.RepairCode for item in MNRRepairList track by item.ID" required>
+                                                <option value="" disabled selected>Search</option>
+                                            </select>
+                                        </td>
+                                        <td style="width:80px;">
+                                            <select class="form-control my-select" ng-model="ddlCompCodeSrh" id="ddlCompCodeSrh" ng-options="item.ComponentCode for item in MNRComponentList track by item.ID" required>
+                                                <option value="" disabled selected>Search</option>
+                                            </select>
+                                        </td>
+                                        <td style="width:80px;"><input type="text" id="txtLengthSrh" ng-model="txtLengthSrh" class="form-control" placeholder="Search" /></td>
+                                        <td style="width:80px;"><input type="text" id="txtWidthSrh" ng-model="txtWidthSrh" class="form-control" placeholder="Search"/></td>
+
+                                        <td style="width:80px;">
+                                            <select class="form-control my-select" ng-model="ddlLocCodeSrh" id="ddlLocCodeSrh" ng-options="item.LocationCode for item in MNRLocationList track by item.ID" required>
+                                                <option value="" disabled selected>Search</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                        <td style="width:60px;">
+                                            <button type="submit" ng-click="MNRTariffdtlsSearchRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                                        </td>
+                                        <td style="width:60px;">
+                                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                                        </td>
+
+                                        <!--<td style="width:60px;">
+                                            <a href="#" ng-click="FileUploadingWindows();" class="btn btn-fill btn-success btnuploadfile btnadd btntop" style="margin-right:0;">
+                                                <i class="material-icons">upload</i> Upload
+                                            </a>-->
+                                            <!--@*<button class="btn btn-fill btn-primary btnuploadn" ng-click="openModal()">Upload</button>*@-->
+                                        <!--</td>-->
+                                    <!--</tr>
+                                </tbody>
+
+                            </table>-->
+                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>DM Code </th>
+                                        <th colspan="2">Damage Description</th>
+                                        <th>Repair Type</th>
+                                        <th>Component Code</th>
+                                        <th>Material Code</th>
+                                         <th>Location</th>
+                                        <th>Length(CM)</th>
+                                        <th>Width(CM)</th>
+                                       
+                                        <th>Lab Hrs</th>
+                                        <th>Lab Cost</th>
+                                        <th>Mat Cost</th>
+
+
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="iRow in DynamicGridMNRTariffDtls | filter : paginate | orderBy:'-Statusv'">
+                                        @*ng-show="IsVisible"*@
+                                        <td>{{$index+1}}</td>
+
+                                        <td>
+                                            <select class="form-control" ng-model="iRow.DmgCode" id="ddlDmgCode" ng-options="item.DamageCode for item in MNRDamageList track by item.ID" ng-change="DamageCodeChange(iRow)" required>
+                                            </select>
+                                        </td>
+                                        <td style="width:250px;" colspan="2"><input type="text" id="txtDmgDesc" ng-model="iRow.DmgDesc" class="form-control" /></td>
+
+                                        <td>
+                                            <select class="form-control" ng-model="iRow.RprCode" id="ddlRprCode" ng-options="item.RepairCode for item in MNRRepairList track by item.ID" required>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" ng-model="iRow.CompCode" id="ddlCompCode" ng-options="item.ComponentCode for item in MNRComponentList track by item.ID" required>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" ng-model="iRow.MatCode" id="ddlCompCode" ng-options="item.MaterialCode for item in MNRMaterialList track by item.ID" required>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" ng-model="iRow.LocCode" id="ddlLocCode" ng-options="item.LocationCode for item in MNRLocationList track by item.ID" required>
+                                            </select>
+                                        </td>
+                                        <td><input type="text" id="txtLength" ng-model="iRow.Length" class="form-control" /></td>
+                                        <td><input type="text" id="txtWidth" ng-model="iRow.Width" class="form-control" /></td>
+
+
+                                        <td><input type="text" id="txtLabHrs" ng-model="iRow.LabHrs" class="form-control" /></td>
+                                        <td><input type="text" id="txtLabCost" ng-model="iRow.LabCost" class="form-control" /></td>
+                                        <td><input type="text" id="txtMatCost" ng-model="iRow.MatCost" class="form-control" /></td>
+
+
+                                        <td style="display:none;"><input type="hidden" id="HdDID" ng-model="iRow.TID" /></td>
+                                        <td class="td-actions text-right">
+                                            <button type="button" rel="tooltip" ng-if="$last" ng-click="Add(iRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                <i class="material-icons">add</i>
+                                            </button>
+                                            <button type="button" rel="tooltip" ng-if="!$last" ng-click="Remove(DynamicGridMNRTariffDtls,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                <i class="material-icons">delete</i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                            <div id="notFoundDiv" ng-show="(DynamicGridMNRTariffDtls|filter:DamageDescription).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave(DynamicGridMNRTariffDtls);" class="btn btn-fill btn-success">Save</button>
+                            <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

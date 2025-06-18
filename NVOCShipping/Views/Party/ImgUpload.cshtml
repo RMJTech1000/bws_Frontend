@@ -1,0 +1,56 @@
+﻿@model NVOCShipping.Models.Products
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("ImgUpload", "Party", FormMethod.Post, new
+{ enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <h1>
+        MVC File Upload Example
+    </h1>
+    <hr />
+    <div>
+        <table class="table-condensed">
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ProductName) &nbsp;&nbsp;
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.ProductName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ProductDesc)
+
+                </td>
+                <td>
+                    @Html.TextBoxFor(m => m.ProductDesc)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.LabelFor(m => m.ProductImg)
+                </td>
+                <td>
+                    <input type="file" name="UploadFile" required />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="submit" name="submit" value="Submit" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    @ViewBag.Message
+                </td>
+            </tr>
+        </table>
+    </div>
+}
+

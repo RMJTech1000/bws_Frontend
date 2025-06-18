@@ -1,0 +1,475 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').show();
+          $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["ImpReg"] != null) {
+
+                $scope.RegId = queryString["ImpReg"].toString();
+                $scope.FillExistingFreightTraiffCharges();
+                $scope.FillExistingTerminalTraiffCharges();
+                $scope.FillExistingDestinationTraiffCharges();
+              
+              }
+        });
+
+        $scope.DynamicGridFreight = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "" }];
+        $scope.DynamicGridDestination = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "" }];
+        $scope.DynamicGridTermainal = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "" }];
+        $scope.FillExistingFreightTraiffCharges = function () {
+            $('#overlay').show();
+            var Datavalue = {};
+
+            Datavalue.TraiffRegular = 135;
+            Datavalue.ID = $scope.RegId;
+            Datavalue.PaymentModeID = 19;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDestination',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridFreight.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridFreight.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+
+                            });
+
+                        });
+                        $('#overlay').hide();
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.FillExistingTerminalTraiffCharges = function () {
+
+            $('#overlay').show();
+            var Datavalue = {};
+            Datavalue.TraiffRegular = 136;
+            Datavalue.ID = $scope.RegId;
+            Datavalue.PaymentModeID = 19;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDestination',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridTermainal.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridTermainal.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes':  result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID':  result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+
+                            });
+
+                        });
+                        $('#overlay').hide();
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $scope.FillExistingDestinationTraiffCharges = function () {
+            $('#overlay').show();
+            var Datavalue = {};
+            Datavalue.TraiffRegular = 138;
+            Datavalue.ID = $scope.RegId;
+            Datavalue.PaymentModeID = 19;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDestination',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridDestination.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridDestination.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+
+                            });
+
+                        });
+                        $('#overlay').hide();
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.getPaging = function (tab) {
+
+
+            var myp = $scope.RegId;
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Import/ShipmentDetails?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Import/ContainerDetails?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Import/ImpDestinationCharges?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Import/CAN?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Import/DeliveryOrder?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 6) {
+                if (myp != "0") {
+                    var url = "/Import/CustomsReports?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 7) {
+                if (myp != "0") {
+                    var url = "/Import/DetDem?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .downbtn .btn {
+        padding: 6px 12px;
+    }
+
+    .modal-dialog .modal-header .modal-title {
+        margin-top: -13px !important;
+        color: #fff !important;
+        font-size: 18px;
+    }
+
+    .modal-dialog .modal-header {
+        background-color: #1e4383 !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/Import/ImportView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            @*<a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                <i class="material-icons">edit</i>
+            </a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Container Details
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" ng-click="getPaging(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Shipment Details</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                <a class="nav-item nav-link active" id="nav-profile-tab" ng-click="getPaging(3);" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Destination Chargges</a>
+                                <a class="nav-item nav-link" id="nav-contact-tab" ng-click="getPaging(4);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">CAN</a>
+                                <a class="nav-item nav-link" id="nav-contact-CAN" ng-click="getPaging(5);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Delivery Order/Empty Returns</a>
+                                @*<a class="nav-item nav-link" ng-click="getPaging(6);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">Customs Report</a>*@
+                                <a class="nav-item nav-link" ng-click="getPaging(7);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">DET/DEM Calculation</a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="card-header card-header-primary card-header-text" style="width: 100%!important; margin:0;">
+                            <div class="card-text" style="background-color: #e6e6e6!important; color: #000!important;background:none!important; box-shadow: none!important; width: 100%!important; padding: 7px 0px; " ortant;">
+                                <h1 class="card-title" style="color: #df1f6c; font-weight: 500; background-color: #ededed61; padding: 8px; font-size: 18px; ">Tariff Details</h1>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" style="margin-top:0; text-align:right; border-bottom:1px dashed #ccc;padding-bottom:2px;">
+                            <button type="submit" id="btnFetchTariff" ng-click="OnClickFetchTariffRate(DynamicGridContainer);" class="btn btn-fill btn-danger btnfetch">
+                                Fetch Tariff
+                                <i class="material-icons"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-12" style="margin-top: 6px; padding-bottom:6px;">
+                            <hl style="color:#df1f6c;">FREIGHT</hl>
+                        </div>
+                        <div class="col-md-12" style="border-bottom: 1px dashed #ccc; padding-bottom: 12px;">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; margin-bottom:0;">
+                                    <thead>
+                                        <tr>
+                                            <th>SNo</th>
+
+                                            <th>Equip Type</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+                                            <th>Payment Mode</th>
+                                            <th>Requested Rate</th>
+                                            <th>Manifest Rate</th>
+                                            <th>Customer Rate</th>
+                                            <th>Rate Different</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridFreight">
+                                            <td>{{$index+1}}</td>
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+                                            <td>{{gRow.PaymentModeID}}</td>
+                                            <td>{{gRow.ReqRate}}</td>
+                                            <td>{{gRow.ManifRate}}</td>
+                                            <td>{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.RateDiff}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12" style="margin-top: 6px; padding-bottom:6px;">
+                            <hl style="color:#df1f6c;">TERMINAL HANDLING</hl>
+                        </div>
+                        <div class="col-md-12" style="border-bottom: 1px dashed #ccc; padding-bottom: 12px;">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width: 100%; margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>SNo</th>
+
+                                            <th>Equip Type</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+                                            <th>Payment Mode</th>
+                                            <th>Requested Rate</th>
+                                            <th>Manifest Rate</th>
+                                            <th>Customer Rate</th>
+                                            <th>Rate Different</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridTermainal">
+                                            <td>{{$index+1}}</td>
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+                                            <td>{{gRow.PaymentModeID}}</td>
+                                            <td>{{gRow.ReqRate}}</td>
+                                            <td>{{gRow.ManifRate}}</td>
+                                            <td>{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.RateDiff}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" style="margin-top: 6px; padding-bottom:6px;">
+                            <hl style="color:#df1f6c;">DESTINATION LOCAL CHARGES</hl>
+                        </div>
+
+                        <div class="col-md-12" style="border-bottom: 1px dashed #ccc; padding-bottom: 12px;">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width: 100%; margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>SNo</th>
+
+                                            <th>Equip Type</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+                                            <th>Payment Mode</th>
+                                            <th>Requested Rate</th>
+                                            <th>Manifest Rate</th>
+                                            <th>Customer Rate</th>
+                                            <th>Rate Different</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridDestination">
+                                            <td>{{$index+1}}</td>
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+                                            <td>{{gRow.PaymentModeID}}</td>
+                                            <td>{{gRow.ReqRate}}</td>
+                                            <td>{{gRow.ManifRate}}</td>
+                                            <td>{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.RateDiff}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right;">                        
+                                <button type="submit" ng-click="RecordSave();" class="btn btn-fill btn-success">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+    </div>

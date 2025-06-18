@@ -1,0 +1,681 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+        $scope.ShipmentTypeAllvalues = [
+            { 'Name': 'EXPORT', 'ID': 1 },
+            { 'Name': 'IMPORT', 'ID': 2 },
+            { 'Name': 'TRANSHIPMENT', 'ID': 3 },
+            { 'Name': 'DAMAGE', 'ID': 4 },
+            { 'Name': 'AVAILABLE', 'ID': 5 },
+
+        ];
+
+        $scope.AgencyList = null;
+        $scope.FillAgencyList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillAgencyList();
+
+        $scope.CntrStatusCodes = null;
+        $scope.fillCntrStatusCodes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrStatusCodes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrStatusCodes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrStatusCodes();
+
+        $scope.CountryList = null;
+        $scope.FillCountryMasterList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CountryMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CountryList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCountryMasterList();
+
+        $scope.CntrTypeList = null;
+        $scope.FillCntrTypeList = function () {
+            $http({
+                method: 'POST',
+                url: "/api/EQCReportApi/ContainerTypes",
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypeList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrTypeList();
+
+        $scope.GradeList = null;
+        $scope.FilGrade = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/Grade/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GradeList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilGrade();
+
+        $scope.LeaseTermList = null;
+        $scope.FilLeaseTerm = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/LeaseTerm/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LeaseTermList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilLeaseTerm();
+
+        $("#ddlCountry").change(function () {
+            $scope.GeoLocValue = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlCountry").val();
+            $http({
+                method: 'POST',
+                url: '/api/EQCReportApi/GeoLocByCountry/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GeoLocValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        //$scope.EQCAgewiseReportRecords = function () {
+        //    var BussData = {};
+        //    BussData.StatusCode = $("#ddlStatuscode option:selected").text();
+        //    BussData.GeoLoc = $('#ddlGeoLoc').val();
+        //    BussData.Country = $('#ddlCountry').val();
+        //    BussData.LeaseTerm = $('#ddlLeaseTerm').val();
+        //    BussData.Grade = $('#ddlGrade').val();
+        //    BussData.CntrType = $('#ddlCntrType').val();
+        //    $http({
+        //        method: 'POST',
+        //        url: "/api/EQCReportApi/EQCAgewiseReportView",
+        //        data: JSON.stringify(BussData),
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            $scope.EQCAgewiseReport = result.data;
+        //            $scope.totalItems = $scope.EQCAgewiseReport.length;
+        //            $scope.currentPage = 1;
+        //            $scope.numPerPage = 8;
+        //            $scope.paginate = function (value) {
+        //                var begin, end, index;
+        //                begin = ($scope.currentPage - 1) * $scope.numPerPage;
+        //                end = begin + $scope.numPerPage;
+        //                index = $scope.EQCAgewiseReport.indexOf(value);
+        //                return (begin <= index && index < end);
+        //            };
+        //        });
+
+        //    }, function (result) {
+
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+        //        }
+        //    });
+
+        //};
+        //$scope.EQCAgewiseReportRecords();
+
+        //$scope.btnSearch = function () {
+           
+        //    $scope.EQCAgewiseReportRecords();
+        //}
+        $scope.ClearRecords = function () {
+
+            $("#ddlStatuscode").val(null).trigger("change");
+            $("#ddlGeoLoc").val(null).trigger("change");
+            $("#ddlCountry").val(null).trigger("change");
+            $("#ddlLeaseTerm").val(null).trigger("change");
+            $("#ddlGrade").val(null).trigger("change");
+            $("#ddlCntrType").val(null).trigger("change");
+        
+            $scope.EQCAgewiseReportRecords();
+        }
+
+        $scope.btnPrint = function () {
+           
+            var cntrStatus = $("#ddlStatuscode option:selected").text();
+            var GeoLoc = $('#ddlGeoLoc').val();
+            var Country = $('#ddlCountry').val();
+            var  LeaseTerm = $('#ddlLeaseTerm').val();
+            var Grade = $('#ddlGrade').val();
+           var CntrType = $('#ddlCntrType').val();
+            var User = localStorage.getItem("UserName");
+            var GeoLocName = $("#ddlGeoLoc option:selected").text();
+            var CountryName = $("#ddlCountry option:selected").text();
+            var GradeName = $("#ddlGrade option:selected").text();
+            var CntrTypeName = $("#ddlCntrType option:selected").text();
+            var LeaseTermName = $("#ddlLeaseTerm option:selected").text();
+
+            window.location.href = '@Url.Action("EQCAgeWiseReportNew", "EQCExcelReport")?cntrStatus=' + cntrStatus + "&Country=" + Country + "&GeoLoc=" + GeoLoc + "&LeaseTerm=" + LeaseTerm + "&Grade=" + Grade + "&CntrType=" + CntrType + "&User=" + User + "&GeoLocName=" + GeoLocName + "&CountryName=" + CountryName + "&GradeName=" + GradeName + "&CntrTypeName=" + CntrTypeName + "&LeaseTermName=" + LeaseTermName;
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .card .table tr td {
+        white-space: nowrap;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > td.bgr {
+        background-color: #12759a !important;
+        color: #fff;
+    }
+
+    .table > thead > tr > td.bg1 {
+        background-color: #a7cff5 !important;
+        background-color: rgb(180,198,231);
+    }
+
+    .table > thead > tr > td.bg2 {
+        background-color: #b8e7d7 !important;
+    }
+
+    .table > thead > tr > td.bg3 {
+        background-color: #c6fdc4 !important;
+    }
+
+    .table > thead > tr > td.bg4 {
+        background-color: #fdc4c9 !important;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/AllReports/InventoryReportDashboard" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+
+
+                <div class="card-body">
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                        <div class="col-md-8" style="text-align:center;">
+                            <h4 style="font-size:24px; font-weight:bold; color:#000!important; margin-top:39px;">EQC Agewise Report</h4>
+                        </div>
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+
+                        <div class="col-md-12">
+                            <div class="row">
+
+
+                                @*<div class="col-md-4">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4 lbl2"><label class="lable-fond">Shipment Type</label></div>
+                    <div class="col-md-1">:</div>
+                    <div class="col-md-5">
+                        <select class="form-control my-select" id="ddlShipmentType" ng-model="ddlShipmentType" options="{ allowClear: true }" ng-options="item.Name for item in ShipmentTypeAllvalues track by item.ID">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4 lbl2"><label class="lable-fond">Agency</label></div>
+                    <div class="col-md-1">:</div>
+                    <div class="col-md-5">
+                        <select id="ddlAgency" class="form-control my-select" ng-model="ddlAgency" options="{ allowClear: true }" ng-options="item.AgencyName for item in AgencyList track by item.ID"></select>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Country</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" id="ddlCountry" ng-model="ddlCountry" options="{ allowClear: true }" ng-options="item.CountryName for item in CountryList track by item.ID">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Geo-Location</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" id="ddlGeoLoc" ng-model="ddlGeoLoc" options="{ allowClear: true }" ng-options="item.GeoLoc for item in GeoLocValue track by item.ID">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @*<div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Type</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select id="ddlCntrType" class="form-control my-select" ng-model="ddlCntrType" options="{ allowClear: true }" ng-options="item.CntrType for item in CntrTypeList track by item.ID"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Grade</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" ng-model="ddlGrade" id="ddlGrade" ng-options="item.Grade for item in GradeList track by item.GradeID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Lease Term</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" ng-model="ddlLeaseTerm" id="ddlLeaseTerm" ng-options="item.LeaseTerm for item in LeaseTermList track by item.LeaseTermID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                               
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl3"><label class="lable-fond">StatusCode</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" ng-model="ddlStatuscode" id="ddlStatuscode" ng-options="item.StatusCode for item in CntrStatusCodes track by item.ID" required></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8">
+                                </div>
+                                <div class="col-md-4" style="text-align:right;">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-fill btn-info" ng-model="btnPrint" ng-click="btnPrint();" style="padding: 6px 18px; margin-top: -1px;width:46%; ">
+                                                    <i class="material-icons"></i> Generate Report
+                                                </button>
+                                                <button type="submit" class="btn btn-fill btn-default" ng-model="ClearRecords" ng-click="ClearRecords();" style="padding: 6px 18px; margin-top: -1px; width: 46%;">
+                                                    <i class="material-icons">close</i> Clear
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="row">
+                                <div class="col-md-12 exceldownload" style="text-align:right;">
+                                    <a ng-click="btnPrint();">Download <i class="fa fa-file-excel-o"></i></a>
+                                </div>
+                            </div>*@
+                            <!--<div class="row">
+                                <div class="col-md-12">
+                                    <div class="material-datatables" style="overflow: scroll;">
+                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            <thead>
+                                                <tr>-->
+                                                    @*<td class="bgr"></td>*@
+                                                    <!--<td class="bgr"></td>
+                                                    <td class="bgr"></td>
+                                                    <td class="bgr"></td>
+                                                    <td class="bgr"></td>
+                                                    <td class="bgr" colspan="24" style="text-align:center;">DRY</td>-->
+                                                    @*<td class="bgr" colspan="24" style="text-align:center;">REEFER</td>*@
+                                                <!--</tr>
+                                                <tr>-->
+                                                    @*<td class="bgr"></td>*@
+                                                    <!--<td class="bgr"></td>
+                                                    <td class="bgr"></td>
+                                                    <td class="bgr"></td>
+                                                    <td class="bgr"></td>
+                                                    <td class="bg1" colspan="4" style="text-align:center;">< 7 Days</td>
+                                                    <td class="bg2" colspan="4" style="text-align:center;">8-14 Days</td>
+                                                    <td class="bg1" colspan="4" style="text-align:center;">15-29 Days</td>
+                                                    <td class="bg2" colspan="4" style="text-align:center;">> 30-59 Days</td>
+                                                    <td class="bg1" colspan="4" style="text-align:center;">> 59 Days</td>
+                                                    <td class="bg2" colspan="4" style="text-align:center;">Total</td>-->
+
+                                                    @*<td class="bg1" colspan="3" style="text-align:center;">< 7 Days</td>
+                                <td class="bg2" colspan="3" style="text-align:center;">8-14 Days</td>
+                                <td class="bg1" colspan="3" style="text-align:center;">15-29 Days</td>
+                                <td class="bg2" colspan="3" style="text-align:center;">> 30-59 Days</td>
+                                <td class="bg1" colspan="3" style="text-align:center;">> 59 Days</td>
+                                <td class="bg2" colspan="3" style="text-align:center;">Total</td>*@
+                                                <!--</tr>
+                                                <tr>-->
+                                                    @*<td>Region</td>*@
+                                                    <!--<td>Country</td>
+                                                    <td>Geo Location</td>
+                                                    <td>Location</td>
+                                                    <td>StatusCode</td>
+                                                    <td>20GP</td>
+                                                    <td>20HQ</td>
+                                                    <td>40GP</td>
+                                                    <td>40HQ</td>
+                                                    <td>20GP</td>
+                                                    <td>20HQ</td>
+                                                    <td>40GP</td>
+                                                    <td>40HQ</td>
+                                                    <td>20GP</td>
+                                                    <td>20HQ</td>
+                                                    <td>40GP</td>
+                                                    <td>40HQ</td>
+                                                    <td>20GP</td>
+                                                    <td>20HQ</td>
+                                                    <td>40GP</td>
+                                                    <td>40HQ</td>
+                                                    <td>20GP</td>
+                                                    <td>20HQ</td>
+                                                    <td>40GP</td>
+                                                    <td>40HQ</td>
+                                                    <td>20GP</td>
+                                                    <td>20HQ</td>
+                                                    <td>40GP</td>
+                                                    <td>40HQ</td>-->
+
+                                                    @*<td>20'RF</td>
+                                <td>40'RF'</td>
+                                <td>HQ'RF'</td>
+                                <td>20'RF</td>
+                                <td>40'RF'</td>
+                                <td>HQ'RF'</td>
+                                <td>20'RF</td>
+                                <td>40'RF'</td>
+                                <td>HQ'RF'</td>
+                                <td>20'RF</td>
+                                <td>40'RF'</td>
+                                <td>HQ'RF'</td>
+                                <td>20'RF</td>
+                                <td>40'RF'</td>
+                                <td>HQ'RF'</td>
+                                <td>20'RF</td>
+                                <td>40'RF'</td>
+                                <td>HQ'RF'</td>*@
+
+                                                <!--</tr>
+
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="iRow in EQCAgewiseReport | filter : paginate | orderBy:'-Statusv'">-->
+
+                                                    @*<td></td>*@
+                                                    <!--<td>{{iRow.Country}}</td>
+                                                    <td>{{iRow.GeoLoc}}</td>
+                                                    <td>{{iRow.Ports}}</td>
+                                                    <td>{{iRow.StatusCode}}</td>
+
+                                                    <td>{{iRow.Dry20L7}}</td>
+                                                    <td>{{iRow.Dry40L7}}</td>
+                                                    <td>{{iRow.DryHQL7}}</td>
+                                                    <td>{{iRow.Dry20HQL7}}</td>
+                                                    <td>{{iRow.Dry208To14}}</td>
+                                                    <td>{{iRow.Dry408To14}}</td>
+                                                    <td>{{iRow.DryHQ8To14}}</td>
+                                                    <td>{{iRow.Dry20HQ8To14}}</td>
+                                                    <td>{{iRow.Dry2015To29}}</td>
+                                                    <td>{{iRow.Dry4015To29}}</td>
+                                                    <td>{{iRow.DryHQ15To29}}</td>
+                                                    <td>{{iRow.Dry20HQ15To29}}</td>
+                                                    <td>{{iRow.Dry2030To59}}</td>
+                                                    <td>{{iRow.Dry4030To59}}</td>
+                                                    <td>{{iRow.DryHQ30To59}}</td>
+                                                    <td>{{iRow.Dry20HQ30To59}}</td>
+                                                    <td>{{iRow.Dry20G59}}</td>
+                                                    <td>{{iRow.Dry40G59}}</td>
+                                                    <td>{{iRow.DryHQG59}}</td>
+                                                    <td>{{iRow.Dry20HQG59}}</td>
+
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>-->
+
+                                                    @*<td>{{iRow.FlRack20L7}}</td>
+                                <td>{{iRow.FlRack40L7}}</td>
+                                <td>{{iRow.FlRackHQL7}}</td>
+
+                                <td>{{iRow.FlRack208To14}}</td>
+                                <td>{{iRow.FlRack408To14}}</td>
+                                <td>{{iRow.FlRackHQ8To14}}</td>
+
+                                <td>{{iRow.FlRack2015To29}}</td>
+                                <td>{{iRow.FlRack4015To29}}</td>
+                                <td>{{iRow.FlRackHQ15To29}}</td>
+
+                                <td>{{iRow.FlRack2030To59}}</td>
+                                <td>{{iRow.FlRack4030To59}}</td>
+                                <td>{{iRow.FlRackHQ30To59}}</td>
+
+                                <td>{{iRow.FlRack20G59}}</td>
+                                <td>{{iRow.FlRack40G59}}</td>
+                                <td>{{iRow.FlRackHQG59}}</td>
+
+                                <td></td>
+                                <td></td>
+                                <td></td>*@
+
+
+                                                <!--</tr>
+                                            </tbody>
+                                        </table>
+                                        <div id="notFoundDiv" ng-show="(EQCAgewiseReport|filter:Country).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card-footer">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-5">-->
+                                            @*<p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>*@
+                                        <!--</div>
+                                        <div class="col-md-7" style="text-align:right;">
+                                            <pagination total-items="totalItems" ng-model="currentPage"
+                                                        max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                            </pagination>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>-->
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

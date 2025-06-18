@@ -1,0 +1,925 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.SlotTermsValue = null;
+        $scope.fillSlotTermsValues = function () {
+            var Datavalue = {};
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/SlotTremsValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotTermsValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSlotTermsValues();
+
+
+        //Vesvoy DropDown//
+        $scope.VesVoyMasterByAgency = null;
+        $scope.fillVesVoy = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/Home/VesVoyMasterByAgency/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.VesVoyMasterByAgency = result.data;
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillVesVoy();
+
+        //voytypes DropDown//
+        $scope.VoyageTypesList = null;
+        $scope.fillVoyageTypes = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/VoyageTypes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.VoyageTypesList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillVoyageTypes();
+
+        //Leginfotypes DropDown//
+        $scope.LegInfoTypesList = null;
+        $scope.fillLegInfoTypes = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/LegInfoTypes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.LegInfoTypesList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillLegInfoTypes();
+
+        // BL DROPDOWN
+        $scope.BLNumberlist = null;
+        $scope.fillBlNumber = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/Home/EXPandTSBLListAgentwise/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BLNumberlist = result.data;
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillBlNumber();
+
+        $scope.DynamicGrid = [{ VID: "", BLID: "", BLNumber: "", POL: "", POD: "", TSPORT: "", VesVoy1: "", VesVoy2: "", OperatorID: "", Operator: "", ContractID: "", Contract: "", SlotAmt20: "", SlotAmt40: "" }];
+        $scope.DynamicGrid.splice(0, 1);
+
+
+        $scope.Add = function (data) {
+
+            var validation = "";
+
+            var ddlBLNo = $('#ddlBLNo').val();
+            if (ddlBLNo == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Booking/BLNO </span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+            var Datavalue = {};
+            Datavalue.BLID = $('#ddlBLNo').val();
+            Datavalue.VesVoyID = $('#ddlVoyage').val();
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: "/api/Home/ExistingTSVoyageAllication",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+
+                if (result.data[0]["StatusCount"] == "0") {
+                    var VIDValue;
+                    VIDValue = ($scope.VID == "") ? 0 : $scope.VID;
+
+                    var val = {
+                        'VID': VIDValue,
+                        'BLID': $("#ddlBLNo").val(),
+                        'BLNumber': $("#ddlBLNo option:selected").text(),
+                        'POL': result.data[0].POL,
+                        'POD': result.data[0].POD,
+                        'TSPORT': result.data[0].TSPORT,
+                        'VesVoy1': result.data[0].VesVoy1,
+                        'VesVoy2': result.data[0].VesVoy2,
+                        'OperatorID': $("#ddlslot").val(),
+                        'Operator': $("#ddlslot option:selected").text(),
+                        'ContractID': $("#ddlslotContract").val(),
+                        'Contract': $("#ddlslotContract option:selected").text(),
+                        'SlotAmt20': $scope.SlotAmt20,
+                        'SlotAmt40': $scope.SlotAmt40,
+                        'SlotTermID': $("#ddlSlotTerm").val(),
+                        'SlotTerm': $("#ddlSlotTerm option:selected").text(),
+
+                    };
+                    if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                        $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+                    } else {
+
+                        $scope.DynamicGrid.push(val);
+                    }
+
+                    $("#ddlBLNo").val("");
+                    $scope.HDArrayIndex = "";
+                    $scope.VID = 0;
+                }
+                else {
+
+                    ShowPopup("Already T/S Voyage Exist for this BL");
+                    return;
+                }
+
+            });
+
+        }
+
+        $scope.Remove = function (DynamicGrid, index, VoyAllocId) {
+            var BussData = {}
+            BussData.VID = VoyAllocId;
+            //alert(VoyAllocId);
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BLVoyAllocationDelete/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGrid.splice(index, VoyAllocId);
+                    // $scope.BindLocRecords($scope.HdCusID);
+                });
+            });
+
+
+
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["VoyAllocID"] != null) {
+                $scope.HdVoyAllocId = queryString["VoyAllocID"].toString();
+                $scope.BindVoyAllocation(queryString["VoyAllocID"].toString());
+                $scope.BindVoyAllocationDtls(queryString["VoyAllocID"].toString());
+            }
+        });
+        $scope.BindVoyAllocation = function (VoyAllocId) {
+
+            var Datavalue = {}
+            var id = VoyAllocId;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = VoyAllocId;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindVoyAllocationEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    console.log(result);
+
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+                        $scope.ddlVoyage = { ID: result.data[0].VesVoyID };
+                        $scope.ddlVoyType = { ID: result.data[0].VoyageTypeID };
+                        $scope.ddlLegInfo = { ID: result.data[0].LegInformationID };
+
+                    }
+                    else {
+                        $('#ddlVoyage').val('');
+                        $('#ddlVoyType').val('');
+                        $('#ddlLegInfo').val('');
+                    }
+                });
+            });
+        }
+
+
+        $scope.BindVoyAllocationDtls = function (VoyDtlsID) {
+            var Datavalue = {};
+            Datavalue.ID = VoyDtlsID;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindVoyAllocationDtlsEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                //$scope.DynamicGrid = [{
+                //    VID: "", BkgID: "", Booking: ""
+                //}];
+                $scope.DynamicGrid.length = 0;
+                $timeout(function () {
+
+                    if (result.data[0].BLID != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'VID': result.data[key].VID,
+                            'BLID': result.data[key].BLID,
+                            'BLNumber': result.data[key].BLNumber,
+                            'POL': result.data[key].POL,
+                            'POD': result.data[key].POD,
+                            'TSPORT': result.data[key].TSPORT,
+                            'VesVoy1': result.data[key].VesVoy1,
+                            'VesVoy2': result.data[key].VesVoy2,
+                            'Operator': result.data[key].Operator,
+                            'Contract': result.data[key].Contract,
+                            'OperatorID': result.data[key].OperatorID,
+                            'ContractID': result.data[key].ContractID,
+                            'SlotAmt20': result.data[key].SlotAmt20,
+                            'SlotAmt40': result.data[key].SlotAmt40,
+                            'SlotTermID': result.data[key].SlotTermID,
+                            'SlotTerm': result.data[key].SlotTerm,
+                        });
+                        //  $scope.BindLegInfoRecords(result.data[key].BkgID);
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+
+        $scope.Recordsave = function (data) {
+            var validation = "";
+            var ddlVoyage = $('#ddlVoyage').val();
+            if (ddlVoyage == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Voyage</span></br>"
+            }
+
+            var ddlVoyType = $('#ddlVoyType').val();
+            if (ddlVoyType == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Voyage Type</span></br>"
+            }
+
+            var ddlLegInfo = $('#ddlLegInfo').val();
+            if (ddlLegInfo == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Leg Information</span></br>"
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            var Datav = "undefined";
+            angular.forEach(data, function (value, key) {
+
+                Datav += data[key].BkgID;
+
+            });
+
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select NextPort Details </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $(".modal").show();
+            var BussData = {}
+
+            var id = $scope.HdVoyAllocId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdVoyAllocId;
+
+            BussData.VesVoyID = $('#ddlVoyage').val();
+            BussData.VoyageTypeID = $('#ddlVoyType').val();
+            BussData.LegInformationID = $('#ddlLegInfo').val();
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+
+            BussData.OperatorID = $('#ddlslot').val();
+            BussData.ContractID = $('#ddlslotContract').val();
+            var Items = []
+
+            console.log(data);
+            angular.forEach(data, function (value, key) {
+                var intVID = data[key].VID;
+                if (typeof data[key].VID == "undefined") {
+                    intVID = 0;
+                }
+
+                Items.push('Insert:' + intVID, data[key].BLID, data[key].BLNumber, data[key].SlotAmt20, data[key].SlotAmt40,
+                    data[key].SlotTerm, data[key].SlotTermID
+
+
+                );
+            });
+
+            BussData.Itemsv = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/Home/VoyageAllocationInsert",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $(".modal").hide();
+                    if (result.data.length > 0) {
+                        ShowPopup(result.data[0].AlertMessage);
+                    }
+                    else {
+                        ShowPopup("Error Not Saved");
+                    }
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.SlotOperatorAllvalues = null;
+        $("#ddlVoyage").change(function () {
+            var Datavalue = {};
+            Datavalue.VesVoyID = $("#ddlVoyage").val();
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/VoyageBookingSlotOperator/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotOperatorAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+
+        $scope.SlotRefNoAllvalue = null;
+        $("#ddlslot").change(function () {
+
+            var Datavalue = {};
+            Datavalue.SlotID = $("#ddlslot").val();
+            Datavalue.VesVoyID = $("#ddlVoyage").val();
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BookingSlotRefNoOperator/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotRefNoAllvalue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        $("#ddlBLNo").change(function () {
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlslotContract").val();
+            Datavalue.BkgID = $("#ddlBLNo").val();
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/TsVoyageSlotContractRate/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $scope.SlotAmt20 = result.data[0].SlotAmt20;
+                $scope.SlotAmt40 = result.data[0].SlotAmt40;
+
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+
+        $scope.back = function () {
+
+            window.location = "/VesVoy/VoyageAllocationView";
+        }
+
+        $scope.RecordModifyed = function (gRow, index, IDv) {
+
+
+            //  $scope.HDArrayIndex = index;
+            //  $scope.HDID = $scope.DynamicGrid[index].HDID;
+            //  $scope.Voyagefunction($scope.DynamicGrid[index].VID);
+            //  $scope.SlotOperatorfunction($scope.DynamicGrid[index].OperatorID, $scope.DynamicGrid[index].VID);
+            //  //$("#ddlslot").val($scope.DynamicGrid[index].OperatorID).select2();
+            //  $("#ddlslot").select2().select2($scope.DynamicGrid[index].OperatorID);
+
+
+            //  //$("#ddlslotContract").val($scope.DynamicGrid[index].ContractID).trigger("change");
+            ////  $("#ddlBLNo").val($scope.DynamicGrid[index].BLID).trigger("change");
+            //  $scope.SlotAmt20 = $scope.DynamicGrid[index].SlotAmt20;
+            //  $scope.SlotAmt40 = $scope.DynamicGrid[index].SlotAmt40;
+
+
+
+
+            var Datavalue = {};
+            Datavalue.ID = IDv;
+            $scope.HDID = IDv;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindVoyAllocationDtlsModify/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $scope.Voyagefunction(result.data[0].VesVoyID);
+                $scope.ddlslot = { ID: result.data[0].OperatorID };
+                $scope.SlotOperatorfunction(result.data[0].OperatorID, result.data[0].VesVoyID);
+                $scope.ddlslotContract = { ID: result.data[0].ContractID };
+                $scope.Booking = { ID: result.data[0].BLID };
+                $scope.SlotAmt20 = result.data[0].SlotAmt20;
+                $scope.SlotAmt40 = result.data[0].SlotAmt40;
+                $scope.ddlSlotTerm = { ID: result.data[0].SlotTermID };
+
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+
+        $scope.Voyagefunction = function (VoyageID) {
+
+
+            var Datavalue = {};
+            Datavalue.VesVoyID = VoyageID;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/VoyageBookingSlotOperator/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotOperatorAllvalues = result.data;
+                    // $scope.ddlslot
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.SlotOperatorfunction = function (slotIDv, VesVoyIDv) {
+
+            var Datavalue = {};
+            Datavalue.SlotID = slotIDv;
+            Datavalue.VesVoyID = VesVoyIDv;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BookingSlotRefNoOperator/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotRefNoAllvalue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">T/S Voyage Allocation</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Voyage</label>
+                                            <select id="ddlVoyage" ng-model="ddlVoyage" class="form-control my-select" ng-options="item.VesVoy for item in VesVoyMasterByAgency track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Operator</label>
+                                            <select id="ddlslot" ng-model="ddlslot" class="form-control my-select" ng-options="item.VesOperator for item in SlotOperatorAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Slot Contract Ref#</label>
+                                            <select id="ddlslotContract" ng-model="ddlslotContract" class="form-control my-select" ng-options="item.SlotRefNo for item in SlotRefNoAllvalue track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Voyage Type</label>
+                                            <select id="ddlVoyType" ng-model="ddlVoyType" class="form-control my-select" ng-options="item.VoyageTypes for item in VoyageTypesList track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Leg Information</label>
+                                            <select id="ddlLegInfo" ng-model="ddlLegInfo" class="form-control my-select" ng-options="item.LegInformation for item in LegInfoTypesList track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>
+                                                Booking/BL Number
+                                            </label>
+                                            <input type="hidden" id="HDIDv" class="form-control" ng-model="VID" />
+                                            <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                            <select class="form-control my-select" ng-model="Booking" id="ddlBLNo" ng-options="item.BLNumber for item in BLNumberlist track by item.ID" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>
+                                                Slot Cost for 20
+                                            </label>
+                                            <input type="text" id="txtTSCost20" class="form-control" ng-model="SlotAmt20" />
+
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label>
+                                                Slot Cost for 40
+                                            </label>
+                                            <input type="text" id="txtTSCost40" class="form-control" ng-model="SlotAmt40" />
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>
+                                                Slot Term
+                                            </label>
+                                            <select class="form-control my-select" id="ddlSlotTerm" ng-disabled="IsSlotdisable" ng-model="ddlSlotTerm" ng-options="item.SlotTerm for item in SlotTermsValue track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="row">
+                                    <div class="col-md-12" style="margin-top:30px;">
+                                        <button type="submit" ng-click="Add(DynamicGrid)" class="btn btn-fill btn-warning searchbtn">
+                                            <i class="material-icons"></i>
+                                            ADD
+                                        </button>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-12 padlr0" style="margin-top: 30px;">
+                            <div class="material-datatables" style="width:100%;overflow:scroll;">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+
+
+                                    <thead>
+                                        <tr class="gridhead1">
+                                            <th>S.No</th>
+                                            <th>Booking/BL Number</th>
+                                            <th>POL</th>
+                                            <th>POD</th>
+                                            <th>T/S PORT</th>
+                                            <th>1st Leg Vessel&Voyage </th>
+                                            <th>2nd Leg Vessel&Voyage</th>
+                                            <th>Operator</th>
+                                            <th>Contract</th>
+                                            <th>Slot Amt 20</th>
+                                            <th>Slot Amt 40</th>
+                                            <th>Slot Term</th>
+
+                                            <th colspan="2">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+
+                                        @*<tr ng-repeat="i in VoyAllocRec | filter : paginate | orderBy:'-Statusv'">*@
+                                        <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                            <td>{{$index+1}}</td>
+
+                                            <td>
+                                                {{gRow.BLNumber}}
+
+                                                <input type="hidden" id="HDBLID" class="form-control" ng-model="gRow.BLID" />
+                                            </td>
+
+                                            <td>{{gRow.POL}}</td>
+                                            <td>{{gRow.POD}}</td>
+                                            <td>{{gRow.TSPORT}}</td>
+                                            <td>{{gRow.VesVoy1}}</td>
+                                            <td>{{gRow.VesVoy2}}</td>
+                                            <td>{{gRow.Operator}}</td>
+                                            <td>{{gRow.Contract}}</td>
+                                            <td>{{gRow.SlotAmt20}}</td>
+                                            <td>{{gRow.SlotAmt40}}</td>
+                                            <td>{{gRow.SlotTerm}}</td>
+                                            <td class="td-actions text-right bindgrid">
+
+                                                <button type="button" rel="tooltip" ng-click="RecordModifyed(DynamicGrid,$index,gRow.VID)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+                                            </td>
+
+                                            <td class="td-actions text-right bindgrid">
+                                                <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index,gRow.VID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                                <input type="hidden" id="HDID" class="form-control" ng-model="gRow.VID" />
+                                            </td>
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+
+                                @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                            </div>
+                        </div>
+
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="Recordsave(DynamicGrid);" class="btn btn-fill btn-success">Submit</button>
+                                <input type="hidden" id="HdVoyAllocId" ng-model="HdVoyAllocId" />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

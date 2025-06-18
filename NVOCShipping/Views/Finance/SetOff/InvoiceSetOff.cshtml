@@ -1,0 +1,302 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #12759a;
+        color: #fff;
+        font-size: 13px;
+        padding: 4px 5px;
+        font-weight: bold;
+        width:64px;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #12759a !important;
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+    .material-datatables .form-control
+    {
+        background-color:#fff;
+        width:80px!important;
+        height:20px!important;
+        font-size:12px!important;
+    }
+       fieldset 
+	{
+		border: 1px solid #ddd !important;
+		margin: 0;
+		xmin-width: 0;
+		padding: 10px;       
+		position: relative;
+		border-radius:4px;
+		background-color:#12759a08;
+		padding-left:10px!important;
+	}	
+	
+		legend
+		{
+			font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 0px;
+    width: 16%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0px 5px 0px 12px;
+    background-color: #12759a;
+		}
+        .panel.panel-default .panel-body
+        {
+            margin-bottom:0!important;
+            padding:0!important;
+        }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12" style="text-align:right;">
+            <a href="/Finance/InvoiceSetOffView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i>
+            </a>
+            <a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                <i class="material-icons">edit</i>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                       Invoice Set Off
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row inventry">
+                        <div class="col-md-12 padlr0" style="padding-top:7px; padding-bottom:7px;">
+                         
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row" style="margin-right:0">
+                                                <div class="col-md-4 lbl"><label class="lable-fond">Account Name</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-6">
+                                                    <select id="ddlAccName" class="form-control my-select"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Set Off Reference</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <label class="lable-fond" style="width:152px!important; padding-left:7px;" id="lblSetOffref" ng-model="lblSetOffref" ng-bind="InvoiceNo"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond">Voucher Date</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <input type="text" class="form-control datepicker" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+                     
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <fieldset class="col-md-12">
+                                        <legend>Open Cr</legend>
+
+                                        <div class="panel panel-default">
+                                            <div class="panel-body" style="margin-bottom:0!important;">
+                                                <div class="material-datatables">
+                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; margin-bottom:0px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S.No</th>
+                                                                <th>Select</th>
+                                                                <th>Voucher No</th>
+                                                                <th>Amount(Local)</th>
+                                                                <th>Adjustment Amt</th>
+                                                                <th>SetOff</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td><input type="checkbox" /></td>
+                                                                <td>RV21040025</td>
+                                                                <td>22000.00</td>
+                                                                <td>229068.23</td>
+                                                                <td><input type="text" class="form-control" placeholder="10937.57" /></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset class="col-md-12">
+                                        <legend>Open Cr</legend>
+
+                                        <div class="panel panel-default">
+                                            <div class="panel-body" style="margin-bottom:0!important;">
+                                                <div class="material-datatables">
+                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%; margin-bottom:0px;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S.No</th>
+                                                                <th>Select</th>
+                                                                <th>Voucher No</th>
+                                                                <th>Amount(Local)</th>
+                                                                <th>Adjustment Amt</th>
+                                                                <th>SetOff</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td><input type="checkbox" /></td>
+                                                                <td>RV21040025</td>
+                                                                <td>22000.00</td>
+                                                                <td>229068.23</td>
+                                                                <td><input type="text" class="form-control" placeholder="10937.57" /></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top:25px;">
+                        <div class="col-md-12">
+                            <fieldset class="col-md-12">
+                                <legend>Summary</legend>
+
+                                <div class="panel panel-default">
+                                    <div class="panel-body" style="margin-bottom:0!important;">
+                                        <div class="col-xs-12 padlr0">
+                                            <div class="col-xs-6 padr0 pull-right" style="font-size:11px; text-align:right;">
+                                                <div class="col-md-12">
+                                                    <table class="table table-responsive">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="width:0px; border:0; background-color:transparent; text-align:right; color:#184188; font-size:15px; font-weight:bold;">Total Dr</td>
+
+                                                                <td style="width:1px; border:0; background-color:transparent; text-align:right;font-weight:bold;">:</td>
+                                                                <td style="width:1px; border:0; background-color:transparent; text-align:right;font-weight:bold;">
+                                                                    <span id="ContentPlaceHolder1_lblTotalDr" style="color:red; font-size:15px;font-weight:bold;">239068.43</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td style="width:0px; border:0; background-color:transparent; text-align:right;color:#c14d20; font-size:15px;font-weight:bold;">Total Cr</td>
+
+                                                                <td style="width:1px; border:0; background-color:transparent; text-align:right;font-weight:bold;">:</td>
+                                                                <td style="width:1px; border:0; background-color:transparent; text-align:right;font-weight:bold;">
+                                                                    <span id="ContentPlaceHolder1_lblCr" style="color:red; font-size:15px;font-weight:bold;">250006.00</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="width:0px; border:0; background-color:transparent; text-align:right;color:#256d20; font-size:15px;font-weight:bold;">Difference</td>
+
+                                                                <td style="width:1px; border:0; background-color:transparent; text-align:right;font-weight:bold;">:</td>
+                                                                <td style="width:1px; border:0; background-color:transparent; text-align:right;font-weight:bold;">
+                                                                    <span id="ContentPlaceHolder1_lblDef" style="color:red; font-size:15px;font-weight:bold;">0.00</span>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right; margin-top:20px;">
+                            <button type="submit" ng-click="RecordSave();" class="btn btn-fill btn-success">
+                                <i class="material-icons">save</i>
+                                Save
+                            </button>
+                            <input type="hidden" id="RegId" ng-model="RegId" />
+                            <input type="hidden" id="HdID" ng-model="HdID" />
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

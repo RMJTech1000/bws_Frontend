@@ -1,0 +1,343 @@
+﻿@model  NVOCShipping.Models.MasterModel
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .form-control.txtarea {
+        width: 100%;
+        margin-left: -42px;
+    }
+</style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 2 }
+        ];
+        $scope.Recordsave = function () {
+            var validation = "";
+            var txtStateCode = $('#txtStateCode').val();
+            if (txtStateCode.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter State Code</span></br>"
+            }
+            var txtStateName = $('#txtStateName').val();
+            if (txtStateName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter State Name</span></br>"
+            }
+            var ddlCountry = $('#ddlCountry').val();
+            if (ddlCountry.length == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Country</span></br>"
+            }
+            //var ddlCity = $('#ddlCity').val();
+            //   if (ddlCity.length == "?") {
+
+            //      validation += "<span style='color:red;'>*</span> <span>Please Select City</span></br>"
+            //   }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+            BussData.StateCode = $scope.txtStateCode;
+            BussData.StateName = $scope.txtStateName;
+            BussData.CountryID = $("#ddlCountry").val();
+            BussData.Status = $("#ddlStatus").val();
+
+            $http({
+                method: 'POST',
+                url: "/api/Home/State",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $timeout(function () {
+                    // BussData.ID = result.data[0].ID;
+                    //alert(result.data[0].ID);
+                    if (BussData.ID != "") {
+                        ShowPopup("State Master Updated");
+                    }
+                    else {
+
+                        ShowPopup("State Master Saved Successfully");
+                    }
+
+                    setTimeout(function () { location.href = "/Home/StateView" }, 1000);
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+
+        $scope.State = null;
+        $scope.fillState = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/stateBind/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.State = result.data;
+
+                });
+            });
+        };
+        $scope.fillState();
+
+        $scope.Country = null;
+        $scope.fillCountry = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindCountries/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Country = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.fillCountry();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["StateRegID"] != null) {
+                $scope.HDRegId = queryString["StateRegID"].toString();
+                $scope.BindState(queryString["StateRegID"].toString());
+
+            }
+        });
+        $scope.BindState = function (StateRegID) {
+
+            var Datavalue = {}
+            var id = StateRegID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = StateRegID;
+            $http({
+                method: 'POST',
+                url: '/api/Home/StateRecord/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.txtStateCode = result.data[0].StateCode;
+                        $scope.txtStateName = result.data[0].StateName;
+                        $scope.ddlCountry = { CountryID: result.data[0].CountryID };
+                        $scope.ddlStatus = { ID: result.data[0].Status };
+
+                    }
+                    else {
+
+                        $scope.StateCode = "";
+                        $scope.StateName = "";
+                        $scope.ddlCountry = "";
+                        $scope.ddlStatus = "";
+                    }
+                });
+            });
+            $scope.back = function () {
+
+                window.location = "/Home/StateView";
+            }
+
+            $scope.add = function () {
+
+                window.location = "/Home/State";
+
+            }
+
+        }
+        //$scope.BindState();
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">State Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Country </label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+
+
+                                            <select class="form-control my-select" ng-model="ddlCountry" id="ddlCountry" ng-options="item.CountryName for item in Country track by item.CountryID" required>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>State Code</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtStateCode" ng-model="txtStateCode" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>State Name</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtStateName" ng-model="txtStateName" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" id="ddlStatus" ng-model="ddlStatus" ng-options="item.name for item in StatusValues track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                            <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

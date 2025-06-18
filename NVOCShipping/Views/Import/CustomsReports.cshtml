@@ -1,0 +1,221 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+      $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["ImpReg"] != null) {
+
+                $scope.RegId = queryString["ImpReg"].toString();
+                $scope.FilBookingExsitingMaster(queryString["ImpReg"].toString());
+
+            }
+          }); 
+        $scope.getPaging = function (tab) {
+
+            //if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+            //    ShowPopup("please fill RATE REQUEST first1");
+            //    return;
+            //}
+
+           var myp = $scope.RegId;
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Import/ShipmentDetails?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Import/ContainerDetails?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Import/PreAlert?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Import/CAN?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Import/DeliveryOrder?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 6) {
+                if (myp != "0") {
+                    var url = "/Import/CustomsReports?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 7) {
+                if (myp != "0") {
+                    var url = "/Import/DetDem?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .downbtn .btn {
+        padding: 6px 12px;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/Import/ImportView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            @*<a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                <i class="material-icons">edit</i>
+            </a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Customs Report
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" ng-click="getPaging(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Shipment Details</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                <a class="nav-item nav-link" id="nav-profile-tab" ng-click="getPaging(3);" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Pre-Alert Documents</a>
+                                <a class="nav-item nav-link" id="nav-contact-tab" ng-click="getPaging(4);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">CAN</a>
+                                <a class="nav-item nav-link" id="nav-contact-CAN" ng-click="getPaging(5);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Delivery Order/Empty Returns</a>
+                                <a class="nav-item nav-link active" ng-click="getPaging(6);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">Customs Report</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(7);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">DET/DEM Calculation</a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="card-body">
+
+
+                    <div class="row">
+                        <div class="col-md-8 downbtn">
+                            <button type="submit" class="btn btn-fill btn-default">Refresh</button>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr class="gridhead1">
+                                            <th>S.NO</th>
+                                            <th>DO NUMBER</th>
+                                            <th>BOOKING/BL</th>
+                                            <th>HBL NUMBER</th>
+                                            <th>REPORT NAME</th>
+                                            <th class="disabled-sorting text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+
+                                        <tr class="gridbody1">
+                                            <td>1</td>
+                                            <td>DO21050001NS-1</td>
+                                            <td>DO21050001NS-1</td>
+                                            <td></td>
+                                            <td>GANG REPORT</td>
+                                            <td class="td-actions text-right">
+
+                                                <button type="button" rel="tooltip" class="btn btn-success" data-original-title="" title="">
+                                                    GENERATE & VIEW
+                                                </button>
+
+                                            </td>
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right;">
+                            <div class="ml-auto">
+                                <button type="submit" class="btn btn-fill btn-success">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,794 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .lightgreen {
+        background-color: #e6f6da;
+        font-weight: 600;
+    }
+    .totalcolor {
+        background-color: #bddea5bf;
+        font-weight: bold;
+        color: red;
+    }
+    .lightblue {
+        background-color: #e0f7fd;
+        font-weight: 600;
+    }
+    .totalbluecolor {
+        background-color: #c6e9f4;
+        font-weight: bold;
+        color: red;
+    }
+    .totaloverall {
+        background-color: #f3f3d6;
+        font-weight: bold;
+        color: red;
+    }
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+    .table > tbody > tr > td
+    {
+        white-space:nowrap!important;
+    }
+    .card .table tr td a {
+        color: #2d55f1;
+        font-weight: 500;
+    }
+
+    .view {
+        margin: auto;
+        width: 600px;
+    }
+
+    .wrapper {
+        position: relative;
+        overflow: auto;
+        border: 1px solid black;
+        white-space: nowrap;
+    }
+
+    .sticky-col {
+        position: -webkit-sticky;
+        position: sticky;
+        background-color: white;
+    }
+
+    .first-col {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        left: 0px;
+    }
+
+    .second-col {
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+        left: 100px;
+    }
+
+    .third-col {
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+        left: 250px;
+    }
+
+    .four-col {
+        width: 150px;
+        min-width: 150px;
+        max-width: 150px;
+        left: 400px;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.BindCurrentDate = new Date().toISOString().slice(0, 10);
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+
+            if (queryString["RegID"] != 0 && queryString["RegID"] != null)
+            {
+                $scope.HDAgId = queryString["RegID"];
+                $scope.fillMISReportview(queryString["RegID"].toString());
+
+            }
+
+        });
+
+
+
+        $scope.VesselNameAllvalues = null;
+        $scope.fillVesselNameValues = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/Home/VesVoyMasterByAgency/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VesselNameAllvalues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillVesselNameValues();
+
+        $scope.SlotOperatorAllvalues = null;
+        $("#ddlVesVoy").change(function () {
+
+            var Datavalue = {};
+            Datavalue.VesVoyID = $("#ddlVesVoy").val();
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BookingSlotOperator/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotOperatorAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        $scope.viewData = null;
+        $scope.fillMISReportview = function (AgentID)
+        {
+            $('#overlay').show();
+            var BussData = {};
+            BussData.AgentID = AgentID;
+            BussData.SlotOperatorID = $("#ddlslot").val();
+            BussData.VesVoyID = $("#ddlVesVoy").val();
+            $http({
+                method: 'POST',
+                url: '/api/AllReportApi/MISReportViewALL/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $('#overlay').hide();
+                    $scope.viewData = result.data;
+                    $scope.totalItems = $scope.viewData.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.viewData.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result)
+            {
+                $('#overlay').hide();
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+
+        $scope.btnSendEmailAlertDisplay = function () {
+
+            $('#demoModalEmail').modal('show');
+            $("#overlay").show();
+            var Datavalue = {};
+            Datavalue.BkgID = $scope.RegId;
+            Datavalue.AgentID = localStorage.getItem("AgencyID");
+            Datavalue.EmailTypes = 210;
+            $http({
+                method: 'POST',
+                url: '/api/SendingEmailsApi/SendAutoEmails/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.txtTo = result.data[0].EmailIDs;
+
+                        $("#overlay").hide();
+                    }
+                });
+                $("#overlay").hide();
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.btnSendEmailAlert = function () {
+
+            $("#overlay").show();
+            var Datavalue = {};
+            Datavalue.BkgID = $scope.RegId;
+            Datavalue.AgentId = localStorage.getItem("AgencyID");
+            Datavalue.To = $scope.txtTo;
+            Datavalue.CC = $scope.txtCC;
+            Datavalue.BCC = $scope.txtBCC;
+            Datavalue.Message = $scope.txtMessage;
+
+            $http({
+                method: 'POST',
+                url: '/api/SendingEmailsApi/EmailsendingBooking/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        ShowPopup(result.data[0].AlertMessage);
+                        $("#overlay").hide();
+                    }
+                });
+                $("#overlay").hide();
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.BtnPDFOpen = function () {
+          
+            var AgencyID = $scope.HDAgId;
+            window.open('@Url.Action("MISReportExcel", "MISReport")?AgencyID=' + AgencyID);
+        }
+
+        $scope.BtnRRPDFOpen = function (RRID) {
+
+            var id = RRID;
+            window.open('@Url.Action("RRPDF", "RateRequest")?id=' + id);
+        }
+
+
+        $scope.viewDataSurcharges = null
+        $scope.BtnRRSurchargesOpen = function (RRID)
+        {
+           
+            $("#overlay").show();
+            
+            var BussData = {};
+            BussData.RRID = RRID;
+            $http({
+                method: 'POST',
+                url: '/api/AllReportApi/MISReportSurcharges/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    $("#overlay").hide();
+                    $('#demoChargeCodedisplay').modal('show');
+                    //$scope.viewDataSurcharges.length = 0;
+                    if (result.data.length > 0) {
+                        $scope.viewDataSurcharges = result.data;
+                        $scope.HideNoRecord = false;
+                    }
+                    else {
+                        $scope.HideNoRecord = true;
+                        $scope.viewDataSurcharges.length = 0;
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.hidePopover = function () {
+            $scope.HideNoRecord = true;
+            $('#demoChargeCodedisplay').modal('hide');
+        }
+
+
+        $scope.BtnRRRevenuMISCOpen = function (RRID) {
+
+            $("#overlay").show();
+
+            var BussData = {};
+            BussData.RRID = RRID;
+            $http({
+                method: 'POST',
+                url: '/api/AllReportApi/MIS_Misc_RevenuValues/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $("#overlay").hide();
+                    $('#demoChargeCodedisplay').modal('show');
+                    $scope.viewDataSurcharges = 0;
+                    if (result.data.length > 0) {
+                        $scope.viewDataSurcharges = result.data;
+                        $scope.HideNoRecord = false;
+                    }
+                    else {
+                        $scope.HideNoRecord = true;
+                        $scope.viewDataSurcharges.length = 0;
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.OpenMisExChageForm = function () {
+            var url = "/Masters/MISExchangeRate?StatusID=" + 2;
+            window.location.href = url;
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .btn.btn-default {
+        color: #000;
+        font-weight: normal;
+        background-color: #e0e0e080;
+        border: 1px solid #000;
+        border-color: transparent;
+        box-shadow: none;
+    }
+    .select2-container {
+        width: 180px !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 28px !important;
+    }
+
+    .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+        text-align: right !important;
+    }
+
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #21277a !important;
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+    .btn.btn-info {
+        background-color: #077adc;
+        border-color: #077adc;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+@*<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />*@
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/MISReport/MISReportView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                        <div class="col-md-8" style="text-align:center;">
+                            <h4 style="font-size:24px; font-weight:bold; color:#000!important; margin-top:39px;">BLUE WAVE SHIPPING MIS REPORT</h4>
+                        </div>
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-5">
+                            <div class="col-md-12" style="margin-top:17px;">
+                                <div class="row">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4"><label>Vessel/Voyage</label></div>
+                                            <div class="col-md-8">
+                                                <select id="ddlVesVoy" ng-model="ddlVesVoy" class="form-control my-select" ng-options="item.VesVoy for item in VesselNameAllvalues track by item.ID"></select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4"><label>Slot Operator</label></div>
+                                            <div class="col-md-8">
+                                                <select id="ddlslot" ng-model="ddlslot" class="form-control my-select" ng-options="item.VesOperator for item in SlotOperatorAllvalues track by item.ID"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row" style="margin-top:55px;">
+                                <div class="col-md-12">
+                                    
+                                    <span>
+                                        MIS Exchange Rate:
+                                        <a href="#" ng-click="OpenMisExChageForm();">
+                                            <span ng-bind="BindCurrentDate"></span>
+                                        </a>
+                                    </span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-12" style="margin-top:28px;">
+                                        <button type="submit" ng-click="btnSendEmailAlertDisplay();" class="btn btn-default" style="padding: 6px 7px;">
+                                            <i class="material-icons">email</i> Send Email
+                                        </button>
+                                        <div class="dropdown">
+                                            <a href="#" class="btn btn-primary dropdown-toggle" style="padding:6px 14px;" data-toggle="dropdown">
+                                                Download
+                                            </a>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item" href="#" ng-click="BtnPDFOpen();"><i class="fa fa-download" style="color: #0c92d5; font-size:15px;"></i> <span style="padding-left:15px;">XLS</span></a>
+                                                <a class="dropdown-item" href="#"><i class="fa fa-envelope" style="color: #0c92d5; font-size: 15px;"></i> <span style="padding-left:15px;">PDF</span></a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+                        <div class="col-md-12 padlr0 view" style="padding:7px;">
+                            <div class="material-datatables wrapper">
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="sticky-col first-col">S.No</th>
+                                            <th class="sticky-col second-col">Rate Request No</th>
+                                            <th class="sticky-col third-col">BLNo</th>
+                                            <th class="sticky-col four-col">Container No</th>
+
+
+                                            <th>POL</th>
+
+                                            <th>POD</th>
+                                            <th>T/S</th>
+                                            <th>FPOD</th>
+                                            <th>Vessel/Voyage</th>
+                                            <th>Terminal Name</th>
+                                            <th>Slot Operator</th>
+                                            <th>ETD</th>
+                                            <th>Commodity Type</th>
+                                            <th>20</th>
+                                            <th>40</th>
+                                            <th>Container Types</th>
+                                            @*<th>20'RF'</th>
+                                                <th>40'RF'</th>*@
+                                            <th>Lease Type</th>
+                                            <th colspan="1">Ocen Freight ($) </th>
+                                            <th colspan="1">BAF ($)</th>
+                                            <th colspan="1">Surcharges ($)</th>
+
+                                            <th colspan="1">Load Port THC ($)</th>
+                                            <th colspan="1">Discharge Port THC ($)</th>
+                                            <th>HDL/TPT ($)</th>
+                                            <th colspan="1">MISC ($)</th>
+                                            <th>Total Revenue ($)</th>
+                                            <th colspan="1">SLOT ($)</th>
+                                            <th colspan="1">T/S THC COST ($)</th>
+                                            <th colspan="1">T/S COMMISSION ($)</th>
+                                            <th>T/S SLOT COST ($)</th>
+                                            <th colspan="1">LOAD PORT PHC ($)</th>
+                                            <th colspan="1">DISCHARGE PORT PHC ($)</th>
+                                            <th colspan="1">LOAD COMMISSION ($)</th>
+                                            <th colspan="1">DISCHARGE COMMISSION ($)</th>
+                                            @*<th>BROK</th>
+                                                <th>CFS MOVEMENT</th>*@
+                                            <th colspan="1">MISC COST ($)</th>
+                                            <th>LOG. FEE ($)</th>
+                                            <th>TOTAL COST ($)</th>
+                                            <th>PROFIT / LOSS ($)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="gRow in viewData">
+                                            <td class="sticky-col first-col">1</td>
+                                            <td class="sticky-col second-col"><a href="#" ng-click="BtnRRPDFOpen(gRow.RRID)">{{gRow.RRNo}}</a></td>
+                                            <td class="sticky-col third-col"><a href="#">{{gRow.BookingNo}}</a></td>
+                                            <td class="sticky-col four-col">{{gRow.CntrNo}}</td>
+
+                                            <td>{{gRow.POL}}</td>
+
+                                            <td>{{gRow.POD}}</td>
+                                            <td>{{gRow.TSPORT}}</td>
+                                            <td>{{gRow.FPOD}}</td>
+                                            <td>{{gRow.VesVoy}}</td>
+                                            <td>{{gRow.TerminalName}}</td>
+                                            <td>{{gRow.SlotOperator}}</td>
+                                            <td>{{gRow.ETDDate}}</td>
+                                            <td>{{gRow.Commodity}}</td>
+                                            <td>{{gRow.Size20}}</td>
+                                            <td>{{gRow.Size40}}</td>
+                                            <td>{{gRow.TypeSize}}</td>
+                                            @*<td>{{gRow.SizeRF40}}</td>
+                                                <td>{{gRow.SizeOT40}}</td>*@
+                                            <td>{{gRow.LeasTerms}}</td>
+                                            <td class="lightgreen amtrgt">{{gRow.OFT}}</td>
+                                            @*<td class="lightgreen">{{gRow.OFTCURR}}</td>*@
+
+                                            <td class="lightgreen amtrgt">{{gRow.BAF}}</td>
+                                            @*<td class="lightgreen">{{gRow.BAFCURR}}</td>*@
+
+                                            <td class="lightgreen amtrgt"><a href="#"  ng-click="BtnRRSurchargesOpen(gRow.RRID)">{{gRow.SURCHARGES}}</a></td>
+
+                                            <td class="lightgreen amtrgt">{{gRow.LOADTHC}}</td>
+
+
+                                            <td class="lightgreen amtrgt">{{gRow.DESTTHC}}</td>
+
+
+                                            <td class="lightgreen amtrgt">{{gRow.HLDTPT}}</td>
+                                            <td class="lightgreen amtrgt"><a href="#"  ng-click="BtnRRRevenuMISCOpen(gRow.RRID)">{{gRow.MISC}}</a></td>
+                                            <td class="totalcolor amtrgt">{{gRow.RevenuAmt}}</td>
+                                            <td class="lightblue amtrgt">{{gRow.SlotAmt}}</td>
+
+                                            <td class="lightblue amtrgt">{{gRow.TSCOST}}</td>
+
+                                            <td class="lightblue amtrgt">{{gRow.TSCOMM}}</td>
+                                            <td class="lightblue amtrgt"></td>
+                                            <td class="lightblue amtrgt">{{gRow.LOADPHC}}</td>
+
+                                            <td class="lightblue amtrgt">{{gRow.DESTPHC}}</td>
+
+                                            <td class="lightblue amtrgt">{{gRow.EXCOMM}}</td>
+
+                                            <td class="lightblue amtrgt">{{gRow.ICOMM}}</td>
+
+                                            <td class="lightblue amtrgt">{{gRow.MISCCOST}}</td>
+
+
+                                            <td class="lightblue amtrgt">{{gRow.LOGCOST}}</td>
+                                            <td class="totalbluecolor amtrgt">{{gRow.COSTAmt}}</td>
+                                            <td class="totaloverall amtrgt">{{gRow.ProfitAmt}}</td>
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="demoModalEmail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:650px;">
+            <div class="modal-content">
+                <div class="modal-header" style="padding: 5px 24px 0;background-color: #4f2576; ">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:center;">
+                            <h1 class="card-title" style="width: 600px; font-size: 17px; color: #fff; padding: 10px; text-align: center; font-weight:bold;">Email Send</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-2">To:</div>
+
+                        <div class="col-md-10 padl0">
+                            <div class="form-group">
+                                <textarea id="txtTo" ng-model="txtTo" class="form-control" rows="2" style="margin-left:-31px; width: 537px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Cc:</div>
+                        <div class="col-md-10 padl0">
+                            <div class="form-group">
+                                <textarea id="txtCC" ng-model="txtCC" class="form-control" rows="2" style="margin-left:-31px; width: 537px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Bcc:</div>
+                        <div class="col-md-10 padl0">
+                            <div class="form-group">
+                                <textarea id="txtBCC" ng-model="txtBCC" class="form-control" rows="2" style="margin-left:-31px; width: 537px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">Message:</div>
+                        <div class="col-md-10 padl0">
+                            <div class="form-group">
+                                <textarea id="txtMessage" ng-model="txtMessage" class="form-control" rows="5" style="margin-left:-31px; width: 537px;"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align: right;">
+                            <button type="submit" id="btnEmail" ng-click="btnSendEmailAlert();" class="btn btn-primary" style="box-shadow:none!important;">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="demoChargeCodedisplay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 650px; margin-top: 250px;">
+            <div class="modal-content">
+
+                <div class="modal-body">
+
+                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                        <thead>
+                            <tr><td><span ng-show="HideNoRecord"></span> No Record</td></tr>
+                            <tr>
+                                <th ng-repeat="gRow in viewDataSurcharges">{{gRow.ChargeCode}}</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td ng-repeat="gRow in viewDataSurcharges">{{gRow.ManifRate}}</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+

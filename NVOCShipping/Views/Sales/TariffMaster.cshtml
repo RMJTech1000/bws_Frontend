@@ -1,0 +1,2125 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<link href="~/assets/css/custom.css" rel="stylesheet" type="text/css" />
+<style>
+    .popup .card [class*=card-header-] {
+        margin: 0 15px;
+        padding: 0;
+        position: relative;
+    }
+    .popup h4.card-title {
+        font-weight: 500;
+        font-size: 16px;
+    }
+    .popup .card .card-header {
+        z-index: 3 !important;
+        margin: 0 auto;
+        width: 24%;
+    }
+    .popup .card-text {
+        background: linear-gradient(60deg,#df1f6c,#21277a) !important;
+        border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+        margin: 0 auto !important;
+        width: 23% !important;
+    }
+    .popup .card [class*=card-header-] .card-text .card-title {
+        font-size: 16px;
+        color: #fff;
+        margin-top: 0;
+    }
+    .popup .card-header:first-child {
+        border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+    }
+    .popup .card-title, .card-title a, .footer-big h4, .footer-big h4 a, .footer-big h5, .footer-big h5 a, .footer-brand, .footer-brand a, .info-title, .info-title a, .media .media-heading, .media .media-heading a, .title, .title a {
+        color: #fff;
+        margin-bottom: 0;
+        font-weight: bold;
+        padding: 3px;
+    }
+    .download {
+        margin-top: -30px;
+    }
+
+        .download .btn.btn-success {
+            background-color: #e0a90c;
+            padding: 6px 8px;
+        }
+
+        .download .card .card-header.card-header-icon i, .card .card-header.card-header-text i {
+            width: 20px;
+            height: 36px;
+        }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        var currentDate = new Date();
+        var dd = currentDate.getDate();
+
+        var mm = currentDate.getMonth() + 1;
+        var yyyy = currentDate.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+
+        currentDate = dd + '/' + mm + '/' + yyyy;
+        $scope.CurrentDate = currentDate;
+
+        $scope.HDArrayIndex = "";
+        document.getElementById("ddlModule").disabled = true;
+        document.getElementById("btnCopyTraiff").disabled = true;
+        document.getElementById("btnCopyTraiff").style.cursor = 'not-allowed';
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+        $scope.StatusBindValues = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'Active', 'ID': 1 },
+            { 'name': 'Deactive ', 'ID': 2 }
+        ];
+
+        $scope.BasicBindValues = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'BL', 'ID': 1 },
+            { 'name': 'Container ', 'ID': 2 }
+        ];
+
+        $scope.ChargeTypesBindValues = [
+            { 'ChargeType': '--select--', 'ID': 0 },
+            { 'ChargeType': 'Revenue', 'ID': 1 },
+            { 'ChargeType': 'Cost ', 'ID': 2 }
+        ];
+
+        $scope.BindDGClassValues = [
+
+            { 'name': 'Group-1', 'ID': 1 },
+            { 'name': 'Group-2 ', 'ID': 2 },
+            { 'name': 'Group-3 ', 'ID': 3 }
+        ];
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.ModuleAllvalues = null;
+        $scope.fillModuleValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "7"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ModuleAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillModuleValues();
+
+
+        $scope.AllHandlingTermsvalues = null;
+        $scope.fillHandlingTermsValues = function () {
+            var Datavalue = {};
+           
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/SlotTremsValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AllHandlingTermsvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillHandlingTermsValues();
+
+
+
+        $scope.ShipmentTypeAllvalues = null;
+        $scope.fillShipmentTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "1"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillShipmentTypeValues();
+
+
+        $scope.CommodityAllvalues = null;
+        $scope.fillCommodityValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "2"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CommodityAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCommodityValues();
+
+        $scope.TariffModeAllvalues = null;
+        $scope.fillTariffModeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "28"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TariffModeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTariffModeAllValues();
+
+        $scope.TariffTypeAllvalues = null;
+        $scope.fillTariffTypeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "29"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TariffTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTariffTypeAllValues();
+
+
+        $scope.TariffRegTypeAllvalues = null;
+        $scope.fillTariffRegTypeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "40"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValuesTraiffMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TariffRegTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTariffRegTypeAllValues();
+
+
+
+
+        $scope.CollectionAllvalues = null;
+        $scope.fillCollectionValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "9"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CollectionAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCollectionValues();
+
+        $scope.AgencyMasterAllvalues = null;
+        $scope.fillAgencyMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAgencyMasterValues();
+
+
+        $scope.CustomerMasterAllvalues = null;
+        $scope.fillCustomerMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCustomerMasterValues();
+
+        $scope.ChargeCodeAllvalues = null;
+
+        $scope.fillChargecodeValues = function () {
+            $scope.states = [];
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ChargeCode/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeCodeAllvalues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+
+        // $scope.fillChargecodeValues();
+
+        $scope.CntrTypesvalues = null;
+        $scope.fillCntrTypeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CntrTypeValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypesvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCntrTypeValues();
+
+        $scope.CurrencyValue = null;
+        $scope.fillCurrencyValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCurrencyValues();
+
+        $scope.CountryValue = null;
+        $scope.fillCountryValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CountryMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CountryValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCountryValues();
+
+
+        $scope.fillCntrTypeValues();
+
+
+        $scope.ServiceTypesValue = null;
+        $scope.fillServiceTypesValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ServiceTypesValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ServiceTypesValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillServiceTypesValues();
+
+        $scope.DynamicGrid = [{ TID: "", ChargeTypeID: "", ChargeType: "", ChargeCode: "", ChargeCodeID: "", Basic: "", BasicID: "", CntrTypeID: "", CntrTypes: "", CurrencyID: "", Currency: "", Amt: "", DestCountryID: "", DestCountry: "", HandlingChargesID: "", HandlingCharges:"" }];
+        $scope.DynamicGrid.splice(0, 1);
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["PTRegNo"] != null) {
+
+                $scope.RegId = queryString["PTRegNo"].toString();
+                $scope.FilPortTariffExsitingMaster(queryString["PTRegNo"].toString());
+                $scope.FilPortTariffExsitingValues(queryString["PTRegNo"].toString());
+                document.getElementById("btnCopyTraiff").disabled = false;
+                document.getElementById("btnCopyTraiff").style.cursor = 'pointer';
+            }
+            else {
+                $scope.ddlModule = { ID: 15 };
+
+            }
+        });
+
+
+        $scope.Add = function (DynamicGrid) {
+            var validation = "";
+
+            var ddlchargeTypes = $('#ddlchargeTypes').val();
+            if (ddlchargeTypes == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select ChargeTypes</span></br>"
+            }
+
+            var ddlchargeCode = $('#ddlchargeCode').val();
+            if (ddlchargeCode == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Code</span></br>"
+            }
+            var ddlBasic = $('#ddlBasic').val();
+            if (ddlBasic == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Basic</span></br>"
+            }
+
+            var ddlBasic = $('#ddlCntrTypes').val();
+            if (ddlBasic == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select CntrTypes</span></br>"
+            }
+
+
+            var ddlCurrency = $('#ddlCurrency').val();
+            if (ddlCurrency == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Currency</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+            var TIDValue;
+            TIDValue = ($scope.TID == "") ? 0 : $scope.TID;
+
+            var val = {
+                'TID': TIDValue,
+                'ChargeTypeID': $("#ddlchargeTypes").val(),
+                'ChargeType': $("#ddlchargeTypes option:selected").text(),
+                'ChargeCode': $("#ddlchargeCode option:selected").text(),
+                'ChargeCodeID': $("#ddlchargeCode").val(),
+                'BasicID': $("#ddlBasic").val(),
+                'Basic': $("#ddlBasic option:selected").text(),
+                'CntrTypeID': $("#ddlCntrTypes").val(),
+                'CntrTypes': $("#ddlCntrTypes option:selected").text(),
+                'CurrencyID': $("#ddlCurrency").val(),
+                'Currency': $("#ddlCurrency option:selected").text(),
+                'Amt': $scope.Amt,
+                'DestCountryID': $("#ddlCountry").val(),
+                'DestCountry': $("#ddlCountry option:selected").text(),
+                'HandlingChargesID': $("#ddlHandlingTerms").val(),
+                'HandlingCharges': $("#ddlHandlingTerms option:selected").text()
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+                $scope.DynamicGrid.push(val);
+            }
+
+
+            $("#ddlchargeTypes").val("");
+            $("#ddlchargeCode").val("");
+            $("#ddlBasic").val("");
+            $("#ddlCntrTypes").val("");
+            $("#ddlCurrency").val("");
+            $scope.Amt = "";
+            $("#ddlCountry").val("");
+            $("#ddlHandlingTerms").val("");
+            $scope.HDArrayIndex = "";
+            $scope.TID = 0;
+
+        }
+
+        $scope.Remove = function (DynamicGrid, index, TID) {
+
+            var BussData = {}
+            BussData.TID = TID;
+            $scope.DynamicGrid.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffDelete/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGrid.splice(index, TID);
+                    $scope.FilPortTariffExsitingValues($scope.RegId);
+                });
+            });
+
+
+
+        }
+        $scope.Selectvalues = function (DynamicGrid, index) {
+            $scope.HDArrayIndex = index;
+            $scope.TID = $scope.DynamicGrid[index].TID;
+            $scope.ChargeType = { ID: $scope.DynamicGrid[index].ChargeTypeID };
+            $scope.functionGridselect($scope.DynamicGrid[index].ChargeTypeID);
+            $scope.ChargeCodeID = { ID: $scope.DynamicGrid[index].ChargeCodeID };
+            $scope.Basic = { ID: $scope.DynamicGrid[index].BasicID };
+            $scope.functionGridSelectBaisc($scope.DynamicGrid[index].BasicID);
+            $scope.CntrTypes = { ID: $scope.DynamicGrid[index].CntrTypeID };
+            $scope.Currency = { ID: $scope.DynamicGrid[index].CurrencyID };
+            $scope.Amt = $scope.DynamicGrid[index].Amt;
+            $scope.DestCountry = { ID: $scope.DynamicGrid[index].DestCountryID };
+            $scope.ddlHandlingTerms = { ID: $scope.DynamicGrid[index].HandlingChargesID };
+
+            if ($scope.DynamicGrid[index].ChargeTypeID == "1") {
+                $scope.DDLHandlingTerms = true
+            }
+            else {
+                $scope.DDLHandlingTerms = false
+            }
+
+        }
+        // --VALIDATION Begin----//
+
+
+        $scope.ExistingTariffValidation = function (data) {
+
+            var BussData = {}
+            var Items = []
+            if ($scope.RegId == "")
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.RegId;
+            $scope.CurrentDate = currentDate;
+            BussData.PortLocationID = $("#ddlLocationPort").val();
+            BussData.ModuleID = $("#ddlModule").val();
+            BussData.ShipmentTypeID = $("#ddlShipmentType").val();
+
+            BussData.CommodityTypeID = $("#ddlCommodityType").val();
+            BussData.CollectionModeID = $("#ddlCollectionMode").val();
+            BussData.CollectionAgentID = 0;
+            BussData.StatusID = $("#ddlStatus").val();
+            BussData.ValidFrom = $("#txtFromDate").val();
+            BussData.ValidTo = $("#txtToDate").val();
+            if ($("#ddlCustomerName").val() != "?")
+                BussData.CustomerID = $("#ddlCustomerName").val();
+            else
+                BussData.CustomerID = 0;
+            BussData.Remarks = $scope.txtRemark;
+
+            BussData.TariffModeID = $("#ddlTariffMode").val();
+
+
+            if ($("#ddlTariffTypes").val() != "?" && $("#ddlTariffTypes").val() != null) {
+                BussData.TariffType = $("#ddlTariffTypes").val();
+            }
+            else
+                BussData.TariffType = 0;
+
+
+            if ($("#ddlRegTariffTypes").val() != null)
+                BussData.TraiffRegular = $("#ddlRegTariffTypes").val();
+            else
+                BussData.TraiffRegular = 0;
+
+            if ($("#ddlGroup").val() != "?" && $("#ddlGroup").val() != null)
+                BussData.GroupID = $("#ddlGroup").val();
+            else
+                BussData.GroupID = 0;
+
+
+            if ($("#ddlServiceType").val() != "?" && $("#ddlServiceType").val() != null)
+                BussData.ServiceTypeID = $("#ddlServiceType").val();
+            else
+                BussData.ServiceTypeID = 0;
+
+
+
+
+
+
+            angular.forEach(data, function (value, key) {
+                var IntDisPort = 0;
+                var StrDisPort = 0;
+
+                var IntHandling = 0;
+                var StrHandling = 0;
+
+                var IntDisPort = data[key].DestCountryID;
+                var StrDisPort = data[key].DestCountry;
+
+                var IntHandling = data[key].HandlingChargesID;
+                var StrHandling = data[key].HandlingCharges;
+
+
+                var intTID = data[key].TID;
+
+                if (StrDisPort == "") {
+                    IntDisPort = parseInt(0);
+                    StrDisPort = parseInt(0);
+                }
+
+                if (StrHandling == "") {
+                    IntHandling = parseInt(0);
+                    StrHandling = parseInt(0);
+                }
+
+
+                if (typeof data[key].TID == "undefined") {
+                    intTID = 0;
+                }
+                Items.push('Insert:' + intTID, data[key].ChargeTypeID, data[key].ChargeType,
+                    data[key].ChargeCodeID,
+                    data[key].ChargeCode,
+                    data[key].BasicID,
+                    data[key].Basic, data[key].CntrTypeID,
+                    data[key].CntrTypes,
+                    data[key].CurrencyID, data[key].Currency,
+                    data[key].Amt,
+                    IntDisPort,
+                    StrDisPort,
+                    IntHandling,
+                    StrHandling
+
+                );
+            });
+            BussData.Itemsv = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/SalesApi/CheckTariffValidation",
+                data: JSON.stringify(BussData),
+
+            })
+                .then(function (response) {
+                    $timeout(function () {
+
+                        $scope.Result = response.data;
+                        //const  date1 = $("#txtToDate").val();
+                        //const date2 = $scope.CurrentDate;
+
+                        //const date1 = new Date($("#txtToDate").val());
+                        //const date2 = new Date($scope.CurrentDate);
+
+                        if (BussData.ID == "0" && $scope.Result.length >= "1") {
+                            
+
+                                ShowPopup("Tariff Combination Already Exists");
+                                return false;
+
+                        }
+                        //else if (date1 > date2) {
+
+                        //    ShowPopup("Please Enter Valid Dates");
+                        //    return false;
+                        //}
+                        else {
+
+
+                            $http({
+                                method: 'POST',
+                                url: '/api/SalesApi/SalesPortTariffInsert',
+                                data: JSON.stringify(BussData),
+
+                            }).then(function (result) {
+                                $timeout(function () {
+                                    $scope.RegId = result.data[0].ID;
+
+                                    if (result.data[0].ID != "0") {
+                                        $scope.FilPortTariffExsitingValues($scope.RegId);
+                                        ShowPopup("Port Tariff Rate Saved Successfully");
+
+                                        var url = "/Sales/TariffView";
+
+                                        window.setTimeout(window.location.href = url, 1000000);
+                                    }
+                                    else {
+
+                                        ShowPopup("Error Not saved");
+                                    }
+
+                                    setTimeOut(function () {
+                                        window.location = "/";
+                                    }, 3000);
+                                });
+                            }, function (result) {
+                                if (result.status == 500) {
+                                    ShowPopup("Sorry no internet connectivity Application Error.");
+                                }
+                                else if (result.status == 404) {
+                                    ShowPopup("Sorry no internet connectivity page not found.");
+                                }
+                                if (result.status > 0) {
+                                    var errorMsg = result.status + ': ' + result.data;
+                                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                                }
+                            }).catch(function (result) {
+
+                                ShowPopup('There has been an error: ' + result);
+                            });
+
+                        }
+
+
+                    });
+                }, function (response) {
+                    if (response.status > 0) {
+                        var errorMsg = response.status + ': ' + response.data;
+                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                    }
+                });
+        }
+        // --VALIDATION end ----//
+        $scope.Recordsave = function (data) {
+
+            var validation = "";
+
+            var ddlTariffMode = $('#ddlTariffMode').val();
+            if (ddlTariffMode == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Tariff Mode</span></br>"
+            }
+
+            if (ddlTariffMode == 82) {
+
+                var ddlTariffTypes = $('#ddlRegTariffTypes').val();
+                if (ddlTariffTypes == "?") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Regular Tariff Types</span></br>"
+                }
+            }
+            if (ddlTariffMode == 83) {
+                var ddlTariffTypes = $('#ddlTariffTypes').val();
+                if (ddlTariffTypes == "?") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Incidental Tariff Types</span></br>"
+                }
+            }
+
+            var ddlLocationPort = $('#ddlLocationPort').val();
+            if (ddlLocationPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Location Port</span></br>"
+            }
+
+            var ddlModule = $('#ddlModule').val();
+            if (ddlModule == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Module</span></br>"
+            }
+
+            var ddlShipmentType = $('#ddlShipmentType').val();
+            if (ddlShipmentType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select ShipmentTypes</span></br>"
+            }
+
+            var ddlShipmentType = $('#ddlServiceType').val();
+            if (ddlShipmentType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Service Types</span></br>"
+            }
+
+
+            
+            var ddlCommodityType = $('#ddlCommodityType').val();
+            if (ddlCommodityType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select CommodityType</span></br>"
+            }
+
+            var ddlCollectionMode = $('#ddlCollectionMode').val();
+            if (ddlCollectionMode == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Collection Mode</span></br>"
+            }
+
+            var ddlCollectionAgent = $('#ddlCollectionAgent').val();
+            if (ddlCollectionAgent == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Collection Agent</span></br>"
+            }
+
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+
+            var txtFromDate = $('#txtFromDate').val();
+            if (txtFromDate.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter FromDate</span></br>"
+            }
+            var txtToDate = $('#txtToDate').val();
+            if (txtToDate.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter ToDate</span></br>"
+            }
+
+            //var ddlCustomerName = $('#ddlCustomerName').val();
+            //alert(ddlCustomerName);
+            //if (typeof ddlCustomerName == "?" && typeof  ddlCustomerName == null) {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Customer Name</span></br>"
+            //}
+
+            var Datav = "undefined";
+            angular.forEach(data, function (value, key) {
+
+                Datav += data[key].ChargeCodeID.ID;
+
+            });
+
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Contract Rates</span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            ///---- save function in ----//
+            $scope.ExistingTariffValidation(data);
+            ///---- save function in ----//
+        }
+
+        $scope.FilPortTariffExsitingMaster = function (PTRegID) {
+
+            var Datavalue = {};
+            Datavalue.ID = PTRegID;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffExistingMasterRecord',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RegId = result.data[0].ID;
+                    $scope.ddlLocationPort = { ID: result.data[0].PortLocationID };
+                    $scope.ddlModule = { ID: result.data[0].ModuleID };
+                    $scope.ddlShipmentType = { ID: result.data[0].ShipmentTypeID };
+                    $scope.ddlCommodityType = { ID: result.data[0].CommodityTypeID };
+                    $scope.ddlCollectionMode = { ID: result.data[0].CollectionModeID };
+                    //$scope.ddlCollectionAgent = { ID: result.data[0].CollectionAgentID };
+                    $scope.ddlStatus = { ID: result.data[0].StatusID };
+                    $scope.txtFromDate = result.data[0].ValidFrom;
+                    $scope.txtToDate = result.data[0].ValidTo;
+                    $scope.ddlCustomerName = { ID: result.data[0].CustomerID };
+                    $scope.txtRemark = result.data[0].Remarks;
+
+                    $scope.ddlTariffMode = { ID: result.data[0].TariffModeID };
+
+                    $scope.ddlGroup = { ID: result.data[0].GroupID };
+                    $scope.ddlServiceType = { ID: result.data[0].ServiceTypeID };
+
+                    if (result.data[0].TariffModeID == 82) {
+                        document.getElementById("ddlRegTariffTypes").disabled = false;
+                        document.getElementById("ddlTariffTypes").disabled = true;
+
+                    }
+                    else if (result.data[0].TariffModeID == 83) {
+                        document.getElementById("ddlRegTariffTypes").disabled = true;
+                        document.getElementById("ddlTariffTypes").disabled = false;
+
+                    }
+                    if (result.data[0].CommodityTypeID == 3)
+                        document.getElementById("ddlGroup").disabled = true;
+                    else
+                        document.getElementById("ddlGroup").disabled = false;
+
+                    $scope.ddlTariffTypes = { ID: result.data[0].TariffType };
+                    $scope.ddlRegTariffTypes = { ID: result.data[0].TraiffRegular };
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.FilPortTariffExsitingValues = function (PTRegID) {
+
+            var Datavalue = {};
+            Datavalue.ID = PTRegID;
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffExistingRecord',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $scope.DynamicGrid = [{
+                    TID: "", ChargeTypeID: "", ChargeType: "", ChargeCode: "", ChargeCodeID: "",
+                    Basic: "", BasicID: "", CntrTypeID: "", CntrTypes: "", CurrencyID: "", Currency: "", Amt: "", DestCountryID: "", DestCountry: "", HandlingChargesID: "", HandlingCharges:""
+                }];
+                $timeout(function () {
+
+                    if (result.data[0].ChargeCodeID != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'TID': result.data[key].TID,
+                            'ChargeTypeID': result.data[key].ChargeTypeID,
+                            'ChargeType': result.data[key].ChargeType,
+                            'ChargeCodeID': result.data[key].ChargeCodeID,
+                            'ChargeCode': result.data[key].ChargeCode,
+                            'BasicID': result.data[key].BasisID,
+                            'Basic': result.data[key].Basis,
+                            'CntrTypeID': result.data[key].CntrID,
+                            'CntrTypes': result.data[key].Cntr,
+                            'CurrencyID': result.data[key].CurrencyID,
+                            'Currency': result.data[key].Currency,
+                            'Amt': result.data[key].Amount,
+                            'DestCountryID': result.data[key].DestCountryID,
+                            'DestCountry': result.data[key].DestCountry,
+                            'HandlingChargesID': result.data[key].HandlingChargeID,
+                            'HandlingCharges': result.data[key].HandlingCharge
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $("#ddlchargeTypes").change(function () {
+
+            if ($("#ddlchargeTypes").val() == "1") {
+                $scope.DDLHandlingTerms = true
+            }
+            else {
+                $scope.DDLHandlingTerms = false
+            }
+
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlchargeTypes").val();
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ChargeCodeTypes/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeCodeAllvalues = result.data;
+
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        $("#ddlBasic").change(function () {
+
+
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlBasic").val();
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CntrTypeValuesPass/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypesvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+
+        $("#ddlTariffMode").change(function () {
+
+            var ID = $("#ddlTariffMode").val();
+            if (ID == 82) {
+                document.getElementById("ddlRegTariffTypes").disabled = false;
+                document.getElementById("ddlTariffTypes").disabled = true;
+                $("#ddlTariffTypes").val('');
+            }
+            else if (ID == 83) {
+                document.getElementById("ddlRegTariffTypes").disabled = true;
+                document.getElementById("ddlTariffTypes").disabled = false;
+                $("#ddlRegTariffTypes").val('');
+            }
+        });
+
+        $scope.functionGridselect = function (Chargeval) {
+
+            var Datavalue = {};
+            Datavalue.ID = Chargeval;
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ChargeCodeTypes/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeCodeAllvalues = result.data;
+
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+
+
+        $scope.functionGridSelectBaisc = function (BasicID) {
+
+
+            var Datavalue = {};
+            Datavalue.ID = BasicID;
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CntrTypeValuesPass/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypesvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+
+        $scope.ClickCopyTraiff = function () {
+
+            $scope.RegId = 0;
+            ShowPopup('Copy Tariff successfully');
+        }
+
+        //$scope.FileUploadingWindows = function () {
+
+        //    var left = (screen.width / 2) - (400 / 2);
+        //    var top = (screen.height / 2) - (300 / 2);
+        //    return window.open("../TarifffileUpload.aspx?ID=" + $scope.RegId, 'window', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=300, top=' + top + ', left=' + left);
+        //}
+
+        $scope.SelectTariffView = function (gDate, Index, TariffMaxID) {
+
+            $scope.HDTariffMaxID = TariffMaxID;
+
+            var Datavalue = {};
+            Datavalue.TariffChID = $scope.HDTariffMaxID;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffChargeViewRecord/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result)
+            {
+                if (result.data.length > 0) {
+                    $timeout(function () {
+                        $scope.DynamicGridMUCCharges.length = 0;
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridMUCCharges.push({
+                                'TCID': result.data[key].ID,
+                                'ChargeCodeID': { ID: result.data[key].ChargeCodeID },
+                                'ShipmentTypeID': { ID: result.data[key].ShipmentTypeID },
+                                'CommodityTypeID': { ID: result.data[key].CommodityTypeID },
+                                'CntrTypeID': { ID: result.data[key].CntrTypeID },
+                                'CurrencyID': { ID: result.data[key].CurrencyID },
+                                'Amount': result.data[key].Amount
+                            });
+                        });
+                        $scope.BindTotalMSCCharges($scope.DynamicGridMUCCharges);
+                    });
+
+                }
+                else {
+                    $scope.DynamicGridMUCCharges.length = 1;
+                }
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+            //
+            $('#demoModalTariffView').modal('show');
+
+        }
+
+        $scope.DynamicGridMUCCharges = [{ TCID: "", ChargeCodeID: "", ShipmentTypeID: "", CommodityTypeID: "", CntrTypeID: "", CurrencyID:"",Amount: "" }];
+
+        $scope.ChargeDescription = null;
+        $scope.fillChargeDescription = function () {
+            $scope.states = [];
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/MUCChargeCodeTypes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeDescription = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChargeDescription();
+
+        $scope.FillShipmentTypes = null;
+
+        $scope.fillShipmentTypesValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "50"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.FillShipmentTypes = result.data;
+                    
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillShipmentTypesValues();
+
+        $scope.MUCChargesAdd = function (gRows) {
+
+            if (gRows.ChargeCodeID.ID == "") {
+                swal("Please enter CntrTypes");
+                return;
+            }
+
+            $scope.DynamicGridMUCCharges.push({
+                'TCID': "",
+                'ChargeCodeID': "",
+                'ShipmentTypeID': "",
+                'CommodityTypeID': "",
+                'CntrTypeID': "",
+                'CurrencyID':"",
+                'Amount': ""
+
+            });
+        }
+
+
+        $scope.OnclickTariffDetailUpdate = function (data) {
+
+            
+            var BussData = {};
+            var Items = [];
+            var intTCID = 0;
+            BussData.TariffChID = $scope.HDTariffMaxID;
+            BussData.Amount = $scope.TotalMCHCharges;
+
+            angular.forEach(data, function (value, key) {
+
+                if (typeof data[key].TCID == "undefined") {
+                    intTCID = 0;
+                }
+                else {
+                    data[key].TCID = intTCID;
+                }
+                Items.push('Insert:' + intTCID, data[key].ChargeCodeID.ID, data[key].ShipmentTypeID.ID, data[key].CommodityTypeID.ID, data[key].CntrTypeID.ID, data[key].CurrencyID.ID, data[key].Amount);
+
+            });
+            BussData.Itemsv = Items.toString();
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/InsertPortTariffChargeInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    $scope.FilPortTariffExsitingValues($scope.RegId);
+                    ShowPopup("Charge Details as Updated sucessfully.");
+                    $('#demoModalTariffView').modal('hide');
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.BindTotalMSCCharges = function (data)
+        {
+             var TotalAmt=0
+            angular.forEach(data, function (value, key) {
+                TotalAmt += parseFloat(data[key].Amount);
+               
+            });
+            $scope.TotalMCHCharges = TotalAmt;
+
+        }
+
+
+
+        $scope.MUCChargesDelete = function (DynamicGridMUCCharges, index, TCID) {
+
+           
+            var BussData = {}
+            BussData.ID = TCID;
+            $scope.DynamicGridMUCCharges.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffBrackupDelete/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup("Delete Tariff Charge Details");
+                });
+            });
+
+
+
+        }
+
+
+        $("#ddlCommodityType").change(function () {
+
+            var Commodity = $('#ddlCommodityType').val();
+            if (Commodity == 3)
+                document.getElementById("ddlGroup").disabled = true;
+            else
+                document.getElementById("ddlGroup").disabled = false;
+
+          
+        });
+
+    });
+
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Sales/TariffView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<a href="/Sales/TariffMaster" class="btn btn-fill btn-warning btnedit btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Tariff Master</h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 download" style="text-align:right;">
+                                <button type="submit" id="btnCopyTraiff" ng-click="ClickCopyTraiff();" class="btn btn-fill btn-success">
+                                    <i class="material-icons">
+                                        content_copy
+                                    </i>
+                                    Copy Tariff
+                                </button>
+
+                            </div>
+                            <div>
+
+                            </div>
+                        </div>
+                        <div>
+
+                        </div>
+                    </div>
+                    <div class="card-body ">
+
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Tariff Mode</label>
+                                            <select class="form-control my-select" id="ddlTariffMode" ng-model="ddlTariffMode" options="{ allowClear: true }" ng-options="item.GeneralName for item in TariffModeAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label> Tariff Type</label>
+                                            <select class="form-control" id="ddlRegTariffTypes" ng-model="ddlRegTariffTypes" options="{ allowClear: true }" ng-options="item.GeneralName for item in TariffRegTypeAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Incidental Tariff Types</label>
+                                            <select class="form-control" id="ddlTariffTypes" ng-model="ddlTariffTypes" options="{ allowClear: true }" ng-options="item.GeneralName for item in TariffTypeAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Location</label>
+                                            <select class="form-control my-select" id="ddlLocationPort" ng-model="ddlLocationPort" options="{ allowClear: true }" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Module</label>
+                                            <select class="form-control my-select" id="ddlModule" ng-model="ddlModule" options="{ allowClear: true }" ng-options="item.GeneralName for item in ModuleAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipment Type</label>
+                                            <select class="form-control my-select" id="ddlShipmentType" ng-model="ddlShipmentType" options="{ allowClear: true }" ng-options="item.GeneralName for item in ShipmentTypeAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Commodity Type</label>
+                                            <select class="form-control my-select" id="ddlCommodityType" ng-model="ddlCommodityType" options="{ allowClear: true }" ng-options="item.GeneralName for item in CommodityAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Group Mode</label>
+                                            <select class="form-control my-select" id="ddlGroup" ng-model="ddlGroup" ng-disabled="ddlGroupHid" options="{ allowClear: true }" ng-options="item.name for item in BindDGClassValues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Service Type</label>
+                                            <select class="form-control my-select" id="ddlServiceType" ng-model="ddlServiceType" ng-options="item.ServiceTypesName for item in ServiceTypesValue track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Collection Mode</label>
+                                            <select class="form-control my-select" id="ddlCollectionMode" ng-model="ddlCollectionMode" options="{ allowClear: true }" ng-options="item.GeneralName for item in CollectionAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <select class="form-control my-select" id="ddlStatus" ng-model="ddlStatus" options="{ allowClear: true }" ng-options="item.name for item in StatusBindValues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid From</label>
+                                            <input type="text" autocomplete="off" id="txtFromDate" class="form-control datepicker" ng-model="txtFromDate" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid Till</label>
+                                            <input type="text" autocomplete="off" id="txtToDate" class="form-control datepicker" ng-model="txtToDate" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Customer Name</label>
+                                            <select class="form-control my-select" id="ddlCustomerName" ng-model="ddlCustomerName" ng-options="item.CustomerName for item in CustomerMasterAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Remark</label>
+                                            <textarea id="txtRemark" ng-model="txtRemark" class="form-control" rows="5"></textarea>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            @*<div class="col-md-12 padlr0" style="text-align:right; padding-right:16px;">
+                                    <a href="#" ng-click="FileUploadingWindows();" class="btn btn-fill btn-success btnuploadfile btnadd btntop" style="margin-right:0;">
+                                        <i class="material-icons">upload</i> Upload
+                                    </a>
+
+                                </div>*@
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+
+                                        <thead>
+                                            <tr class="gridhead">
+                                                <th>S.No</th>
+                                                <th>Charge Types</th>
+                                                <th>Charge Code</th>
+                                                <th>Basis</th>
+                                                <th>Container Type</th>
+                                                <th>Currency</th>
+                                                <th>Amount</th>
+                                                <th>Dest.Port</th>
+                                                <th>Handling Terms</th>
+                                                <th class="td-actions text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="margin-top:20px!important;">
+                                            <tr class="gridbody">
+                                                <td></td>
+                                                <td class="chg">
+                                                    <input type="hidden" id="HDIDv" class="form-control" ng-model="TID" />
+                                                    <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                    <select class="form-control" id="ddlchargeTypes" ng-model="ChargeType" ng-options="item.ChargeType for item in ChargeTypesBindValues track by item.ID"></select>
+
+                                                </td>
+                                                <td class="chgcode">
+
+                                                    <select class="form-control" id="ddlchargeCode" ng-model="ChargeCodeID"
+                                                            ng-options="item.ChargeCode for item in ChargeCodeAllvalues track by item.ID">
+                                                    </select>
+                                                </td>
+                                                <td class="basis">
+                                                    <select class="form-control" id="ddlBasic" ng-model="Basic" ng-change="ContainerTypesBind();" ng-options="item.name for item in BasicBindValues track by item.ID">
+                                                        
+                                                    </select>
+                                                </td>
+                                                <td class="cont">
+                                                    <select class="form-control" id="ddlCntrTypes" ng-model="CntrTypes" ng-options="item.CntrTypes for item in CntrTypesvalues track by item.ID">
+                                                    </select>
+                                                </td>
+
+                                                <td class="curr">
+                                                    <select class="form-control" id="ddlCurrency" ng-model="Currency" ng-options="item.Currency for item in CurrencyValue track by item.ID">
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" id="txtAmt" class="form-control amtrgt" ng-model="Amt" /></td>
+                                                <td class="des">
+                                                    <select class="form-control" id="ddlCountry" ng-model="DestCountry" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                    </select>
+                                                </td>
+
+                                                <td class="des">
+                                                    <select class="form-control" id="ddlHandlingTerms" ng-disabled="DDLHandlingTerms" ng-model="ddlHandlingTerms" ng-options="item.SlotTerm for item in AllHandlingTermsvalues track by item.ID">
+                                                        <option value=""></option>
+                                                    </select>
+                                                </td>
+
+
+
+
+                                                <td class="td-actions text-right entrygrid">
+                                                    <button type="button" rel="tooltip" ng-click="Add(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">add</i>
+                                                    </button>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                        <thead>
+                                            <tr class="gridhead1">
+                                                <th>S.No.</th>
+                                                <th>Charge Types</th>
+                                                <th class="wid200">Charge Code</th>
+                                                <th>Basis</th>
+                                                <th>Container Type</th>
+
+                                                <th>Currency</th>
+                                                <th class="wid90">Amount</th>
+                                                <th>Dest.Port</th>
+                                                <th>Handling Charges</th>
+                                                <th class="disabled-sorting text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+
+                                            <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                                <td>{{$index+1}}</td>
+
+                                                <td>
+                                                    {{gRow.ChargeType}}
+                                                    @*<input type="text" id="txtChargeType" class="form-control" ng-model="gRow.ChargeType" />*@
+                                                    <input type="hidden" id="HDChargeTypeID" class="form-control" ng-model="gRow.ChargeTypeID" />
+                                                </td>
+                                                <td>
+                                                    {{gRow.ChargeCode}}
+                                                    @*<input type="text" id="txtChargeCode" class="form-control" ng-model="gRow.ChargeCode" />*@
+                                                    <input type="hidden" id="HDChargeCodeID" class="form-control" ng-model="gRow.ChargeCodeID" />
+                                                </td>
+
+                                                <td>
+                                                    {{gRow.Basic}}
+                                                    @*<input type="text" id="txtBasic" class="form-control" ng-model="gRow.Basic" />*@
+                                                    <input type="hidden" id="HDBasicID" class="form-control" ng-model="gRow.BasicID" />
+                                                </td>
+
+                                                <td>
+                                                    {{gRow.CntrTypes}}
+                                                    @*<input type="text" id="txtCntrTypes" class="form-control" ng-model="gRow.CntrTypes" />*@
+                                                    <input type="hidden" id="HDCntrTypeID" class="form-control" ng-model="gRow.CntrTypeID" />
+                                                </td>
+
+                                                <td>
+                                                    {{gRow.Currency}}
+                                                    @*<input type="text" id="txtCurrency" class="form-control" ng-model="gRow.Currency" />*@
+                                                    <input type="hidden" id="HDCurrencyID" class="form-control" ng-model="gRow.CurrencyID" />
+                                                </td>
+                                                <td class="txtright">
+                                                    {{gRow.Amt}}
+                                                    @*<input type="text" id="txtAmt" class="form-control" ng-model="gRow.Amt" />*@
+                                                </td>
+                                                <td>
+                                                    {{gRow.DestCountry}}
+                                                    @*<input type="text" id="txtDestCountry" class="form-control" ng-model="gRow.DestCountry" />*@
+                                                    <input type="hidden" id="HDDestCountryID" class="form-control" ng-model="gRow.DestCountryID" />
+                                                </td>
+                                                <td>
+                                                    {{gRow.HandlingCharges}}
+                                                    <input type="hidden" id="HDHandlingCharges" class="form-control" ng-model="gRow.HandlingChargesID" />
+                                                </td>
+                                                <td class="td-actions text-right bindgrid">
+
+
+                                                    <button type="button" rel="tooltip" ng-show="gRow.ChargeTypeID ==2" ng-click="SelectTariffView(DynamicGrid,$index,gRow.TID)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                        <i class="material-icons"></i>Breakup
+                                                    </button>
+
+                                                    <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+                                                    <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index,gRow.TID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                    <input type="hidden" id="HDID" class="form-control" ng-model="gRow.TID" />
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave(DynamicGrid);" class="btn btn-fill btn-success">Submit</button>
+                            <input type="hidden" id="RegId" name="RegId" />
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal fade" id="demoModalTariffView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="width:1020px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                            </div>
+                            <div class="modal-body">
+                                <div class="row popup">
+                                    <div class="col-md-12" style="text-align:center;">
+
+                                        <div class="card-header card-header-primary card-header-text" style=" margin-bottom: 20px;">
+                                            <div class="card-text">
+                                                <h4 class="card-title" style="font-weight:bold;">THC COSTINGS</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="material-datatables">
+
+                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>SNo</th>
+                                                            <th>Charges</th>
+                                                            <th>Shipment Type</th>
+                                                            <th>Commodity</th>
+                                                            <th>Cntr Type</th>
+                                                            <th>Currency</th>
+                                                            <th>Amount</th>
+
+                                                            <th class="disabled-sorting text-right actwid">Actions</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+                                                        <tr ng-repeat="gRow in DynamicGridMUCCharges">
+                                                            <td>{{$index+1}}</td>
+
+
+                                                            <td>
+                                                                <select class="form-control" id="ddlchargeCode" ng-model="gRow.ChargeCodeID" ng-options="item.ChargeCode for item in ChargeDescription track by item.ID"></select>
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-control" id="ddlshipmentTypes" ng-model="gRow.ShipmentTypeID" ng-options="item.GeneralName for item in FillShipmentTypes track by item.ID"></select>
+                                                            </td>
+
+                                                            <td>
+                                                                <select class="form-control" id="ddlCommodity" ng-model="gRow.CommodityTypeID" ng-options="item.GeneralName for item in CommodityAllvalues track by item.ID"></select>
+                                                            </td>
+
+                                                            <td>
+                                                                <select class="form-control" id="ddlCntrTypes" ng-model="gRow.CntrTypeID" ng-options="item.CntrTypes for item in CntrTypesvalues track by item.ID"></select>
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-control" id="ddlCurrency" ng-model="gRow.CurrencyID" ng-options="item.Currency for item in CurrencyValue track by item.ID">
+                                                                </select>
+                                                            </td>
+
+                                                            <td><input type="text" id="txtReqRate" autocomplete="off" class="form-control" ng-change="BindTotalMSCCharges(DynamicGridMUCCharges);" ng-model="gRow.Amount" /></td>
+
+                                                            <td class="td-actions text-right actwid">
+                                                                <button type="button" rel="tooltip" ng-if="$last" ng-click="MUCChargesAdd(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                                    <i class="material-icons">add</i>
+                                                                </button>
+                                                                <button type="button" rel="tooltip" ng-if="!$last" ng-click="MUCChargesDelete(DynamicGridMUCCharges,$index,gRow.TCID)"  class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                    <i class="material-icons">delete</i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="6"></td>
+                                                            <td><span ng-bind="TotalMCHCharges"> </span> </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+
+
+
+                                        </div>
+
+                                        <div class="col-md-12">
+
+                                            <button type="submit" id="btnudate" ng-click="OnclickTariffDetailUpdate(DynamicGridMUCCharges);" class="btn btn-fill btn-primary btnupdate btntop">
+                                                <i class="material-icons"></i>
+                                                Update
+                                            </button>
+
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+        });
+    });
+</script>
+

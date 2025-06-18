@@ -1,0 +1,375 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+
+    .card .table tr td {
+        white-space: nowrap;
+    }
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+    .table > thead > tr > th.thd{
+        width:50px!important;
+    }
+</style>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, Upload, $timeout) {
+
+
+        $scope.DCMRGlobalReportRecords = function (ReqID) {
+
+            $http({
+                method: 'POST',
+                url: "/api/EQCReportApi/DCMRGlobalReportView",
+                data: {},
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DCMRGlobalReport = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.DCMRGlobalReportRecords();
+
+         $scope.btnPrint = function () {
+          
+            var User = localStorage.getItem("UserName");
+            window.location.href = '@Url.Action("DCMRGlobalExcelReport", "EQCReport")?User=' + User;
+
+
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #20498e !important;
+        color: #fff;
+    }
+
+        .table > thead > tr > th.appth {
+            background-color: #3b9e40 !important;
+        }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+    .table > thead > tr > th.impFull {
+        background-color: #9eb833 !important;
+        color: #fff;
+    }
+
+    .table > thead > tr > th.cntrDeStuf {
+        background-color: #00657b !important;
+        color: #fff;
+    }
+    .table > thead > tr > th.mtyRet {
+        background-color: #9eb833 !important;
+        color: #fff;
+    }
+    .table > thead > tr > th.dmg {
+        background-color: #00657b !important;
+        color: #fff;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+@*<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />*@
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/AllReports/InventoryReportDashboard" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+              
+
+
+                <div class="card-body">
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                        <div class="col-md-8" style="text-align:center;">
+                            <h4 style="font-size:24px; font-weight:bold; color:#000!important; margin-top:39px;">DCMR Global Report</h4>
+                        </div>
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h4 style="color: #12759a;font-size:14px;font-weight:bold;"> DCMR GLOBAL SUMMARY</h4>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 exceldownload" style="text-align:right;">
+                                    <a ng-click="btnPrint();">Download <i class="fa fa-file-excel-o"></i></a>
+                                </div>
+                            </div>
+
+                            <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+                                <div class="col-md-12 padlr0" style="padding:7px;">
+
+                                    <div class="material-datatables" style="overflow: scroll;">
+
+                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            <thead>
+
+
+                                                <tr>
+
+
+                                                    <th colspan="3" class="cntrDeStuf" style="text-align:center;">SUMMARY TYPE</th>
+                                                    <th colspan="6" class="impFull" style="text-align: center;">IMPORT FULL</th>
+
+                                                    <th colspan="6" class="cntrDeStuf" style="text-align:center;">
+                                                        WITH CNEE
+                                                    </th>
+
+                                                    <th class="impFull" colspan="6" style="text-align:center;">
+                                                        DAMAGE
+                                                    </th>
+                                                    <th class="cntrDeStuf" colspan="6" style="text-align:center;">
+                                                        AVAILABLE
+                                                    </th>
+                                                    <th class="impFull" colspan="6" style="text-align:center;">WITH SHIPPER   </th>
+
+                                                    <th class="cntrDeStuf" colspan="6" style="text-align:center;">
+                                                        EXP LDN
+                                                    </th>
+                                                    <th class="impFull" colspan="6" style="text-align:center;">
+                                                        SAILED
+                                                    </th>
+                                                    <th class="cntrDeStuf" colspan="6" style="text-align:center;">
+                                                        TRANSHIPMENT
+
+                                                    <th class="impFull" colspan="6" style="text-align:center;">
+                                                        MT REPO
+                                                    </th>
+                                                  
+
+                                                    @*<th class="cntrDeStuf" rowspan="2">
+            TOTAL
+        </th>*@
+                                                </tr>
+                                                <tr>
+                                                    <th class="cntrDeStuf">AGENCY</th>
+                                                    <th class="cntrDeStuf">GEOLOCATION</th>
+                                                    <th class="cntrDeStuf">LOCATIONS(Port)</th>
+                                                    <th class="impFull">20'GP</th>
+                                                    <th class="impFull">40'HC</th>
+                                                    <th class="impFull">20'OT</th>
+                                                    <th class="impFull">40'OT</th>
+                                                    <th class="impFull">20'FR</th>
+                                                    <th class="impFull">40'FR</th>
+
+                                                    <th class="cntrDeStuf" width="50px">20'GP</th>
+                                                    <th class="cntrDeStuf" width="50px">40'HC</th>
+                                                    <th class="cntrDeStuf" width="50px">20'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">40'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">20'FR</th>
+                                                    <th class="cntrDeStuf" width="50px">40'FR</th>
+
+                                                    <th class="impFull">20'GP</th>
+                                                    <th class="impFull">40'HC</th>
+                                                    <th class="impFull">20'OT</th>
+                                                    <th class="impFull">40'OT</th>
+                                                    <th class="impFull">20'FR</th>
+                                                    <th class="impFull">40'FR</th>
+
+                                                    <th class="cntrDeStuf" width="50px">20'GP</th>
+                                                    <th class="cntrDeStuf" width="50px">40'HC</th>
+                                                    <th class="cntrDeStuf" width="50px">20'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">40'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">20'FR</th>
+                                                    <th class="cntrDeStuf" width="50px">40'FR</th>
+
+                                                    <th class="impFull">20'GP</th>
+                                                    <th class="impFull">40'HC</th>
+                                                    <th class="impFull">20'OT</th>
+                                                    <th class="impFull">40'OT</th>
+                                                    <th class="impFull">20'FR</th>
+                                                    <th class="impFull">40'FR</th>
+
+                                                    <th class="cntrDeStuf" width="50px">20'GP</th>
+                                                    <th class="cntrDeStuf" width="50px">40'HC</th>
+                                                    <th class="cntrDeStuf" width="50px">20'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">40'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">20'FR</th>
+                                                    <th class="cntrDeStuf" width="50px">40'FR</th>
+
+
+                                                    <th class="impFull">20'GP</th>
+                                                    <th class="impFull">40'HC</th>
+                                                    <th class="impFull">20'OT</th>
+                                                    <th class="impFull">40'OT</th>
+                                                    <th class="impFull">20'FR</th>
+                                                    <th class="impFull">40'FR</th>
+
+                                                    <th class="cntrDeStuf" width="50px">20'GP</th>
+                                                    <th class="cntrDeStuf" width="50px">40'HC</th>
+                                                    <th class="cntrDeStuf" width="50px">20'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">40'OT</th>
+                                                    <th class="cntrDeStuf" width="50px">20'FR</th>
+                                                    <th class="cntrDeStuf" width="50px">40'FR</th>
+
+                                                    <th class="impFull">20'GP</th>
+                                                    <th class="impFull">40'HC</th>
+                                                    <th class="impFull">20'OT</th>
+                                                    <th class="impFull">40'OT</th>
+                                                    <th class="impFull">20'FR</th>
+                                                    <th class="impFull">40'FR</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                <tr ng-repeat="iRow in DCMRGlobalReport">
+                                                    <td>{{iRow.Agency}}</td>
+                                                    <td>{{iRow.GeoLocV}}</td>
+                                                    <td>{{iRow.GeoLoc}}</td>
+                                                    <td>{{iRow.ImpFull20GP}}</td>
+                                                    <td>{{iRow.ImpFull40HC}}</td>
+                                                    <td>{{iRow.ImpFull20OT}}</td>
+                                                    <td>{{iRow.ImpFull40OT}}</td>
+                                                    <td>{{iRow.ImpFull20FR}}</td>
+                                                    <td>{{iRow.ImpFull40FR}}</td>
+
+                                                    <td>{{iRow.DeStuff20GP}}</td>
+                                                    <td>{{iRow.DeStuff40HC}}</td>
+                                                    <td>{{iRow.DeStuff20OT}}</td>
+                                                    <td>{{iRow.DeStuff40OT}}</td>
+                                                    <td>{{iRow.DeStuff20FR}}</td>
+                                                    <td>{{iRow.DeStuff40FR}}</td>
+
+                                                    <td>{{iRow.DmgUr20GP}}</td>
+                                                    <td>{{iRow.DmgUr40HC}}</td>
+                                                    <td>{{iRow.DmgUr20OT}}</td>
+                                                    <td>{{iRow.DmgUr40OT}}</td>
+                                                    <td>{{iRow.DmgUr20FR}}</td>
+                                                    <td>{{iRow.DmgUr40FR}}</td>
+
+
+                                                    <td>{{iRow.Avail20GP}}</td>
+                                                    <td>{{iRow.Avail40HC}}</td>
+                                                    <td>{{iRow.Avail20OT}}</td>
+                                                    <td>{{iRow.Avail40OT}}</td>
+                                                    <td>{{iRow.Avail20FR}}</td>
+                                                    <td>{{iRow.Avail40FR}}</td>
+
+
+                                                    <td>{{iRow.OutTo20GP}}</td>
+                                                    <td>{{iRow.OutTo40HC}}</td>
+                                                    <td>{{iRow.OutTo20OT}}</td>
+                                                    <td>{{iRow.OutTo40OT}}</td>
+                                                    <td>{{iRow.OutTo20FR}}</td>
+                                                    <td>{{iRow.OutTo40FR}}</td>
+
+
+                                                    <td>{{iRow.ExpFull20GP}}</td>
+                                                    <td>{{iRow.ExpFull40HC}}</td>
+                                                    <td>{{iRow.ExpFull20OT}}</td>
+                                                    <td>{{iRow.ExpFull40OT}}</td>
+                                                    <td>{{iRow.ExpFull20FR}}</td>
+                                                    <td>{{iRow.ExpFull40FR}}</td>
+
+                                                    <td>{{iRow.MtyTransit20GP}}</td>
+                                                    <td>{{iRow.MtyTransit40HC}}</td>
+                                                    <td>{{iRow.MtyTransit20OT}}</td>
+                                                    <td>{{iRow.MtyTransit40OT}}</td>
+                                                    <td>{{iRow.MtyTransit20FR}}</td>
+                                                    <td>{{iRow.MtyTransit40FR}}</td>
+
+                                                    <td>{{iRow.Trans20GP}}</td>
+                                                    <td>{{iRow.Trans40HC}}</td>
+                                                    <td>{{iRow.Trans20OT}}</td>
+                                                    <td>{{iRow.Trans40OT}}</td>
+                                                    <td>{{iRow.Trans20FR}}</td>
+                                                    <td>{{iRow.Trans40FR}}</td>
+
+                                                    <td>{{iRow.MtyRepo20GP}}</td>
+                                                    <td>{{iRow.MtyRepo40HC}}</td>
+                                                    <td>{{iRow.MtyRepo20OT}}</td>
+                                                    <td>{{iRow.MtyRepo40OT}}</td>
+                                                    <td>{{iRow.MtyRepo20FR}}</td>
+                                                    <td>{{iRow.MtyRepo40FR}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+</div>
+
+       
+
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

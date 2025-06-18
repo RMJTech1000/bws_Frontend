@@ -1,0 +1,515 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+       
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.StatusValues = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'Active', 'ID': 1 },
+            { 'name': 'In-Active', 'ID': 2 }
+        ];
+
+        $scope.LinerValue = null;
+        $scope.fillLinerValues = function () {
+            var Datavalue = {};
+            Datavalue.BussTypes = "7";
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerBussTypesMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    $scope.LinerValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillLinerValues();
+
+
+
+        $scope.ModuleAllvalues = null;
+        $scope.fillModuleValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "7"; //GeneralMaster Table seqNo //lastmodifyed seq 7
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ModuleAllvalues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillModuleValues();
+
+
+        $scope.ProgramAllvalues = null;
+        $scope.fillProgramValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "54"; //GeneralMaster Table seqNo //lastmodifyed seq 7
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ProgramAllvalues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillProgramValues();
+
+        $scope.BLNoLogicsList = null;
+        $("#ddlProgram").change(function () {
+
+            $scope.BLNofillLogics($("#ddlProgram").val());
+            //var Datavalue = {};
+            //Datavalue.ProgramID = $("#ddlProgram").val();
+            //$http({
+            //    method: 'POST',
+            //    url: '/api/DocumentNumbering/BLNoLogics/',
+            //    data: JSON.stringify(Datavalue),
+            //}).then(function (result) {
+            //    $timeout(function () {
+            //        $scope.BLNoLogicsList = result.data;
+
+            //    });
+            //}, function (result) {
+            //    if (result.status == 500) {
+            //        ShowPopup("Sorry no internet connectivity Application Error.");
+            //    }
+            //    else if (result.status == 404) {
+            //        ShowPopup("Sorry no internet connectivity page not found.");
+            //    }
+            //    if (result.status > 0) {
+            //        var errorMsg = result.status + ': ' + result.data;
+            //        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+            //    }
+            //}).catch(function (result) {
+            //    ShowPopup('There has been an error: ' + result);
+            //});
+
+        });
+
+        $scope.BLNofillLogics = function (ProgramID) {
+
+            var Datavalue = {};
+            Datavalue.ProgramID = ProgramID;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentNumbering/BLNoLogics/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BLNoLogicsList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        
+
+
+        //$scope.BLNoLogicsList = null;
+        //$scope.fillBLNoLogicsList = function () {
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/DocumentNumbering/BLNoLogics/',
+        //        data: {}
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            $scope.BLNoLogicsList = result.data;
+
+        //        });
+        //    }, function (result) {
+        //        if (result.status == 500) {
+        //            ShowPopup("Sorry no internet connectivity Application Error.");
+        //        }
+        //        else if (result.status == 404) {
+        //            ShowPopup("Sorry no internet connectivity page not found.");
+        //        }
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    }).catch(function (result) {
+        //        ShowPopup('There has been an error: ' + result);
+        //    });
+        //};
+        //$scope.fillBLNoLogicsList();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["LogicID"] != null) {
+                $scope.HDRegId = queryString["LogicID"].toString();
+                $scope.BindLinerBLNoLogicsEdit(queryString["LogicID"].toString());
+
+            }
+        });
+        $scope.BindLinerBLNoLogicsEdit = function (LogicID) {
+
+            var Datavalue = {}
+            var id = LogicID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = LogicID;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentNumbering/BLNoLogicsEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        $scope.HDRegId = result.data[0].ID;;
+                        $scope.ddlBLNoLogics = { ID: result.data[0].BLNoLogicID };
+                        $scope.ddlLinerName = { ID: result.data[0].LinerID };
+                        $scope.txtLinerCode = result.data[0].LinerCode;
+                        $scope.ddlModule = { ID: result.data[0].ModuleID };
+                        $scope.BLNofillLogics(result.data[0].ProgramID);
+                        $scope.ddlProgram = { ID: result.data[0].ProgramID };
+                        $scope.ddlStatus = { ID: result.data[0].StatusID };
+                    }
+                   
+                });
+            });
+          
+        }
+        $scope.Recordsave = function () {
+
+            var validation = "";
+
+            var ddlModule = $('#ddlModule').val();
+            if (ddlModule == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Module </span></br>"
+            }
+
+            var ddlProgram = $('#ddlProgram').val();
+            if (ddlProgram == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Program </span></br>"
+            }
+
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status </span></br>"
+            }
+            var ddlBLNoLogics = $('#ddlBLNoLogics').val();
+            if (ddlBLNoLogics == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select BLNoLogics </span></br>"
+            }
+
+            var txtLinerCode = $('#txtLinerCode').val();
+            if (txtLinerCode.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Liner Code</span></br>"
+            }
+         
+            var ddlLinerName = $('#ddlLinerName').val();
+            if (ddlLinerName == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select LinerName </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').show
+            var BussData = {}
+
+            if ($scope.HDRegId != "")
+                BussData.ID = $scope.HDRegId;
+            else
+                BussData.ID = 0;
+
+         
+            BussData.ModuleID = $("#ddlModule").val();
+            BussData.ProgramID = $("#ddlProgram").val();
+            BussData.StatusID = $("#ddlStatus").val();
+            BussData.BLNoLogicID = $("#ddlBLNoLogics").val();
+            BussData.LinerCode = $scope.txtLinerCode;
+            BussData.LinerID = $("#ddlLinerName").val();
+            $http({
+                method: 'POST',
+                url: "/api/DocumentNumbering/BLNoLogicsInsert",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $timeout(function () {
+               
+                    if (BussData.ID != "") {
+                        ShowPopup("LinerBLNumbering Updated");
+                    }
+                    else {
+
+                        ShowPopup("LinerBLNumbering Saved Successfully");
+                    }
+                    
+                    var url = "/LinerAgencies/LinerBLNumberingView";
+                    window.location.href = url;
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                   
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.back = function () {
+
+            window.location = "/LinerAgencies/LinerBLNumberingView";
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Document Numbering</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @*<div class="row">
+                            <div class="col-md-12 download" style="text-align:right;">
+
+                                <span style="margin-left: 100px; color: #e91e63; font-size:14px; padding-right: 38px;">STATUS :</span>
+                                <div class="togglebutton">
+                                    <label>
+                                        <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                        <span class="toggle"></span>
+
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>*@
+                        <div class="row">
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Module</label>
+                                            <select id="ddlModule" ng-model="ddlModule" class="form-control my-select" ng-options="item.GeneralName for item in ModuleAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Program</label>
+                                            <select id="ddlProgram" ng-model="ddlProgram" class="form-control my-select" ng-options="item.GeneralName for item in ProgramAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <select id="ddlStatus" ng-model="ddlStatus" class="form-control my-select" ng-options="item.name for item in StatusValues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>NUMBERING LOGICS *</label>
+                                            <select id="ddlBLNoLogics" ng-model="ddlBLNoLogics" class="form-control my-select" ng-options="item.BLNoLogic for item in BLNoLogicsList track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>LINER CODE *</label>
+                                            <input type="text" autocomplete="off" id="txtLinerCode" ng-model="txtLinerCode" class="form-control">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>LINER NAME *</label>
+                                            <select id="ddlLinerName" ng-model="ddlLinerName" class="form-control my-select" ng-options="item.CustomerName for item in LinerValue track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-6">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>AGENT CODE *</label>
+                        <input type="text" autocomplete="off" id="txtAgentCode" ng-model="txtAgentCode" class="form-control">
+
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                        </div>
+
+
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-success">Save</button>
+                                <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

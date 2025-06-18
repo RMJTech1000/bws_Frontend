@@ -1,0 +1,1049 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+@*<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />*@
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<style>
+    input[type=checkbox] {
+        width: 100% !important;
+        height: 17px !important;
+    }
+
+    .form-control.txtport {
+        width: 250px;
+        border-radius: 0;
+    }
+
+    .tblservie.table > thead > tr > th {
+        text-align: center;
+    }
+
+        .tblservie.table > thead > tr > th.headtitle {
+            font-size: 15px !important;
+        }
+
+    .tblservie.table > thead > tr.bighead > th {
+        background-color: #f9f9f9;
+        color: #304974;
+    }
+
+    .table.tblservie > tbody > tr > td {
+        padding: 4px 4px !important;
+    }
+
+    .tblservie.table .form-control {
+        border-radius: 0;
+    }
+
+    .table thead tr th {
+        border-right: none;
+        border: 2px solid #3049747a;
+        padding: 4px 8px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        font-size: 13px !important;
+    }
+
+    .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+        width: 130px !important;
+        font-size: 13px !important;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.Weekdays = [
+
+            { ID: 1, Name: 'Sun' },
+            { ID: 2, Name: 'Mon' },
+            { ID: 3, Name: 'Tue' },
+            { ID: 4, Name: 'Wed' },
+            { ID: 5, Name: 'Thu' },
+            { ID: 6, Name: 'Fri' },
+            { ID: 7, Name: 'Sat' },
+        ];
+
+        $scope.Weekdays2 = [
+            { ID: 1, Name: 'Sun' },
+            { ID: 2, Name: 'Mon' },
+            { ID: 3, Name: 'Tue' },
+            { ID: 4, Name: 'Wed' },
+            { ID: 5, Name: 'Thu' },
+            { ID: 6, Name: 'Fri' },
+            { ID: 7, Name: 'Sat' },
+        ];
+
+        $scope.GeoLocationList = null;
+        $scope.fillGeoLocations = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/GeoLocationsMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GeoLocationList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.fillGeoLocations();
+
+
+        $scope.PortValues = null;
+        $scope.fillPortValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BindMainPorts/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortValues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortValues();
+
+        $scope.OperatorValue = null;
+        $scope.fillSlotOperatorValues = function () {
+
+
+            var Datavalue = {};
+            Datavalue.BussTypes = "7,8,13";
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerBussTypesMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    $scope.OperatorValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSlotOperatorValues();
+
+        // operator grid dropdown change
+        $("#ddlOperator").change(function () {
+            $scope.SlotRefValues = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlOperator").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindSlotRefByOperator/',
+                data: JSON.stringify(Datavalue),
+                //  data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotRefValues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.BindExistSlotByOperator = function (OprID) {
+            $scope.SlotRefValues = null;
+            var Datavalue = {};
+
+            Datavalue.ID = OprID;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindSlotRefByOperator/',
+                data: JSON.stringify(Datavalue),
+                //  data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotRefValues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["SSID"] != null) {
+
+                $scope.HdRegId = queryString["SSID"].toString();
+                $scope.BindServiceSetup(queryString["SSID"].toString());
+                $scope.BindServiceRoute(queryString["SSID"].toString());
+                $scope.BindServiceOperators(queryString["SSID"].toString());
+            }
+
+
+        });
+
+        $scope.BindServiceSetup = function (SSID) {
+            var Datavalue = {};
+            Datavalue.ID = SSID;
+            $http({
+                method: 'POST',
+                url: "/api/Home/ServiceSetupEdit",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+                        // alert(result.data[0].TaxName);
+                        $scope.txtName = result.data[0].ServiceName;
+                        $scope.txtEffFrom = result.data[0].DtEffective;
+                        $scope.ddlGeoLoc = { ID: result.data[0].GeoLocID };
+
+                    }
+                    else {
+                        $scope.txtName = "";
+                        $scope.txtEffFrom = "";
+                        $scope.ddlGeoLoc = "";
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.BindServiceRoute = function (SSID) {
+            var Datavalue = {};
+            Datavalue.ID = SSID;
+            $http({
+                method: 'POST',
+                url: "/api/Home/ServiceRouteEdit",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data[0].PortID != "") {
+                        $scope.DynamicGridRoute.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGridRoute.push({
+
+                            'RID': result.data[key].RID,
+                            'Port': { ID: result.data[key].PortID },
+                            'TTHH': result.data[key].TTHH,
+                            'TTMM': result.data[key].TTMM,
+                            'WindowCommenceDay': { ID: result.data[key].DayWindowCommence },
+                            'WComHH': result.data[key].WComHH,
+                            'WComMM': result.data[key].WComMM,
+                            'WindowCloseDay': { ID: result.data[key].DayWindowClose },
+                            'WCloseHH': result.data[key].WCloseHH,
+                            'WCloseMM': result.data[key].WCloseMM,
+                            'PortStayDay': result.data[key].DayPortStay,
+                            'PortStayHH': result.data[key].PortStayHH,
+                            'PortStayMM': result.data[key].PortStayMM,
+
+                        });
+
+                    });
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.BindServiceOperators = function (SSID) {
+            var Datavalue = {};
+            Datavalue.ID = SSID;
+
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/ServiceOperatorsEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    if (result.data[0].OperatorID != "") {
+                        $scope.DynamicGridOperator.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGridOperator.push({
+                            'OID': result.data[key].OID,
+                            'OperatorID': result.data[key].OperatorID,
+                            'Operator': result.data[key].Operator,
+                            'SlotRefID': result.data[key].SlotRefID,
+                            'SlotRef': result.data[key].SlotRef,
+
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.DynamicGridRoute = [{ RID: "", Port: "", TTHH: "", TTMM: "", WindowCommenceDay: "", WComHH: "00", WComMM: "00", WindowCloseDay: "", WCloseHH: "00", WCloseMM: "00", PortStayDay: "0", PortStayHH: "00", PortStayMM: "00" }];
+
+
+        $scope.AddRoute = function (DynamicGridRoute) {
+
+
+            $scope.DynamicGridRoute.push({
+                'RID': "",
+                'Port': "",
+                'TTHH': "",
+                'TTMM': "",
+                'WindowCommenceDay': "",
+                'WComHH': "00",
+                'WComMM': "00",
+                'WindowCloseDay': "",
+                'WCloseHH': "00",
+                'WCloseMM': "00",
+                'PortStayDay': "0",
+                'PortStayHH': "00",
+                'PortStayMM': "00",
+
+            });
+
+        }
+
+        //$scope.RemoveRoute = function (DynamicGridRoute, index,RID) {
+        //    $scope.DynamicGridRoute.splice(index, 1);
+        //}
+
+        $scope.RemoveRoute = function (DynamicGridRoute, index, RID) {
+
+            var Datavalue = {}
+
+            Datavalue.RID = RID;
+
+            $scope.DynamicGridRoute.splice(index, 1)
+
+            $http({
+
+                method: 'POST',
+
+                url: '/api/Home/ServicePortsDelete/',
+
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    $scope.DynamicGridRoute.splice(index, OID);
+
+                    $scope.BindServiceRoute($scope.HdRegId);
+
+                });
+
+            });
+
+
+
+        }
+
+
+        $scope.DynamicGridOperator = [{ OID: "", OperatorID: "", Operator: "", SlotRefID: "", SlotRef: "" }];
+
+        $scope.DynamicGridOperator.splice(0, 1);
+
+        $scope.Selectvalues = function (DynamicGridOperator, index) {
+            $scope.HDArrayIndex = index;
+            $scope.OID = $scope.DynamicGridOperator[index].OID;
+            $scope.Operator = { ID: $scope.DynamicGridOperator[index].OperatorID };
+            $scope.BindExistSlotByOperator($scope.DynamicGridOperator[index].OperatorID);
+            $scope.SlotRef = { ID: $scope.DynamicGridOperator[index].SlotRefID };
+
+        }
+        $scope.AddOperator = function (DynamicGridOperator) {
+
+            var validation = "";
+
+            var ddlOperator = $('#ddlOperator').val();
+            if (ddlOperator == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select  Operator</span></br>"
+            }
+
+            var ddlSlotRef = $('#ddlSlotRef').val();
+            if (ddlSlotRef == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select  Slot Reference </span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            for (var i = 0; i < $scope.DynamicGridOperator.length; i++) {
+
+                if ($scope.DynamicGridOperator[i].OperatorID == $('#ddlOperator').val() && $scope.DynamicGridOperator[i].SlotRefID == $('#ddlSlotRef').val()) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Operator/Slot Ref Already Exists </span></br>"
+                }
+
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var OIDValue;
+
+            OIDValue = ($scope.OID == "") ? 0 : $scope.OID;
+
+            var val = {
+                'OID': OIDValue,
+                'OperatorID': $("#ddlOperator").val(),
+                'Operator': $("#ddlOperator option:selected").text(),
+                'SlotRefID': $("#ddlSlotRef").val(),
+                'SlotRef': $("#ddlSlotRef option:selected").text(),
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGridOperator[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGridOperator.push(val);
+            }
+
+            $("#ddlOperator").val("");
+            $("#ddlSlotRef").val("");
+
+            $scope.OID = 0;
+
+        }
+
+        $scope.RemoveOperator = function (DynamicGridOperator, index, OID) {
+
+
+
+            var Datavalue = {}
+
+            Datavalue.OID = OID;
+
+            $scope.DynamicGridOperator.splice(index, 1)
+
+            $http({
+
+                method: 'POST',
+
+                url: '/api/Home/ServiceOperatorsDelete/',
+
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    $scope.DynamicGridOperator.splice(index, OID);
+
+                    $scope.BindServiceOperators($scope.HdRegId);
+
+                });
+
+            });
+
+
+
+        }
+
+        //$scope.RemoveOperator = function (DynamicGridOperator, index,OID) {
+        //    $scope.DynamicGridOperator.splice(index, 1);
+        //}
+
+        $scope.Recordsave = function (dataRoute, dataOpr) {
+            var validation = "";
+
+
+            var txtName = $('#txtName').val();
+            if (txtName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Service Name </span></br>"
+
+            }
+            var txtEffFrom = $('#txtEffFrom').val();
+            if (txtEffFrom.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Date Effective From</span></br>"
+
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var Datav = "undefined";
+            var DataTT = "undefined";
+            angular.forEach(dataRoute, function (value, key) {
+                Datav += dataRoute[key].Port;
+                DataTT += dataRoute[key].TTHH;
+            });
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Route Details</span></br>"
+            }
+            if (DataTT.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Transit Time in  Route  </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $scope.ExistingServiceValidation = function () {
+                var BussData = {}
+
+                var id = $scope.HdRegId;
+
+                if (id == "" || id == null)
+                    BussData.ID = 0;
+                else
+                    BussData.ID = $scope.HdRegId;
+                var Data = {};
+                Data.ServiceName = $scope.txtName;
+                $http({
+                    method: 'POST',
+                    url: '/api/Home/ServiceValidation/',
+                    data: JSON.stringify(Data),
+
+                })
+                    .then(function (response) {
+                        $timeout(function () {
+
+                            $scope.Result = response.data;
+                            if (BussData.ID == "" && $scope.Result.length == "1") {
+
+                                ShowPopup("Service Name Already Exists..Please Create Different Service Name");
+                                return false;
+
+                            }
+                            else {
+
+
+                                BussData.ServiceName = $scope.txtName;
+                                BussData.DtEffective = $('#txtEffFrom').val();
+                                BussData.UserID = localStorage.getItem("UserID");
+                                BussData.GeoLocID = $('#ddlGeoLoc').val();
+                                var ItemsR = []
+                                var ItemsO = []
+
+                                angular.forEach(dataRoute, function (value, key) {
+
+                                    var intRID = dataRoute[key].RID;
+                                    var intWCOMDayID = dataRoute[key].WindowCommenceDay;
+                                    var intWCloseDayID = dataRoute[key].WindowCloseDay;
+
+                                    if (typeof dataRoute[key].RID == "undefined") {
+                                        intRID = 0;
+                                    }
+                                    if (typeof dataRoute[key].WindowCommenceDay == "undefined" || dataRoute[key].WindowCommenceDay == "" || dataRoute[key].WindowCommenceDay == null ||
+                                        dataRoute[key].WindowCommenceDay == "?" || dataRoute[key].WindowCommenceDay == "[object Object]") {
+                                        intWCOMDayID = 0;
+                                    }
+                                    if (typeof dataRoute[key].WindowCloseDay == "undefined" || dataRoute[key].WindowCloseDay == "" || dataRoute[key].WindowCloseDay == null ||
+                                        dataRoute[key].WindowCloseDay == "?" || dataRoute[key].WindowCloseDay == "[object Object]") {
+                                        intWCloseDayID = 0;
+                                    }
+                                    ItemsR.push('Insert:' + intRID, dataRoute[key].Port.ID, dataRoute[key].TTHH, dataRoute[key].TTMM,
+                                        intWCOMDayID, dataRoute[key].WComHH, dataRoute[key].WComMM, intWCloseDayID,
+                                        dataRoute[key].WCloseHH, dataRoute[key].WCloseMM, dataRoute[key].PortStayDay, dataRoute[key].PortStayHH, dataRoute[key].PortStayMM,
+                                    );
+                                });
+
+                                angular.forEach(dataOpr, function (value, key) {
+                                    var intOID = dataOpr[key].OID;
+                                    if (typeof dataOpr[key].OID == "undefined") {
+                                        intOID = 0;
+                                    }
+                                    ItemsO.push('Insert:' + intOID, dataOpr[key].OperatorID, dataOpr[key].Operator, dataOpr[key].SlotRefID, dataOpr[key].SlotRef
+                                    );
+                                });
+                                BussData.ItemsRoute = ItemsR.toString();
+                                BussData.ItemsOpr = ItemsO.toString();
+                                $http({
+                                    method: 'POST',
+                                    url: "/api/Home/InsertServiceSetup",
+                                    data: JSON.stringify(BussData),
+                                }).then(function (result) {
+                                    $timeout(function () {
+                                        if (result.data[0].ID != "0") {
+                                            ShowPopup("Service Setup Saved Successfully");
+                                        }
+                                        else {
+
+                                            ShowPopup("Error,Not Saved");
+                                        }
+                                        var url = "/VesVoy/ServiceSetupView";
+                                        window.location.href = url;
+
+                                        setTimeOut(function () {
+                                            window.location = "/";
+                                        }, 3000);
+                                    });
+                                }, function (result) {
+                                    if (result.status == 500) {
+                                        ShowPopup("Sorry no internet connectivity Application Error.");
+                                    }
+                                    else if (result.status == 404) {
+                                        ShowPopup("Sorry no internet connectivity page not found.");
+                                    }
+
+
+                                    if (result.status > 0) {
+                                        var errorMsg = result.status + ': ' + result.data;
+                                        // $(".modal").hide();
+                                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                                    }
+                                }).catch(function (result) {
+                                    // This is set in the event of an error.
+                                    console.log(result);
+                                    ShowPopup('There has been an error: ' + result);
+                                });
+
+                            }
+                            //}
+
+
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            var errorMsg = response.status + ': ' + response.data;
+                            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                        }
+                    });
+            }
+            $scope.ExistingServiceValidation();
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+        }
+
+        $scope.DeleteServiceOperators = function (OID) {
+            var Datavalue = {};
+            Datavalue.OID = OID;
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/ServiceOperatorsDelete/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+
+                $timeout(function () {
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+        $scope.back = function () {
+            window.location = "/VesVoy/ServiceSetupView";
+        }
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Service Setup</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Name</label>
+                                            <input type="text" ng-model="txtName" id="txtName" class="form-control" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Geo Location</label>
+                                            <select class="form-control my-select" ng-model="ddlGeoLoc" id="ddlGeoLoc" ng-options="item.GeoLocation for item in GeoLocationList track by item.ID" required></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Date Effective From</label>
+                                            <input type="text" ng-model="txtEffFrom" id="txtEffFrom" class="form-control datepicker" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12" style="margin-top: 35px;">
+                                <div class="material-datatables">
+
+                                    <table class="table tblservie table-striped table-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="13" class="headtitle">Route Details</th>
+                                            </tr>
+                                            <tr class="bighead">
+                                                <th rowspan="3">Action</th>
+                                                <th rowspan="3">Port</th>
+                                                <th colspan="2">Transit Time</th>
+                                                <th colspan="3">Window Commence</th>
+                                                <th colspan="3">Window Close</th>
+                                                <th colspan="3">Port Stay</th>
+                                            </tr>
+                                            <tr class="bighead">
+                                                <th rowspan="2">HH</th>
+                                                <th rowspan="2">MM</th>
+                                                <th rowspan="2">Day</th>
+                                                <th colspan="2">Time</th>
+                                                <th rowspan="2">Day</th>
+                                                <th colspan="2">Time</th>
+                                                <th rowspan="2">Day</th>
+                                                <th colspan="2">Time</th>
+                                            </tr>
+                                            <tr class="bighead">
+                                                <th>HH</th>
+                                                <th>MM</th>
+                                                <th>HH</th>
+                                                <th>MM</th>
+                                                <th>HH</th>
+                                                <th>MM</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            <tr ng-repeat="iRow in DynamicGridRoute ">
+                                                <td class="td-actions text-right">
+                                                    <button type="button" rel="tooltip" ng-if="$last" ng-click="AddRoute(iRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">add</i>
+                                                    </button>
+                                                    <button type="button" rel="tooltip" ng-if="!$last" ng-click="RemoveRoute(DynamicGridRoute,$index,iRow.RID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" ng-model="iRow.Port" id="ddlPort" ng-options="item.PortName for item in PortValues track by item.ID" required></select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.TTHH" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTMM" ng-model="iRow.TTMM" class="form-control" />
+                                                </td>
+                                                <td>
+
+
+                                                    <select class="form-control" ng-model="iRow.WindowCommenceDay" id="ddlDayWinCom" ng-options="item.Name for item in Weekdays track by item.ID" required>
+                                                        <option value="0">-Select-</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.WComHH" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.WComMM" class="form-control" />
+                                                </td>
+                                                <td>
+
+                                                    <select class="form-control" ng-model="iRow.WindowCloseDay" id="ddlDayWinClose" ng-options="item.Name for item in Weekdays2 track by item.ID" required>
+                                                        <option value="0">-Select-</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.WCloseHH" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.WCloseMM" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtDayWinCom" ng-model="iRow.PortStayDay" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.PortStayHH" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtTTHH" ng-model="iRow.PortStayMM" class="form-control" />
+                                                </td>
+                                                <td style="display:none;"><input type="hidden" id="HdDID" ng-model="iRow.RID" /></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-12">
+
+                            <h5 class="cardtitle">Operator Details</h5>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="60%" style="width:60%">
+                                    <thead>
+                                        <tr>
+                                        </tr>
+                                        <tr class="bighead">
+                                            <th></th>
+                                            <th> Operator</th>
+                                            <th>Slot Reference</th>
+
+                                            <th class="disabled-sorting text-right actwid">Action</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody style="margin-top:20px!important;">
+                                        <tr class="bighead">
+                                            <td></td>
+                                            <td class="chg">
+                                                <input type="hidden" id="HDIDv" class="form-control" ng-model="OID" />
+                                                <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                <select id="ddlOperator" ng-model="Operator" class="form-control" ng-options="item.CustomerName for item in OperatorValue track by item.ID"></select>
+
+                                            </td>
+                                            <td class="chgcode">
+                                                <select id="ddlSlotRef" ng-model="SlotRef" class="form-control" ng-options="item.SlotRefCode for item in SlotRefValues track by item.ID"></select>
+                                            </td>
+
+                                            <td class="td-actions text-right entrygrid">
+                                                <button type="button" rel="tooltip" ng-click="AddOperator(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">add</i>
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <thead>
+                                        <tr class="bighead">
+                                            <th>S.No</th>
+                                            <th> Operator</th>
+                                            <th>Slot Reference</th>
+
+                                            <th class="disabled-sorting text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+
+                                        <tr class="gridbody1" ng-repeat="gRow in DynamicGridOperator">
+                                            <td>{{$index+1}}</td>
+
+                                            <td>
+                                                {{gRow.Operator}}
+
+                                                <input type="hidden" id="HDOperatorID" class="form-control" ng-model="gRow.OperatorID" />
+                                            </td>
+                                            <td>
+                                                {{gRow.SlotRef}}
+
+                                                <input type="hidden" id="HDSlotRefID" class="form-control" ng-model="gRow.SlotRefID" />
+                                            </td>
+
+
+
+                                            <td class="td-actions text-right bindgrid">
+                                                <button type="button" rel="tooltip" ng-click="RemoveOperator(DynamicGridOperator,$index,gRow.OID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                                <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGridOperator,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">edit</i>
+                                                </button>
+
+                                                <input type="hidden" id="HOID" class="form-control" ng-model="gRow.OID" />
+                                            </td>
+
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+
+                                @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+
+                            <button type="submit" ng-click="Recordsave(DynamicGridRoute,DynamicGridOperator);" class="btn btn-fill btn-success">Save</button>
+                            <input type="hidden" id="HdRegId" ng-model="HdRegId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

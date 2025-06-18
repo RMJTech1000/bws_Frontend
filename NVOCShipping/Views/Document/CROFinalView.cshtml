@@ -1,0 +1,193 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["BkgCROID"] != null) {
+
+                $scope.HDBkgNo = queryString["BkgCROID"].toString();
+                $scope.fillCROview($scope.HDBkgNo);
+            }
+
+        });
+
+        $scope.CROview = null;
+        $scope.fillCROview = function (BkgIDv) {
+            var Datavalue = {};
+            Datavalue.BkgID = BkgIDv;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/CROViewRecordALL/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CROview = result.data;
+                    $scope.totalItems = $scope.CROview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.CROview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+
+
+        $scope.LoadingCROPage = function (urlv) {
+
+            var url = "/Document/CROFinalNew?CRORegID=" + encodeURIComponent(urlv);
+            window.location.href = url;
+
+        }
+
+        $scope.BookingBack = function () {
+
+            var url = "/Document/Booking?BkgRegID=" + encodeURIComponent($scope.HDBkgNo);
+            window.location.href = url;
+        }
+        $scope.LoadingCROPrint = function (id) {
+            var AgencyID = localStorage.getItem("AgencyID");
+            window.open('@Url.Action("CROPDF", "BookingPDF")?id=' + id + '&AgencyID=' + AgencyID);
+
+        }
+         
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+    function AddNew() {
+
+        window.location = "/Document/CRO"
+    }
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 createnew" style="text-align:right;">
+            Back to Booking
+            <a href="#" ng-click="BookingBack();" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">reply</i>
+                <input type="hidden" id="HDBkgNo" ng-model="HDBkgNo" />
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        CRO View
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Release Ref</th>
+                                    <th>Booking</th>
+                                    <th>Valid From</th>
+                                    <th>Valid Till</th>
+                                    <th>Status</th>
+                                    <th>Print</th>
+
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in CROview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.ReleaseOrderNo}}</td>
+                                    <td>{{i.BookingNo}}</td>
+                                    @*<td>{{i.Custome}}</td>
+        <td>{{i.Depot}}</td>*@
+                                    <td>{{i.Date}}</td>
+                                    <td>{{i.ValidTill}}</td>
+                                    <td>{{i.Status}}</td>
+                                    <td>
+                                        <button type="button" ng-click="LoadingCROPrint(i.ID);" rel="tooltip" class="btn btn-default btn-round btnprint" data-original-title="" title="">
+                                            <i class="material-icons">print</i>
+                                        </button>
+                                    </td>
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingCROPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+
+                                            view
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

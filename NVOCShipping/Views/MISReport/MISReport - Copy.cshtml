@@ -1,0 +1,174 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.CustomerMasterAllvalues = null;
+        $scope.fillCustomerMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCustomerMasterValues();
+
+
+
+        $scope.btnPrint = function () {
+            var id = 1;
+            window.open('@Url.Action("MISReportExcel", "MISReport")?id=' + id);
+
+        }
+
+
+        });
+        function ShowPopup(message) {
+            swal(message);
+        };
+
+</script>
+<style>
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+
+    .table > tbody > tr > td {
+        white-space: nowrap !important;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i>
+
+                </button>
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">MIS REPORT</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row" style="border:1px solid #ccc; margin-bottom:20px;">
+                           
+
+                            <div class="col-md-6  offset-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-3" style="font-size:16px;">Location</div>
+
+                                        <div class="col-md-5 padlr0">
+                                            <select class="form-control my-select" id="ddlLocation" ng-model="ddlLocation" options="{ allowClear: true }" ng-options="item.GeoLocation for item in LocationAllvalues track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+
+                                <div class="col-md-12" style="text-align:right;">
+                                    <input type="hidden" id="RegId" ng-model="RegId" />
+                                    <input type="hidden" id="RegRRId" ng-model="RegRRId" />
+                      
+                                    <button type="submit" id="btnPdf" ng-click="btnPrint();" class="btn btn-warning">
+                                        <i class="material-icons">print</i>
+                                        Print
+                                    </button>
+                                    <button type="submit" id="btnEmail" class="btn btn-default">
+                                        <i class="material-icons">email</i>
+                                        Send Email
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+

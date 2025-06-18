@@ -1,0 +1,305 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.AssemblyList = null;
+        $scope.fillAssemblyList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/BindAssembly/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AssemblyList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillAssemblyList();
+
+        $scope.Recordsave = function () {
+            var validation = "";
+            var txtCompCode = $('#txtCompCode').val();
+            if (txtCompCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Component Code</span></br>"
+
+            }
+            var txtCompDesc = $('#txtCompDesc').val();
+            if (txtCompDesc.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Component Description</span></br>"
+            }
+            var ddlAssembly = $('#ddlAssembly').val();
+            if (ddlAssembly == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Assembly </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+            BussData.ComponentCode = $scope.txtCompCode;
+            BussData.ComponentDescription = $scope.txtCompDesc;
+            BussData.AssemblyID = $("#ddlAssembly").val();
+            if ($scope.ChkStatus == 1) {
+
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRApi/MNRComponentMaster",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    // BussData.ID = result.data[0].ID;
+                    //alert(result.data[0].ID);
+                    if (BussData.ID != "") {
+                        ShowPopup("MNR Component Master Updated");
+                    }
+                    else {
+
+                        ShowPopup("MNR Component Master Saved Successfully");
+                    }
+                    var url = "/MNR/MNRComponentView";
+                    window.location.href = url;
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["CompID"] != null) {
+                $scope.HDRegId = queryString["CompID"].toString();
+                $scope.BindMNRComponent(queryString["CompID"].toString());
+
+            }
+        });
+
+        $scope.BindMNRComponent = function (CompID) {
+
+            var Datavalue = {}
+            var id = CompID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = CompID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRApi/MNRComponentViewEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.txtCompCode = result.data[0].ComponentCode;
+                        $scope.txtCompDesc = result.data[0].ComponentDescription;
+                        $scope.ddlAssembly = {ID : result.data[0].AssemblyID };
+                        $scope.ChkStatus = result.data[0].Status;
+
+                    }
+                    else {
+                        $scope.txtCompCode = "";
+                        $scope.txtCompDesc = "";
+                        $scope.ddlAssembly = "";
+                        $scope.ChkStatus = 0;
+                    }
+                });
+            });
+
+        }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/MNR/MNRComponentView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-rose card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Component Master </h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Component Code</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtCompCode" ng-model="txtCompCode" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label> Component Description</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtCompDesc" autocomplete="off" ng-model="txtCompDesc" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label> Assembly</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlAssembly" id="ddlAssembly" ng-options="item.Assembly for item in AssemblyList track by item.ID" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7 input-field">
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                    <span class="toggle"></span>
+
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                        </div>
+                        <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+

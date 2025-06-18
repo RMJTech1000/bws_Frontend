@@ -1,0 +1,186 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+        });
+        function ShowPopup(message) {
+            swal(message);
+        };
+
+</script>
+<style>
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+
+    .table > tbody > tr > td {
+        white-space: nowrap !important;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i>
+
+                </button>
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Manage Manifest</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Location</label>
+                                            <select id="ddlLocation" class="form-control my-select"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipment Type</label>
+                                            <select id="ddlShipmentType" class="form-control my-select"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Manifest Type</label>
+                                            <select id="ddlManifestType" class="form-control my-select"></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vessel & Voyage</label>
+                                            <select id="ddlShipmentType" class="form-control my-select"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                     
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" class="btn btn-fill btn-rose">CLEAR</button>
+                                <button type="submit" class="btn btn-fill btn-primary">SEARCH</button>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Vessel/Voyage</th>
+                                                <th>ETA</th>
+                                                <th>Terminal</th>
+                                                <th>Location</th>
+                                                <th class="disabled-sorting text-right actwid">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <select class="form-control" id="ddlCFSName">
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtCFSCode" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtBondNo" class="form-control" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" id="txtIALCode" class="form-control" />
+                                                </td>
+                                                <td class="td-actions text-right actwid">
+                                                    <button type="button" rel="tooltip" class="btn btn-warning btn-round" data-original-title="" title="">
+                                                       View
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // Initialise the wizard
+        demo.initMaterialWizard();
+        setTimeout(function () {
+            $('.card.card-wizard').addClass('active');
+        }, 600);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

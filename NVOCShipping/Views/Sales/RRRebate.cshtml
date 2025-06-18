@@ -1,0 +1,496 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.full.min.js"></script>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<style>
+    .headtop.row {
+        background-color: #e1f2f9;
+    }
+
+    .headtop .form-group {
+        margin: 5px 0 0;
+        padding-bottom: 0;
+    }
+
+    .btn-success.btnsearch {
+        padding: 8px 14px;
+        margin-top: 32px;
+    }
+
+    .btn-rose.btnsearch {
+        padding: 8px 14px;
+    }
+
+    .headbox.row {
+        border: 1px solid #ccc;
+        margin-top: 12px;
+        padding-bottom: 12px;
+        padding-top: 10px;
+    }
+
+    .headbox p {
+        font-size: 12px;
+        margin-bottom: 0;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+        $scope.ChargeCodeAllvalues = [
+            { 'ChargeCode': 'OCEAN FREIGHT', 'ID': 1 },
+
+        ];
+
+
+        //$scope.fillChargecodeValues = function () {
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/CommonAccessApi/ChargeCode/',
+        //        data: {}
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            $scope.ChargeCodeAllvalues = result.data;
+
+        //        });
+        //    }, function (result) {
+        //        if (result.status == 500) {
+        //            ShowPopup("Sorry no internet connectivity Application Error.");
+        //        }
+        //        else if (result.status == 404) {
+        //            ShowPopup("Sorry no internet connectivity page not found.");
+        //        }
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    }).catch(function (result) {
+        //        ShowPopup('There has been an error: ' + result);
+        //    });
+        //};
+        //$scope.fillChargecodeValues();
+
+        $scope.Vendorvalues = null;
+        $scope.fillVendorValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Vendorvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillVendorValues();
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["RQRegNo"] != null) {
+                $scope.RegId = queryString["RQRegNo"].toString();
+                $scope.FilRateSheetExsitingMaster();
+                $scope.FilRateSheetRebateExsitingMaster();
+            }
+
+        });
+
+        $scope.DynamicGridRebate = [{ RBID: "", ChargeCodeID: "", Frt: "", Rebate: "", Vendor: "", Remarks: "" }];
+        $scope.AddRateExport = function (DynamicGridRebate) {
+
+            if (DynamicGridRebate.ChargeCodeID == "") {
+                swal("Please enter Amount");
+                return;
+            }
+
+            $scope.DynamicGridRebate.push({
+                'RBID': "",
+                'ChargeCodeID': "",
+                'Frt': "",
+                'Rebate': "",
+                'Vendor': "",
+                'Remarks': ""
+            });
+
+        }
+        $scope.RemoveRateExport = function (DynamicGridRebate, index) {
+            $scope.DynamicGridRebate.splice(index, 1);
+
+        }
+
+        $scope.RebateRecordsave = function (data) {
+
+            var validation = "";
+            var Datav = "undefined";
+            angular.forEach(data, function (value, key) {
+                Datav += data[key].ChargeCodeID.ID;
+
+            });
+
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container Details</span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var Items = []
+
+            if ($scope.RegId == "")
+                BussData.RRID = 0;
+            else
+                BussData.RRID = $scope.RegId;
+
+
+
+            angular.forEach(data, function (value, key) {
+                Items.push('Insert:' + data[key].RBID, data[key].ChargeCodeID.ID, data[key].Frt, data[key].Rebate, data[key].Vendor.ID,
+                    data[key].Remarks
+
+                );
+            });
+
+            BussData.Itemsv = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/SalesRatesheetRebateInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data[0].RRID != "0") {
+                        ShowPopup("Ratesheet Rebate Saved Successfully");
+                        var url = "/Sales/RRConfirmation?RQRegNo=" + encodeURIComponent($scope.RegId);
+                        window.location.href = url;
+
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.FilRateSheetRebateExsitingMaster = function () {
+            var Datavalue = {};
+            Datavalue.RRID = $scope.RegId;
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/RateSheetRebateExsisting',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length != 0) {
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridRebate.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridRebate.push({
+                                'RBID': result.data[key].RBID,
+                                'ChargeCodeID': { ID: result.data[key].ChargeCodeID },
+                                'Frt': result.data[key].FRT,
+                                'Rebate': result.data[key].Rebate,
+                                'Vendor': { ID: result.data[key].Vendor },
+                                'Remarks': result.data[key].Remarks
+
+
+                            });
+
+                        });
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.OnPagetab = function (tab) {
+
+            if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+                ShowPopup("please fill RATE REQUEST first1");
+                return;
+            }
+
+            var myp = $scope.RegId;
+
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Sales/RR?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create RR Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Sales/RRContainer?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Sales/RRMRGSLOT?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Sales/RRLocalCharges?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Sales/RRConfirmation?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            else if (tab == 6) {
+                if (myp != "0") {
+                    var url = "/Sales/RRRebate?RQRegNo=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Job Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+
+
+        $scope.FilRateSheetExsitingMaster = function () {
+
+            var Datavalue = {};
+            Datavalue.RRID = $scope.RegId;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/RateSheetExistingMasterRecord',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.divRRNo = result.data[0].RatesheetNo;
+                    $scope.divStatus = result.data[0].Status;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Sales/RaterequestView" type="submit" ng-click="back();" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </a>
+                @*<a href="/Sales/RaterequestView" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+                </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Rate Request</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12 download" style="text-align:right;">
+                                <span style="font-weight:bold;color: #af7e4c;">RR Number :<span ng-bind="divRRNo"></span> </span>
+                                <span style="margin-left:100px; font-weight:bold;color: #af7e4c;">Status : <span style="color:red;" ng-bind="divStatus"></span></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 padlr0">
+                                <nav>
+                                    <div class="col-md-12" style="background-color: #f5f4f4;">
+                                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Rate Request</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(5);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">MRG & SLOT</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(3);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Local Charges</a>
+                                            <a class="nav-item nav-link active" ng-click="OnPagetab(6);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Rebate</a>
+                                            <a class="nav-item nav-link" ng-click="OnPagetab(4);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Confirmation</a>
+                                        </div>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>S.No</th>
+                                            <th>Charges</th>
+                                            <th>Frt$</th>
+                                            <th>Rebate</th>
+                                            <th>Vendor</th>
+                                            <th>Remarks</th>
+
+
+                                            <th class="disabled-sorting text-right actwid">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridRebate">
+                                            <td>{{$index+1}}</td>
+
+                                            <td>
+                                                <select class="form-control" id="ddlchargeCode" ng-model="gRow.ChargeCodeID" ng-options="item.ChargeCode for item in ChargeCodeAllvalues track by item.ID"></select>
+
+                                            </td>
+
+                                            <td><input type="text" id="txtAmt" class="form-control" ng-model="gRow. Frt" /></td>
+                                            <td><input type="text" id="txtAmt" class="form-control" ng-model="gRow. Rebate" /></td>
+
+                                            <td>
+                                                <select class="form-control" id="ddlvendor" ng-model="gRow.Vendor" ng-options="item.CustomerName for item in Vendorvalues track by item.ID">
+                                                </select>
+                                            </td>
+
+                                            <td><input type="text" id="txtAmt" class="form-control" ng-model="gRow.Remarks" /></td>
+
+                                            <td style="display:none;"><input type="hidden" id="HDRID" class="form-control" ng-model="gRow.RBID" /></td>
+
+
+                                            <td class="td-actions text-right actwid">
+                                                <button type="button" rel="tooltip" ng-if="$last" ng-click="AddRateExport(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">add</i>
+                                                </button>
+                                                <button type="button" rel="tooltip" ng-if="!$last" ng-click="RemoveRateExport(DynamicGridRebate,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                    <i class="material-icons">delete</i>
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="ml-auto">
+                                <button type="submit" ng-click="RebateRecordsave(DynamicGridRebate);" class="btn btn-fill btn-success">
+                                    <i class="material-icons">save</i>
+                                    Save & Next
+                                </button>
+                                <input type="hidden" id="RegId" ng-model="RegId" />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+

@@ -1,0 +1,250 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $scope.AddNew = function () {
+           window.location = "/Finance/TaxDeclaration"
+        }
+
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+
+        $scope.StatusValues = [
+
+            { 'Name': 'Active', 'ID': 1 },
+            { 'Name': 'InActive', 'ID': 2 },
+
+        ];
+        $scope.Country = null;
+        $scope.fillCountry = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CountryMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Country = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.fillCountry();
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.TaxDeclRecords = null;
+        $scope.TaxDeclRecords = function () {
+            var BussData = {}
+
+            BussData.TaxName = $scope.txtTaxName;
+            BussData.CountryID = localStorage.getItem("CountryID");
+            BussData.StatusID = $("#ddlStatus").val();
+
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/TaxDeclarationView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.TaxDeclRec = result.data;
+
+                $scope.totalItems = $scope.TaxDeclRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.TaxDeclRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+
+
+        $scope.TaxDeclViewRecords = function () {
+
+            $scope.TaxDeclRecords();
+        }
+        $scope.ClearRecords = function () {
+
+            $scope.txtTaxName = "";
+           //$("#ddlCountry").val(null) .trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $scope.TaxDeclRecords();
+        }
+        $scope.TaxDeclRecords();
+        $scope.TaxDeclUpdate = function (urlv) {
+
+            //var url = "/Finance/TaxDeclaration?TaxDeclID=" + encodeURIComponent(url);
+            //window.location.href = url;
+
+            var ParameterValue = "TaxDeclID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Finance/TaxDeclaration?" + ciphertext;
+
+            window.location.href = url;
+        }
+         $scope.btnPrint = function () {
+             var TaxName = $('#txtTaxName').val();
+             var Status = $('#ddlStatus').val();
+             var User = localStorage.getItem("UserName");
+             window.location.href = '@Url.Action("TaxDeclrationExcel", "MastersExcel")?TaxName=' + TaxName + '&Status=' + Status + '&User=' + User;
+        }
+    }
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Tax Declaration
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+                        <div class="col-md-12 padlr0" style="text-align:right; padding-right:16px;">
+                            <a href="#" ng-click="btnPrint();" class="btn btn-fill btn-danger btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">download</i> Download Excel
+                            </a>
+                        </div>
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Tax Name</th>
+                                    <th>Tax Percentage</th>
+                                    <th>Country</th>
+                                    <th>Status</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in TaxDeclRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.TaxName}}</td>
+                                    <td>{{i.TaxPercentage}}</td>
+                                    <td>{{i.CountryName}}</td>
+                                    <td>{{i.StatusV}}</td>
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="TaxDeclUpdate(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(TaxDeclRec|filter:TaxPercentage).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" autocomplete="off" id="txtTaxName" ng-model="txtTaxName" class="form-control" placeholder="Tax Percentage">
+                        </div>
+                    </div>
+
+        
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-select" ng-model="ddlStatus" id="ddlStatus" ng-options="item.Name for item in StatusValues track by item.ID" required></select>
+                         
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="TaxDeclViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

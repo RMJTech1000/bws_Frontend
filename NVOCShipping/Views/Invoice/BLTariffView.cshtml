@@ -1,0 +1,254 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.viewPage = null;
+        $scope.fillviewPage = function () {
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffUpdateView/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.viewPage = result.data;
+                    $scope.totalItems = $scope.viewPage.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.viewPage.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillviewPage();
+
+    
+
+        $scope.LoadingPage = function (BLId) {
+
+
+            var url = "/Invoice/BLTariffDetails?BLRegID=" + encodeURIComponent(BLId);
+            window.location.href = url;
+
+        }
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+   
+
+</script>
+<style>
+    .card-stats .card-header.card-header-icon i {
+        color: #ffffff !important;
+        font-size: 38px !important;
+    }
+
+    .card.card-stats.card-cancelled {
+        background-color: #f34394;
+        margin-bottom: 0;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 createnew" style="text-align:right;">
+            Create New
+            <a href="/Invoice/BLTariffDetails" class="btn btn-fill btnadd btn-success btn-round btntop">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                       BL TARIFF DETAILS
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card card-stats card-draft">
+                                <div class="card-header card-header-warning card-header-icon">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <i class="material-icons">file_copy</i>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <p class="card-category">Draft</p>
+                                            <h3 class="card-title" ng-bind="Draft"></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card card-stats card-cancelled">
+                                <div class="card-header card-header-warning card-header-icon">
+                                    <div class="row">
+                                        <div class="col-md-3">
+
+                                            <i class="material-icons">clear</i>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <p class="card-category">Cancelled</p>
+                                            <h3 class="card-title" ng-bind="Cancelled"></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card card-stats card-confirmed">
+                                <div class="card-header card-header-warning card-header-icon">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <i class="material-icons">task_alt</i>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <p class="card-category">Confirmed</p>
+                                            <h3 class="card-title" ng-bind="Confirmed"></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>BLNumber</th>
+                                    <th>Booking Party</th>
+                                    <th>POL</th>
+                                    <th>POD</th>
+                                    <th>SHIPMENT TYPE</th>
+                                    <th>DOC.NUMBER</th>
+                                    <th>STATUS</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in viewPage | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.BookingNo}}</td>
+                                    <td>{{i.BkgParty}}</td>
+                                    <td>{{i.POL}}</td>
+                                    <td>{{i.POD}}</td>
+                                    <td>{{i.ShipmentTypes}}</td>
+                                    <td>{{i.DocNumber}}</td>
+                                    <td>{{i.Status}}</td>
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtBLNumber" ng-model="txtBLNumber" class="form-control" placeholder="BL NUMBER">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtBkgParty" ng-model="txtBkgParty" class="form-control" placeholder="BOOKING PARTY">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtinvoice" ng-model="txtinvoice" class="form-control" placeholder="PRO.INV/FINAL INV NO">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtfDate" ng-model="txtFdate" class="form-control" placeholder="FROM DATE">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtTdate" ng-model="txtTdate" class="form-control" placeholder="TO DATE">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="TerminalViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

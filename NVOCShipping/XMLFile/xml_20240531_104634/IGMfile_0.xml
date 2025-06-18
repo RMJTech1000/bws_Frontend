@@ -1,0 +1,265 @@
+<RootElement>
+  <Header>
+    <DocumentFormat>
+      <DocumentFormatIdentifier>TRADEDOC</DocumentFormatIdentifier>
+      <ControllingAgency>DNT</ControllingAgency>
+    </DocumentFormat>
+    <DocumentType>
+      <DocumentTypeCode>GIG</DocumentTypeCode>
+    </DocumentType>
+    <DocumentIdentification>
+      <UniqueReferenceNo>SNRF123</UniqueReferenceNo>
+      <MessageFunction>9</MessageFunction>
+    </DocumentIdentification>
+    <InterchangeSender>
+      <SenderID>info@bluewave.com.my</SenderID>
+    </InterchangeSender>
+    <InterchangeRecipient>
+      <RecipientID>info@bluewave.com.my</RecipientID>
+    </InterchangeRecipient>
+    <DateorTimeofPreparation>
+      <DateofPreparation>20240509</DateofPreparation>
+      <TimeofPreparation>3643</TimeofPreparation>
+    </DateorTimeofPreparation>
+  </Header>
+  <Body>
+    <BeginningofMessage>
+      <DocumentNo>1</DocumentNo>
+      <MessageCode>785</MessageCode>
+      <DocMessageJobNo>BWSPKG23012003MAA</DocMessageJobNo>
+      <IssueDate>202405311046348630</IssueDate>
+    </BeginningofMessage>
+    <ProcessingIndicator>
+      <ProcessingIndicatorCode>23</ProcessingIndicatorCode>
+      <ProcessingIndicatorCode>MNT</ProcessingIndicatorCode>
+    </ProcessingIndicator>
+    <Parties>
+      <PartyType>PSA</PartyType>
+      <OrganizationIdentification>CM0010</OrganizationIdentification>
+      <OrganizationName>BULUE WAVE SHIPPING</OrganizationName>
+      <AddressInformation>
+        <Text>NO.31-1,JALAN RAMIN 1, BANDAR AMBAN</Text>
+        <Text>G BOTANIC, 41200 KLANG, SELANGOR DA</Text>
+        <Text>RUL EHSAN,MALAYSIA</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>SA</PartyType>
+      <OrganizationIdentification>CM0007</OrganizationIdentification>
+      <OrganizationName>BULUE WAVE SHIPPING</OrganizationName>
+      <AddressInformation>
+        <Text>NO.31-1,JALAN RAMIN 1, BANDAR AMBAN</Text>
+        <Text>G BOTANIC, 41200 KLANG, SELANGOR DA</Text>
+        <Text>RUL EHSAN,MALAYSIA </Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>CZ</PartyType>
+      <OrganizationIdentification>CM6195</OrganizationIdentification>
+      <OrganizationName>PHILI-ORIENT LOGISTICS (PG) SDN BHD-BAYAN LEPAS-BAYAN LEPAS</OrganizationName>
+      <AddressInformation>
+        <Text>No. 316-F, Wisma Phili-Orient,
+Jala</Text>
+        <Text>n Dato’ Ismail Hashim, Sungai Ara
+1</Text>
+        <Text>1900 Bayan Lepas, Penang, Malaysia.</Text>
+        <Text>
+Office:  +604 646 4336
+Fax:  +604 </Text>
+        <Text>646 4337,</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>CN</PartyType>
+      <OrganizationIdentification>CM7958</OrganizationIdentification>
+      <OrganizationName>PHILI ORIENT LOGISTICS PVT LTD-CHENNAI</OrganizationName>
+      <AddressInformation>
+        <Text>UNIT NO.3E, AT NEW DOOR NOS.43&amp;44/
+</Text>
+        <Text>OLD NOS.96&amp;97, 11TH AVENUE, ASHOK
+N</Text>
+        <Text>AGAR, CHENNAI 600083.
+TEL:044 48602</Text>
+        <Text>099 PTC:MR CHANDRU
+ H/P: +91 960609</Text>
+        <Text>1240 
+GSTIN NO.:33AAICP5814C1ZQ
+ PA</Text>
+        <Text>N NO.: AAICP5814C
+ IEC NO: NIL
+ EMA</Text>
+        <Text>IL:chandru@pol-group.com,</Text>
+      </AddressInformation>
+    </Parties>
+    <Parties>
+      <PartyType>IN</PartyType>
+      <OrganizationIdentification>CM7958</OrganizationIdentification>
+      <OrganizationName>PHILI ORIENT LOGISTICS PVT LTD-CHENNAI</OrganizationName>
+      <AddressInformation>
+        <Text>UNIT NO.3E, AT NEW DOOR NOS.43&amp;44/
+</Text>
+        <Text>OLD NOS.96&amp;97, 11TH AVENUE, ASHOK
+N</Text>
+        <Text>AGAR, CHENNAI 600083.
+TEL:044 48602</Text>
+        <Text>099 PTC:MR CHANDRU
+ H/P: +91 960609</Text>
+        <Text>1240 
+GSTIN NO.:33AAICP5814C1ZQ
+ PA</Text>
+        <Text>N NO.: AAICP5814C
+ IEC NO: NIL
+ EMA</Text>
+        <Text>IL:chandru@pol-group.com</Text>
+      </AddressInformation>
+    </Parties>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>8</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>INMAA</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>9</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>MYWSP</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>8</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>INMAA</PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>13</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>
+      </PlaceOrLocCode>
+    </PlaceOrLocation>
+    <PlaceOrLocation>
+      <PlaceOrLocCodeQualifier>27</PlaceOrLocCodeQualifier>
+      <PlaceOrLocCode>
+      </PlaceOrLocCode>
+    </PlaceOrLocation>
+    <DateTimeDetail>
+      <DateTimeFuncCode>182</DateTimeFuncCode>
+      <DateTimeValue>202405311046348630</DateTimeValue>
+    </DateTimeDetail>
+    <DateTimeDetail>
+      <DateTimeFuncCode>132</DateTimeFuncCode>
+      <DateTimeValue>202401170000000000</DateTimeValue>
+    </DateTimeDetail>
+    <DateTimeDetail>
+      <DateTimeFuncCode>132</DateTimeFuncCode>
+      <DateTimeValue>202401180000000000</DateTimeValue>
+    </DateTimeDetail>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>AA</DocRefCode>
+        <DocRefNo>PCA</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>BM</DocRefCode>
+        <DocRefNo>BLNO</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CAC</DocRefCode>
+        <DocRefNo>GENDRAL/HAZ</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>CSC</DocRefCode>
+        <DocRefNo>9</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>SCN</DocRefCode>
+        <DocRefNo>2452U7</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <DocumentReferenceInfo>
+      <DocRefDetail>
+        <DocRefCode>TOP</DocRefCode>
+        <DocRefNo>BKMT01</DocRefNo>
+      </DocRefDetail>
+    </DocumentReferenceInfo>
+    <TransportDetails>
+      <TransportStageCodeQualifier>11</TransportStageCodeQualifier>
+      <ModeofTransportCode>1</ModeofTransportCode>
+      <ConveyanceReferenceNo>02349E</ConveyanceReferenceNo>
+      <TransportMeans>
+        <TransportTypeID />
+        <TransportTypeName />
+      </TransportMeans>
+      <TransportIdentification>
+        <TransportTypeID>A8KM8</TransportTypeID>
+        <TransportMeansName>ESL WAFA</TransportMeansName>
+        <Nationality>
+        </Nationality>
+      </TransportIdentification>
+    </TransportDetails>
+    <LineItem>
+      <LineItemNo>1</LineItemNo>
+      <ItemIdentifiers>
+        <TariffCode>850220</TariffCode>
+        <ProductDesc>
+        </ProductDesc>
+      </ItemIdentifiers>
+      <PackageandWeightSummary>
+        <TotalPackage>
+          <NumberofPackages>10</NumberofPackages>
+          <PackageTypeCode>PLT</PackageTypeCode>
+        </TotalPackage>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementDimensionCode>AAD</MeasurementDimensionCode>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>2728.500</Value>
+          <MeasurementDimensionCode>MFT</MeasurementDimensionCode>
+          <MeasurementDimensionCode>MFT</MeasurementDimensionCode>
+        </Measurement>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>0.000</Value>
+        </Measurement>
+        <Measurement>
+          <MeasurementQualifier>WT</MeasurementQualifier>
+          <MeasurementUnitCode>KGM</MeasurementUnitCode>
+          <Value>0.000</Value>
+        </Measurement>
+      </PackageandWeightSummary>
+      <AdditionalInformation>
+        <InformationType>PAC</InformationType>
+        <Text>N/M</Text>
+      </AdditionalInformation>
+      <Container>
+        <ContainerIdentifier>ISMU3006067</ContainerIdentifier>
+      </Container>
+    </LineItem>
+    <Container>
+      <ContainerItemNo>1</ContainerItemNo>
+      <ContainerIdentifier>ISMU3006067</ContainerIdentifier>
+      <ContainerSizeandCodes>
+        <ContainerSizeandDetailedTypeCode>20GP</ContainerSizeandDetailedTypeCode>
+      </ContainerSizeandCodes>
+      <EquipmentStatus>3</EquipmentStatus>
+      <FullEmptyIndicator>1</FullEmptyIndicator>
+      <Seal>BWS3881</Seal>
+      <SealingParty>CA</SealingParty>
+    </Container>
+    <GrandTotal>
+      <TotalMeasurement>
+        <MeasurementQualifier>AAE</MeasurementQualifier>
+        <MeasurementDimensionCode>AAD</MeasurementDimensionCode>
+        <MeasurementUnitCode>KGM</MeasurementUnitCode>
+        <Value>0.00</Value>
+      </TotalMeasurement>
+    </GrandTotal>
+    <AdditionalInformation>
+      <InformationType>AAA</InformationType>
+      <Text>
+      </Text>
+    </AdditionalInformation>
+  </Body>
+</RootElement>

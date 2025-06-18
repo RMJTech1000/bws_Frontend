@@ -1,0 +1,1098 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.GenderValues = [
+            { 'name': 'Male', 'ID': 1 },
+            { 'name': 'FeMale ', 'ID': 2 }
+        ];
+
+        $scope.MartialValues = [
+            { 'name': 'Single', 'ID': 1 },
+            { 'name': 'Married ', 'ID': 2 }
+        ];
+     
+        //Agency State DropDown//
+        $scope.Agencies = null;
+        $scope.fillAgencies = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/PartyApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Agencies = result.data;
+                   
+
+                });
+            });
+        };
+        $scope.fillAgencies();
+
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/DepotValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.GeoLocChange = function (gRow, index, selectedterminal)
+        {
+            var Datavalue = {};
+
+            if (gRow.LocationID && typeof gRow.LocationID.ID != undefined)
+                Datavalue.ID = gRow.LocationID.ID
+            else
+                Datavalue.ID = gRow
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/AgencyMasterByGeoLoc/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+
+                
+                $("#ddlCompnay" + index).html("");
+                for (var i = 0; i < result.data.length; i++)
+                {
+                    $("#ddlCompnay" + index).append($("<option>").text(result.data[i].AgencyName).val(result.data[i].ID).attr("label", result.data[i].AgencyName))
+
+                }
+               
+                if (selectedterminal)
+                {
+                    $("#ddlCompnay" + index).val(selectedterminal);
+
+                }
+
+                $timeout(function () {
+                    // console.log($scope);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.AgencyOnload = function (gRow, index) {
+            //console.log(gRow[index]);
+            // gRow.Terminal[index].ID = $("#ddlTerminal" + index).val();
+
+        }
+
+
+        //Country DropDown//
+        $scope.Country = null;
+        $scope.fillCountry = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/countryBind/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Country = result.data;
+
+                });
+            });
+        };
+        $scope.fillCountry();
+
+  //City DropDown//
+        $scope.City = null;
+        $scope.fillCity = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/cityBind/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.City = result.data;
+
+                });
+            });
+        };
+        $scope.fillCity();
+        //City DropDown//
+
+        //Division DropDown//
+        $scope.Division = null;
+        $scope.fillDivision = function () {
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/Division/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Division = result.data;
+
+                });
+            });
+        };
+        $scope.fillDivision();
+        //Division DropDown//
+
+        //Department DropDown//
+        $scope.Department = null;
+        $scope.fillDepartment = function () {
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/Department/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Department = result.data;
+
+                });
+            });
+        };
+        $scope.fillDepartment();
+        //Department DropDown//
+
+        //Designation DropDown//
+        $scope.Designation = null;
+        $scope.fillDesignation = function () {
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/Designation/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Designation = result.data;
+
+                });
+            });
+        };
+        $scope.fillDesignation();
+        //Designation DropDown//
+
+
+        // --VALIDATION Begin----//
+
+
+        $scope.ExistingTariffValidation = function () {
+
+            var BussData = {}
+            if ($scope.HdId == "" || $scope.HdId==undefined)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdId;
+            BussData.UserID = $scope.txtUserID;
+            BussData.Password = $scope.txtPassword;
+            BussData.UserName = $scope.txtUserName;
+            BussData.DOB = $('#txtDOB').val();
+            BussData.Gender = $('#ddlGender').val();
+            BussData.MartialStatus = $('#ddlMartial').val();
+            if ($('#txtAddress').val() != "") {
+                BussData.Address = $('#txtAddress').val();
+            }
+            else {
+                BussData.Address = " ";
+            }
+            BussData.BranchID = $('#ddlBranch').val();
+            BussData.DivID = $('#ddlDivision').val();
+            BussData.DepID = $('#ddlDepartment').val();
+            BussData.DesID = $('#ddlDesignation').val();
+            //BussData.FunRepID = $('#ddlFunRep').val();
+            BussData.DOJ = $('#txtDOJ').val();
+            BussData.EmailID = $scope.txtEmailID;
+            BussData.MobNo = $scope.txtMobile;
+
+           
+
+            if ($('#ddlAmdDepot').val() != "?")
+            {
+                BussData.DepotID = $('#ddlAmdDepot').val();
+            }
+            else {
+                BussData.DepotID = 0;
+            }
+
+
+          
+            $http({
+                method: 'POST',
+                url: "/api/UserApi/UserAndUserIDValidation",
+                data: JSON.stringify(BussData),
+
+            })
+                .then(function (response) {
+                    $timeout(function () {
+
+                        $scope.Result = response.data;
+                       
+                        if (BussData.ID == "0" && $scope.Result.length >= "1") {
+                            ShowPopup("UserID OR User Name Already Exists");
+                           
+                            return false;
+
+                        }
+
+                        else {
+
+                            $http({
+                                method: 'POST',
+                                url: "/api/UserApi/InsertUser",
+                                data: JSON.stringify(BussData),
+
+                            }).then(function (result) {
+                                $timeout(function () {
+                                    $scope.Save = result.data;
+                                    if (result.data.length > 0)
+                                    {
+                                        $scope.HdId = result.data[0].ID;
+                                        $('#overlay').hide;
+                                        ShowPopup("Record Saved Successfully");
+                                    }
+                                    else {
+                                        ShowPopup("Error Not Saved");
+                                    }
+                                    return false;
+                                    setTimeOut(function () {
+                                        window.location = "/";
+                                    }, 3000);
+                                });
+                            }, function (result) {
+                                if (result.status == 500) {
+                                    ShowPopup("Sorry no internet connectivity Application Error.");
+                                }
+                                else if (result.status == 404) {
+                                    ShowPopup("Sorry no internet connectivity page not found.");
+                                }
+                                if (result.status > 0) {
+                                    var errorMsg = result.status + ': ' + result.data;
+                                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                                }
+                            }).catch(function (result) {
+
+                                ShowPopup('There has been an error: ' + result);
+                            });
+
+                        }
+
+
+                    });
+                }, function (response) {
+                    if (response.status > 0) {
+                        var errorMsg = response.status + ': ' + response.data;
+                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                    }
+                });
+        }
+
+        // --VALIDATION end ----//
+
+
+        $scope.RecordSave = function ()
+        {
+            var validation = "";
+
+            var txtUserID = $('#txtUserID').val();
+            if (txtUserID.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter User ID</span></br>"
+
+            }
+            var txtUserName = $('#txtUserName').val();
+            if (txtUserName.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter User Name</span></br>"
+
+            }
+
+            var txtPassword = $('#txtPassword').val();
+            if (txtPassword.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Password</span></br>"
+
+            }
+
+            var txtDOB = $('#txtDOB').val();
+            if (txtDOB.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Date Of Birth</span></br>"
+
+            }
+             var ddlGender = $('#ddlGender').val();
+            if (ddlGender == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Gender</span></br>"
+
+            }
+             var ddlMartial = $('#ddlMartial').val();
+            if (ddlMartial == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Martial Status</span></br>"
+
+            }
+            var ddlBranch = $('#ddlBranch').val();
+            if (ddlBranch == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Branch</span></br>"
+
+            }
+            var ddlDepartment = $('#ddlDepartment').val();
+            if (ddlDepartment == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Department</span></br>"
+
+            }
+            var ddlDesignation = $('#ddlDesignation').val();
+            if (ddlDesignation == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Designation</span></br>"
+
+            }
+            //var ddlFunRep = $('#ddlFunRep').val();
+            //if (ddlFunRep == "?") {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Functional Reporting</span></br>"
+
+            //}
+            var txtEmailID = $('#txtEmailID').val();
+            if (txtEmailID.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Email ID</span></br>"
+
+            }
+            var txtMobile = $('#txtMobile').val();
+            if (txtMobile.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Mobile No</span></br>"
+
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            ////--- Save-------------//
+            $scope.ExistingTariffValidation();
+        }
+
+
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["UserID"] != null) {
+
+                
+                $scope.HdId = queryString["UserID"].toString();
+              
+                $scope.BindUserDtls(queryString["UserID"].toString());
+                $scope.BindRoleExistingValues(queryString["UserID"].toString());
+
+            }
+        });
+
+        $scope.BindUserDtls = function (UserID) {
+
+           
+              var Datavalue = {};
+            $scope.HdId = UserID
+             
+              if ($scope.HdId != "")
+                  Datavalue.ID = $scope.HdId;
+              else
+                  Datavalue.ID = 0;
+
+
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/UserViewRecord/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length>0) {
+
+                      
+                        $scope.txtUserID = result.data[0].UserID;
+                        $scope.txtPassword = result.data[0].Password;
+                        $scope.txtUserName = result.data[0].UserName;
+                        $scope.txtDOB = result.data[0].DOB;
+                        $scope.ddlGender = { ID: result.data[0].Gender };
+                        $scope.ddlMartial = { ID: result.data[0].MartialStatus };
+                        $scope.txtAddress = result.data[0].Address;
+                        $scope.ddlBranch = { ID: result.data[0].BranchID };
+                        $scope.ddlDivision = { ID: result.data[0].DivID };
+                        $scope.ddlDepartment = { ID: result.data[0].DepID };
+                        $scope.ddlDesignation = { ID: result.data[0].DesID };
+                       // $scope.ddlFunRep = { ID: result.data[0].FunRepID };
+                        $scope.txtDOJ = result.data[0].DOJ;
+                        $scope.txtEmailID = result.data[0].EmailID;
+                        $scope.txtMobile = result.data[0].MobNo;
+                        $scope.ddlAmdDepot = { ID: result.data[0].DepotID };
+                    }
+                    else {
+                        /*$('#ddlAgent').val(0);*/
+                        $('#ddlAgent').val(0);
+                        $('#txtUserName').val('');
+                        $('#txtDOB').val('');
+                        $('#ddlGender').val(0);
+                        $('#ddlMartial').val(0);
+                        $('#txtAddress').val('');
+                        $('#ddlBranch').val(0);
+                        $('#ddlDivision').val(0);
+                        $('#ddlDepartment').val(0);
+                        $('#ddlDesignation').val(0);
+                        $('#ddlFunRep').val(0);
+                        $('#txtDOJ').val('');
+                        $('#txtEmailID').val('');
+                        $('#txtMobile').val('');
+                    }
+                });
+            });
+            $scope.back = function () {
+                window.location = "/Users/UserView";
+            }
+        }
+       
+
+        $scope.GeoLocationsValues = null;
+        $scope.fillGeoLocations = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/PartyApi/BindGeoLocations/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.GeoLocationsValues = result.data;
+                   
+
+                });
+            });
+        };
+        $scope.fillGeoLocations();
+
+
+        $scope.RollMasterValues = null;
+        $scope.fillRollMaster = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/PartyApi/BindRoleMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.RollMasterValues = result.data;
+
+
+                });
+            });
+        };
+        $scope.fillRollMaster();
+
+
+        $scope.BLChargeGridValueBind = [{
+
+            ID: "", CompnayID: "", RoleID: "", LocationID: ""
+        }];
+
+
+        $scope.gridRowAdd = function (gRow, index)
+        {
+            var validation = "";
+
+            //for (var i = 1; i < $scope.BLChargeGridValueBind.length; i++) {
+
+            //    alert($scope.BLChargeGridValueBind[i].LocationID.ID);
+            //    alert(gRow.LocationID.ID);
+
+            //    if ($scope.BLChargeGridValueBind[i].LocationID.ID === gRow.LocationID.ID)
+            //    {
+            //        validation += "<span style='color:red;'>*</span> <span>Already Exists </span></br>"
+            //    }
+            //}
+            //if (validation != "") {
+            //    ShowPopup(validation);
+            //    return false;
+            //}
+            $scope.BLChargeGridValueBind.push({
+                'ID': "",
+                'LocationID': "",
+                'CompnayID': "",
+                'RoleID': ""
+
+
+            });
+        }
+
+        $scope.RecordSaveRole = function (datav) {
+        
+            var BussData = {}
+            var validation = "";
+            var ID = $scope.HdId;
+            if (ID == "")
+            {
+                validation += "<span style='color:red;'>*</span> <span>Please Insert Role</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var Items = [];
+
+            console.log(datav);
+            angular.forEach(datav, function (value, key)
+            {
+                var intAgencyID = $("#ddlCompnay" + key).val();
+                Items.push('Insert:' + datav[key].ID, intAgencyID, datav[key].LocationID.ID, datav[key].RoleID.ID
+                );
+            });
+            BussData.ID = $scope.HdId;
+            BussData.Items = Items.toString();
+            $http({
+                method: 'POST',
+                url: "/api/UserApi/InsertUserRole",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Save = result.data;
+                    $scope.BindRoleExistingValues($scope.HdId);
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Record Saved Successfully");
+                    }
+                    else {
+                        ShowPopup("Error Not Saved");
+                    }
+                    return false;
+                });
+            });
+
+        }
+
+
+
+        $scope.BindRoleExistingValues = function (UserID) {
+
+            var Datavalue = {};
+            Datavalue.ID = UserID;
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/UserViewExstingRole/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0)
+                    {
+                        $scope.BLChargeGridValueBind.length = 0;
+                        angular.forEach(result.data, function (value, key) {
+                            $scope.BLChargeGridValueBind.push({
+
+                                'CompnayID': { ID: result.data[key].CompnayID },
+                                'RoleID': { ID: result.data[key].RoleID },
+                                'LocationID': { ID: result.data[key].LocationID },
+                              
+                            });
+                            $scope.GeoLocChange(result.data[key].LocationID, key, result.data[key].CompnayID);
+                        });
+                    }
+                   
+                });
+            });
+            $scope.Userback = function ()
+            {
+               
+                window.location = "/Users/UserView";
+            }
+        }
+
+        $scope.UserDetailsRemove = function (BLChargeGridValueBind, index, RoleIDv)
+        {
+            console.log($scope.BLChargeGridValueBind);
+            var BussData = {}
+            BussData.RoleID = RoleIDv;
+            BussData.UserID = $scope.HdId;
+          
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/UserRoledeleteMaster/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BLChargeGridValueBind.splice(index, RoleIDv);
+                    $scope.BindRoleExistingValues($scope.HdId);
+                });
+            });
+
+
+
+        }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+  
+</script>
+
+<style>
+    .bmd-form-group [class*=" bmd-label"], .bmd-form-group [class^=bmd-label] {
+        position: initial;
+    }
+
+    .nav-tabs .nav-item .nav-link.active {
+        background-color: hsl(336deg 76% 50%);
+        transition: background-color .3s .2s;
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        margin: 3px 6px;
+        background-color: #20498e;
+        padding: 5px 0;
+    }
+
+    .nav-tabs .nav-item {
+        width: 46%;
+    }
+
+    .chargedtls label {
+        font-size: 13px !important;
+    }
+
+    .nav-tabs {
+        padding: 8px 0px;
+        border-bottom: none !important;
+    }
+    /* .chargedtls
+        {
+            border:1px solid #ccc;
+        }*/
+    .card .pickupdiv .table tr td {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        /* font-weight: 600;*/
+        background-color: #f0f8ff78;
+        color: #333;
+    }
+
+    .card .pickupdiv .table tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #21277a;
+    }
+
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Users/UserView" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    @*<div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">User Profile</h4>
+                        </div>
+                    </div>*@
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="nav-tabs-navigation">
+                                            <div class="nav-tabs-wrapper">
+                                                <div class="row">
+                                                    <div class="col-md-6 padlr0">
+                                                        <ul class="nav nav-tabs demtab" data-tabs="tabs">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active" href="#UserProfiles" id="User" data-toggle="tab">
+                                                                    User Details
+                                                                    <div class="ripple-container"></div>
+                                                                </a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" href="#RoleDetails" id="Role" data-toggle="tab">
+                                                                    Role Details
+                                                                    <div class="ripple-container"></div>
+                                                                </a>
+                                                            </li>
+
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+
+                                        <div class="tab-content" style="padding:0;">
+                                            <div class="tab-pane active" id="UserProfiles">
+                                                <div class="row">
+
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>User ID</label>
+                                                                    <input type="text" id="txtUserID" class="form-control" ng-model="txtUserID" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>User Name</label>
+                                                                    <input type="text" id="txtUserName" class="form-control" ng-model="txtUserName" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Password</label>
+                                                                    <input type="text" id="txtPassword" class="form-control" ng-model="txtPassword" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>DOB</label>
+                                                                    <input type="text" id="txtDOB" class="form-control datepicker" ng-model="txtDOB" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Gender</label>
+                                                                    <select id="ddlGender" ng-model="ddlGender" class="form-control my-select" ng-options="item.name for item in GenderValues track by item.ID">
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Martial Status</label>
+                                                                    <select id="ddlMartial" ng-model="ddlMartial" class="form-control my-select" ng-options="item.name for item in MartialValues track by item.ID">
+                                                                    </select>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Address</label>
+                                                                    <textarea id="txtAddress" ng-model="txtAddress" class="form-control" rows="5"></textarea>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Branch</label>
+                                                                    <select id="ddlBranch" ng-model="ddlBranch" class="form-control my-select" ng-options="item.CityName for item in City track by item.ID"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Division</label>
+                                                                    <select id="ddlDivision" ng-model="ddlDivision" class="form-control my-select" ng-options="item.Name for item in Division track by item.ID"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Department</label>
+                                                                    <select id="ddlDepartment" ng-model="ddlDepartment" class="form-control my-select" ng-options="item.Name for item in Department track by item.ID"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Designation</label>
+                                                                    <select id="ddlDesignation" ng-model="ddlDesignation" class="form-control my-select" ng-options="item.Name for item in Designation track by item.ID"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    @*<div class="col-md-4">
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Functional Reporting</label>
+                        <select id="ddlFunRep" ng-model="ddlFunRep" class="form-control">
+                            <option value="0">-Select-</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Manager</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Date Of Join</label>
+                                                                    <input type="text" id="txtDOJ" ng-model="txtDOJ" class="form-control datepicker" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Email ID</label>
+                                                                    <input type="text" id="txtEmailID" ng-model="txtEmailID" class="form-control" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Mobile No</label>
+                                                                    <input type="text" id="txtMobile" ng-model="txtMobile" class="form-control" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <label>Depot</label>
+                                                                    <select class="form-control my-select" ng-model="ddlAmdDepot" id="ddlAmdDepot" ng-options="item.DepotName for item in DepotValue track by item.ID">
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-footer ">
+                                                    <div class="col-md-12" style="text-align:right;">
+                                                        <button type="submit" ng-click="RecordSave();" class="btn btn-fill btn-rose">Submit</button>
+                                                        
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane" id="RoleDetails">
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+
+                                                        <div class="col-md-12">
+                                                            <div class="material-datatables">
+                                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>S.No</th>
+                                                                            <th>Locations</th>
+                                                                            <th>Company</th>
+                                                                            <th>Role</th>
+                                                                            <th>Action</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr ng-repeat=" gRow in BLChargeGridValueBind">
+                                                                            <td>{{$index+1}}</td>
+                                                                            <td>
+                                                                                <select id="ddlLocation{{$index}}" ng-model="gRow.LocationID" class="form-control" ng-options="item.GeoLocation for item in GeoLocationsValues track by item.ID" ng-change="GeoLocChange(gRow,$index);"></select>
+
+                                                                            </td>
+                                                                            <td>
+                                                                                <select id="ddlCompnay{{$index}}" ng-model="gRow.CompnayID" class="form-control" ng-options="item.AgencyName for item in Agencies track by item.ID" ng-change="AgencyOnload(gRow,$index);"></select>
+                                                                            </td>
+                                                                            <td>
+                                                                                <select id="ddlRole" ng-model="gRow.RoleID" class="form-control" ng-options="item.RoleName for item in RollMasterValues track by item.ID"></select>
+                                                                            </td>
+                                                                            <td class="td-actions text-right actwid">
+                                                                                <button type="button" rel="tooltip" ng-if="$last" ng-click="gridRowAdd(gRow,$index)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                                                    <i class="material-icons">add</i>
+                                                                                </button>
+                                                                                <button type="button" rel="tooltip" ng-if="!$last" ng-click="UserDetailsRemove(BLChargeGridValueBind,$index,gRow.RoleID.ID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                                    <i class="material-icons">delete</i>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="card-footer ">
+                                                    <div class="col-md-12" style="text-align:right;">
+                                                        <button type="submit" ng-click="RecordSaveRole(BLChargeGridValueBind);" class="btn btn-fill btn-rose">Submit Role</button>
+                                                        <input type="hidden" id="HdId" ng-model="HdId" />
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                          
+                                        </div>
+
+                                     
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                        
+                    </div>
+                                    </div>
+
+                        </div>
+                    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>
+

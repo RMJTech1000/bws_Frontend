@@ -1,0 +1,584 @@
+﻿@model  NVOCShipping.Models.MasterModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        document.getElementById("txtSACCode").disabled = true;
+
+        $scope.AddNew = function () {
+            window.location = "/Finance/TaxEngine"
+        }
+        $scope.ShipmentTypes = null;
+        $scope.fillShipmentTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/ShipmentTypes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillShipmentTypes();
+
+        $scope.States = null;
+        $scope.fillStateslist = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/BindListStates/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.States = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillStateslist();
+
+        $scope.ChargeCodesList = null;
+        $scope.fillChargeCode = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/ChargeCodes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeCodesList = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChargeCode();
+
+
+        $scope.TaxPercList = null;
+        $scope.fillTaxPerc = function () {
+            var BussData = {}
+
+            BussData.CountryID = localStorage.getItem("CountryID");
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/TaxPercentage/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TaxPercList = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTaxPerc();
+
+        $scope.BindTaxEngRecords = function () {
+            var BussData = {}
+            BussData.ChargeTBID = $("#ddlChargeCode").val();
+            BussData.CountryID = localStorage.getItem("CountryID");
+            BussData.ShipmentTypeID = $("#ddlShipmentType").val();
+            BussData.TaxPercentageID = $("#ddlTaxperc").val();
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/TaxEngineView",
+                data: JSON.stringify(BussData),
+          
+        }).then(function (result) {
+            $scope.TaxEngineRec = result.data;
+            if ($scope.TaxEngineRec.length == 0) {
+                ShowPopup("No Records");
+            }
+            $scope.totalItems = $scope.TaxEngineRec.length;
+            $scope.currentPage = 1;
+            $scope.numPerPage = 8;
+            $scope.paginate = function (value) {
+                var begin, end, index;
+                begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                end = begin + $scope.numPerPage;
+                index = $scope.TaxEngineRec.indexOf(value);
+                return (begin <= index && index < end);
+            };
+        });
+
+        };
+
+        $scope.BindTaxViewRecords = function () {
+
+            $scope.BindTaxEngRecords();
+        }
+        $scope.BindTaxEngRecords();
+        $scope.SaveEngineDtls = function () {
+
+            var validation = "";
+            var ddlChargeCode = $('#ddlChargeCode').val();
+            if (ddlChargeCode == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select ChargeCode</span></br>"
+            }
+            var ddlShipmentType = $('#ddlShipmentType').val();
+            if (ddlShipmentType == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Shipment Type</span></br>"
+            }
+
+            var ddlTaxperc = $('#ddlTaxperc').val();
+            if (ddlTaxperc == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Tax Percentage</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            $scope.ExistingTaxEngineDtls = function () {
+                var BussData = {}
+                var id = $scope.HdTaxEngID
+
+                if (id == "" || id == null)
+                    BussData.ID = 0;
+                else
+                    BussData.ID = $scope.HdTaxEngID;
+                var Data = {};
+                Data.ChargeTBID = $("#ddlChargeCode").val();
+                Data.CountryID = localStorage.getItem("CountryID");
+                Data.ShipmentTypeID = $("#ddlShipmentType").val();
+                Data.TaxPercentageID = $("#ddlTaxperc").val();
+                $http({
+                    method: 'POST',
+                    url: '/api/FinanceApi/ExistingTaxEngine/',
+                    data: JSON.stringify(Data),
+
+                })
+                    .then(function (response) {
+                        $timeout(function () {
+                           
+                            $scope.Result = response.data;
+                            if (BussData.ID == "0" && $scope.Result.length >= "1") {
+                                    ShowPopup("TaxEngine Already Exists this Combination..Please Contact Administration");
+                                    return false;
+
+                                }
+                                else {
+
+                                    // alert(BussData.ID);
+                                    BussData.ChargeTBID = $("#ddlChargeCode").val();
+                                    BussData.ShipmentTypeID = $("#ddlShipmentType").val();
+                                    BussData.SACCode = $scope.txtSACCode;
+                                BussData.TaxPercentageID = $("#ddlTaxperc").val();
+                                BussData.UserID = localStorage.getItem("UserID");
+                                BussData.AgencyID = localStorage.getItem("AgencyID");
+
+
+                                    $http({
+                                        method: 'POST',
+                                        url: "/api/FinanceApi/InsertTaxEngine",
+                                        data: JSON.stringify(BussData),
+                                    }).then(function (result) {
+                                        $timeout(function () {
+                                            if (BussData.ID != "") {
+                                                ShowPopup("TaxEngine Updated");
+                                                var url = "/Finance/TaxEngine";
+                                                window.location.href = url;
+                                            }
+                                            else {
+
+                                                ShowPopup("TaxEngine Saved Successfully");
+                                                var url = "/Finance/TaxEngine";
+                                                window.location.href = url;
+                                            }
+                                           
+                                            
+                                            setTimeOut(function () {
+                                                window.location = "/";
+                                            }, 3000);
+                                         
+                                        });
+                                    }, function (result) {
+                                        if (result.status == 500) {
+                                            ShowPopup("Sorry no internet connectivity Application Error.");
+                                        }
+                                        else if (result.status == 404) {
+                                            ShowPopup("Sorry no internet connectivity page not found.");
+                                        }
+
+
+                                        if (result.status > 0) {
+                                            var errorMsg = result.status + ': ' + result.data;
+                                            // $(".modal").hide();
+                                            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                                        }
+                                    }).catch(function (result) {
+                                        // This is set in the event of an error.
+                                        console.log(result);
+                                        ShowPopup('There has been an error: ' + result);
+                                    });
+
+                                }
+                            //}
+
+                         
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            var errorMsg = response.status + ': ' + response.data;
+                            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                        }
+                    });
+            }
+            $scope.ExistingTaxEngineDtls();
+
+           
+        }
+
+        $("#ddlChargeCode").change(function () {
+            var Datavalue = {};
+           // alert($("#ddlChargeCode").val());
+            Datavalue.ID = $("#ddlChargeCode").val();
+
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/BindSACCodeByChgCode",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.txtSACCode = result.data[0].SACCode;
+                    }
+                });
+
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+        });
+
+        //$scope.BindTaxEngineDtls();
+
+        $scope.TaxEngineEdit = function (TaxEngID) {
+
+            var Datavalue = {};
+            Datavalue.ID = TaxEngID;
+            $http({
+                method: 'POST',
+                url: '/api/financeApi/TaxEngineDtlsEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+
+                        $scope.ddlChargeCode = { ChargeTBID: result.data[0].ChargeTBID };
+                        $scope.ddlShipmentType = { ShipmentTypeID: result.data[0].ShipmentTypeID };
+                        $scope.txtSACCode = result.data[0].SACCode;
+                        $scope.ddlTaxperc = { ID: result.data[0].TaxPercentageID };
+                        $scope.HdTaxEngID = result.data[0].ID;
+                    }
+                    else {
+
+                        $scope.txtSACCode = "";
+                        $scope.ddlChargeCode = "";
+                        $scope.ddlShipmentType = "";
+                        $scope.ddlTaxperc = "";
+                    }
+                });
+            });
+
+        }
+
+        //$scope.TaxEngineDelete = function (TaxEngID) {
+        //    var BussData = {};
+        //    BussData.ID = TaxEngID;
+        //   // alert(BussData.ID);
+
+        //    $http({
+        //        method: 'POST',
+        //        url: "/api/FinanceApi/TaxEngineRemove/",
+        //        data: JSON.stringify(BussData),
+        //    }).then(function () {
+        //        $timeout(function () {
+        //            var index = $scope.TaxEngineRec.indexOf(TaxEngID)
+        //            $scope.TaxEngineRec.splice(index, TaxEngID);
+        //            //$scope.BindTaxEngineDtls();
+        //        });
+        //    });
+
+        //};
+        $scope.FileUploadingWindows = function () {
+
+            var left = (screen.width / 2) - (400 / 2);
+            var top = (screen.height / 2) - (300 / 2);
+            return window.open("../TaxEngineUpload.aspx", 'window', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=300, top=' + top + ', left=' + left);
+        }
+            $scope.btnExcel = function () {
+
+                var ChargeTBID = $("#ddlChargeCode").val();
+                 var User = localStorage.getItem("UserName");
+                var CountryID = localStorage.getItem("CountryID");
+
+                window.location.href = '@Url.Action("CreateTaxEngineExcel", "AccountsMasterExcel")?ChargeTBID=' + ChargeTBID + "&CountryID=" + CountryID + "&User=" + User;
+
+        }
+        $scope.ClearRecords = function () {
+            $scope.txtSACCode = "";
+            $("#ddlChargeCode").val(null).trigger("change");
+            $("#ddlShipmentType").val(null).trigger("change");
+            $("#ddlTaxperc").val(null).trigger("change");
+            $scope.BindTaxEngRecords();
+        }
+ 
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Tax Engine</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Code</label>
+                                            <select class="form-control my-select" ng-model="ddlChargeCode" id="ddlChargeCode" ng-options="item.ChgCode for item in ChargeCodesList track by item.ChargeTBID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>SAC Code </label>
+
+                                            <input type="text" autocomplete="off" id="txtSACCode" ng-model="txtSACCode" class="form-control">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipment Type</label>
+
+                                            <select class="form-control my-select" ng-model="ddlShipmentType" id="ddlShipmentType" ng-options="item.GeneralName for item in ShipmentTypes track by item.ShipmentTypeID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Tax PerCentage</label>
+
+                                            <select class="form-control my-select" ng-model="ddlTaxperc" id="ddlTaxperc" ng-options="item.TaxName for item in TaxPercList track by item.ID" required></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        @*<div class="row">
+            <div class="col-md-3">
+                <input type="file" name="file" class="form-control"
+                       onchange="angular.element(this).scope().loadFile(this.files)">
+                <br /><br />
+            </div>
+        </div>*@
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="BindTaxViewRecords();" class="btn btn-fill btn-rose searchbtn">
+                                    <i class="material-icons">search</i>
+                                    Search
+                                </button>
+                                <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger">Clear</button>
+                                <button type="submit" ng-click="btnExcel();" class="btn btn-fill btn-success">
+                                    <i class="material-icons">download</i>
+                                    Download
+                                </button>
+                                <button type="submit" ng-click="FileUploadingWindows();" class="btn btn-fill btn-info">
+                                    <i class="material-icons">upload</i>
+                                    Upload
+                                </button>
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="SaveEngineDtls();">
+                                    <i class="material-icons">add</i>
+                                    Add
+                                </button>
+                                <input type="hidden" id="HdTaxEngID" ng-model="HdTaxEngID" />
+                                <br />
+                                <p ng-bind="msg"></p>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="material-datatables">
+
+                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>ChargeCode</th>
+                                                    <th>SAC Code</th>
+                                                    <th>Shipment Type</th>
+                                                    <th>Tax Percentage</th>
+                                                    <th class="disabled-sorting text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                <tr ng-repeat="i in TaxEngineRec | filter : paginate | orderBy:'-Statusv'">
+
+                                                    <td>{{i.ChgCode}}</td>
+                                                    <td>{{i.SACCode}}</td>
+                                                    <td>{{i.ShipmentType}}</td>
+                                                    <td>{{i.TaxName}}</td>
+                                                    <td class="td-actions text-right">
+                                                        <button type="button" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="" ng-click="TaxEngineEdit(i.ID);">
+                                                            <i class="material-icons">edit</i>
+                                                        </button>
+                                                        @*<button type="button" rel="tooltip" class="btn btn-danger btn-round" data-original-title="" title="" ng-click="TaxEngineDelete(i.ID);">
+                                    <i class="material-icons">delete</i>
+                                </button>*@
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        @*<div id="notFoundDiv" ng-show="(TaxEngineRec|filter:ChgCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="card-footer">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                                            </div>
+                                            <div class="col-md-7" style="text-align:right;">
+                                                <pagination total-items="totalItems" ng-model="currentPage"
+                                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                                </pagination>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+
+</script>

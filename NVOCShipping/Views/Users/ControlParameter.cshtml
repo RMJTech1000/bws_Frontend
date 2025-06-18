@@ -1,0 +1,474 @@
+﻿@model  NVOCShipping.Models.MasterModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+
+        $scope.AddNew = function () {
+            window.location = "/Users/ControlParameter"
+        }
+
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 2 }
+        ];
+
+
+        $scope.AgencyMasterList = null;
+        $scope.FilAgencyMasterList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMasterList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilAgencyMasterList();
+
+        $scope.MenuModuleList = null;
+        $scope.FilMenuModuleList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/MenuListDD/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MenuModuleList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilMenuModuleList();
+
+        $scope.GLCodeValues = null;
+        $scope.fillGLCodeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/GLCodeMasterRecord/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GLCodeValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillGLCodeValues();
+
+        $scope.BindCPRecords = function () {
+            var BussData = {}
+            BussData.AgencyID = $("#ddlAgency").val();
+            BussData.ModuleID = $("#ddlModule").val();
+            BussData.Parameter = $scope.txtParameter;
+            BussData.Value = $scope.txtValue;
+            BussData.StatusID = $("#ddlStatus").val();
+            $http({
+                method: 'POST',
+                url: "/api/Home/ControlParameterView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $scope.CPRec = result.data;
+               
+            });
+
+        };
+
+        $scope.BindCPViewRecords = function () {
+
+            $scope.BindCPRecords();
+        }
+        $scope.BindCPRecords();
+      
+        $scope.SaveCP = function () {
+
+            var validation = "";
+            var ddlAgency = $('#ddlAgency').val();
+            if (ddlAgency == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Agency</span></br>"
+            }
+            var ddlModule = $('#ddlModule').val();
+            if (ddlModule == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Module</span></br>"
+            }
+            //var txtValue = $('#txtValue').val();
+            //if (txtValue.length == 0) {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Enter Value </span></br>"
+
+            //}
+            var txtParameter = $('#txtParameter').val();
+            if (txtParameter.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Parameter </span></br>"
+
+            }
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+
+            var BussData = {}
+            var id = $scope.HdCPID
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdCPID;
+
+            // alert(BussData.ID);
+            BussData.AgencyID = $("#ddlAgency").val();
+            BussData.ModuleID = $("#ddlModule").val();
+            BussData.Parameter = $scope.txtParameter;
+            BussData.Value = $scope.txtValue;
+            BussData.StatusID = $("#ddlStatus").val();
+            BussData.GLCodeID = $("#ddlGL").val();
+            if ($("#ddlGL").val() == "?") {
+                BussData.GLCodeID = 0;
+               
+            }
+            else {
+                BussData.GLCodeID = $("#ddlGL").val();
+            }
+
+            $http({
+                method: 'POST',
+                url: "/api/Home/InsertControlParameter",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (BussData.ID != "") {
+                        ShowPopup("ControlParameter Updated");
+                    }
+                    else {
+
+                        ShowPopup("ControlParameter Saved Successfully");
+                    }
+                    var url = "/Users/ControlParameter";
+                    window.location.href = url;
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.CPEdit = function (CPID) {
+          
+            var Datavalue = {};
+            Datavalue.ID = CPID;
+            $http({
+                method: 'POST',
+                url: '/api/Home/ControlParameterEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.ddlAgency = { ID: result.data[0].AgencyID };
+                        $scope.ddlModule = { ID: result.data[0].ModuleID };
+                        $scope.txtParameter = result.data[0].Parameter;
+                        $scope.txtValue = result.data[0].Value;
+                        $scope.ddlStatus = { ID: result.data[0].StatusID };
+                        $scope.HdCPID = result.data[0].ID;
+                        $scope.ddlGL= { ID: result.data[0].GLCodeID };
+                        
+                    }
+                    else {
+
+                        $scope.txtValue = "";
+                        $scope.txtParameter = "";
+                        $scope.ddlStatus = "";
+                        $scope.ddlAgency = "";
+                        $scope.ddlModule = "";
+                    }
+                });
+            });
+
+        }
+
+        $scope.ClearRecords = function () {
+
+            $("#ddlAgency").val(null).trigger("change");
+            $("#ddlModule").val(null).trigger("change");
+            $scope.txtValue = "";
+            $scope.txtParameter = "";
+            $("#ddlStatus").val(null).trigger("change");
+            $scope.BindCPRecords();
+        }
+    });
+         
+    
+
+
+  
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Control Parameter</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Agency</label>
+                                            <select class="form-control my-select" id="ddlAgency" ng-model="ddlAgency" ng-options="item.AgencyName for item in AgencyMasterList track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Module </label>
+                                            <select class="form-control my-select" id="ddlModule" ng-model="ddlModule" ng-options="item.Module for item in MenuModuleList track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Parameter</label>
+
+                                            <input type="text" autocomplete="off" id="txtParameter" ng-model="txtParameter" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>GL Code</label>
+
+                                            <select class="form-control my-select" id="ddlGL" ng-model="ddlGL" ng-options="item.GLCode for item in GLCodeValues track by item.ID"></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                          
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Value</label>
+
+                                            <input type="text" autocomplete="off" id="txtValue" ng-model="txtValue" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+
+                                            <select class="form-control my-select" id="ddlStatus" ng-model="ddlStatus" ng-options="item.name for item in StatusValues track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        @*<div class="row">
+                                <div class="col-md-3">
+                                    <input type="file" name="file" class="form-control"
+                                           onchange="angular.element(this).scope().loadFile(this.files)">
+                                    <br /><br />
+                                </div>
+                            </div>*@
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="BindCPViewRecords();" class="btn btn-fill btn-rose searchbtn">
+                                    <i class="material-icons">search</i>
+                                    Search
+                                </button>
+                                <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="SaveCP();">
+
+                                    Submit
+                                </button>
+                                <input type="hidden" id="HdCPID" ng-model="HdCPID" />
+                                <br />
+                                <p ng-bind="msg"></p>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="material-datatables" style="border: 1px solid #ccc; padding: 5px; overflow:scroll;height:400px;">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Agency</th>
+                                                <th>Module</th>
+                                                <th>Parameter </th>
+                                                <th>GLCode</th>
+                                                <th>Value</th>
+                                                <th>Status</th>
+                                                <th class="disabled-sorting text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr ng-repeat="i in CPRec | filter : paginate | orderBy:'-Statusv'">
+
+                                                <td>{{i.Agency}}</td>
+                                                <td>{{i.Module}}</td>
+                                                <td>{{i.Parameter}}</td>
+                                                <td>{{i.GLCode}}</td>
+                                                <td>{{i.Value}}</td>
+                                                <td>{{i.StatusResult}}</td>
+                                                <td class="td-actions text-right">
+                                                    <button type="button" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="" ng-click="CPEdit(i.ID);">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+                                                    @*<button type="button" rel="tooltip" class="btn btn-danger btn-round" data-original-title="" title="" ng-click="TaxEngineDelete(i.ID);">
+                            <i class="material-icons">delete</i>
+                        </button>*@
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    @*<div id="notFoundDiv" ng-show="(TaxEngineRec|filter:ChgCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+
+</script>

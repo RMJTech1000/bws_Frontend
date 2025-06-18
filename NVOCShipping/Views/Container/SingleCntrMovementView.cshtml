@@ -1,0 +1,357 @@
+﻿@model  NVOCShipping.Models.MasterModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrNo();
+
+        $("#ddlCntrNo").change(function () {
+            $scope.CntrStatusCodes = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlCntrNo").val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrStatusandTypeByCntrNo/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                  
+                    $scope.txtFromStatus = result.data[0].StatusCode;
+                    $("#ddlSizeType").val(result.data[0].CntrTypeID).trigger("change");
+                 
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+      
+        $scope.BindCntrTxnsRecords = function () {
+            var validation = "";
+
+            var ddlCntrNo = $('#ddlCntrNo').val();
+            if (ddlCntrNo == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container No</span></br>"
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var BussData = {}
+            BussData.CntrID = $("#ddlCntrNo").val();
+            BussData.CntrTypeID = 0;
+            BussData.VesVoyID = 0;
+            BussData.BLID = 0;
+            BussData.FromPortID = 0;
+            BussData.NextPortID = 0;
+            BussData.DepotID = 0;
+            BussData.CustomerID = 0;
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/SingleContainersTrackingView",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $scope.CntrTxnsRec = result.data;
+
+            });
+
+        }
+
+       
+
+        $scope.Next = function (CntrTxnsRec) {
+
+            var validation = "";
+
+            var IntRow = 0;
+            for (var i = 0; i < CntrTxnsRec.length; i++) {
+
+                if (CntrTxnsRec[i].ChkFlag == 1) {
+                    IntRow = true;
+                    break;
+
+                }
+                else {
+
+                    IntRow = false;
+                }
+
+            }
+            if (IntRow == false) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check CheckBox </span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            localStorage.setItem("FromStatusCode", $scope.txtFromStatus);
+
+            var Items = []
+            for (var i = 0; i < $scope.CntrTxnsRec.length; i++) {
+
+                if ($scope.CntrTxnsRec[i].ChkFlag==1) {
+
+                    var Id = $scope.CntrTxnsRec[i].CntrID;
+                    Items.push(Id);
+
+                    localStorage.setItem("FromLocID", $scope.CntrTxnsRec[i].FromPortID);
+                    localStorage.setItem("AgentID", $scope.CntrTxnsRec[i].AgencyID);
+                    localStorage.setItem("DepotID", $scope.CntrTxnsRec[i].DepotID);
+                    localStorage.setItem("TransitID", $scope.CntrTxnsRec[i].ModeOfTransportID);
+                    localStorage.setItem("BLID", $scope.CntrTxnsRec[i].BLID);
+                    localStorage.setItem("CustomerID", $scope.CntrTxnsRec[i].CustomerID);
+                    localStorage.setItem("VesVoyID", $scope.CntrTxnsRec[i].VesVoyID);
+                    localStorage.setItem("AgencyGeoLocID", $scope.CntrTxnsRec[i].AgencyGeoLocID);
+                    
+                }
+
+            }
+            var url = "/Container/SingleCntrMovementEntry?CntrID=" + Items.toString();
+            window.location.href = url;
+        }
+
+        $scope.ClearRecords = function () {
+            //$("#ddlCntrNo").val(null).trigger("change");
+            var url = "/Container/SingleCntrMovementView";
+            window.location.href = url;
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Single Movement Entry</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+                            <div class="col-md-12" style="border:1px solid #ccc;">
+                                <div class="row">
+                                    <div class="col-md-3" style="border-right:1px solid #ccc;">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Container Number</label>
+                                                    <select class="form-control my-select" ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID">
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" style="border-right:1px solid #ccc;">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Container Size Type </label>
+                                                    <select disabled class="form-control my-select" ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3" style="border-right:1px solid #ccc;">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>From Status</label>
+                                                    <input disabled class="form-control" id="txtFromStatus" ng-model="txtFromStatus" required>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="col-md-12 padlr0" style="margin-top:21px;">
+                                            <button type="submit" ng-click="BindCntrTxnsRecords();" class="btn btn-fill btn-primary" style="padding: 8px 0px; width: 30%;">Search</button>
+
+                                            <button type="submit" ng-click="Next(CntrTxnsRec);" class="btn btn-fill btn-info" style="padding: 8px 0px; width: 30%;">Next</button>
+
+                                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger" style="padding: 8px 0px; width: 30%;">Clear</button>
+
+                                            <br />
+                                            <p ng-bind="msg"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         
+
+                        </div>
+
+                        @*<div class="row">
+                <div class="col-md-3">
+                    <input type="file" name="file" class="form-control"
+                           onchange="angular.element(this).scope().loadFile(this.files)">
+                    <br /><br />
+                </div>
+            </div>*@
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="padding-left: 19px; padding-right:19px;">
+                            <div class="material-datatables" style="border: 1px solid #ccc; padding: 5px; overflow:scroll;height:430px;">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th class="disabled-sorting text-right"></th>
+
+                                            <th>Container No</th>
+                                            <th>Size Type</th>
+                                            <th>Status</th>
+                                            <th>Move Dt</th>
+                                            <th>Agency</th>
+                                            <th>Location</th>
+                                            <th>Vessel/Voyage</th>
+                                            <th>Transit </th>
+                                            <th>Depot</th>
+                                            <th>BL Number</th>
+                                            <th>Customer</th>
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="i in CntrTxnsRec | filter : paginate | orderBy:'-Statusv'">
+                                            <td> <input type="checkbox" id="ChkFlag" value="{{i.CntrID}}" ng-if="$first" ng-model="i.ChkFlag" ng-true-value="1" ng-false-value="0" /></td>
+
+                                            <td>{{i.CntrNo}}</td>
+                                            <td>{{i.Size}}</td>
+                                            <td>{{i.StatusCode}}</td>
+                                            <td>{{i.DtMovement}}</td>
+                                            <td>{{i.AgencyName}}</td>
+                                            <td>{{i.FromPort}}</td>
+                                            <td>{{i.VesVoy}}</td>
+                                            <td>{{i.TransitMode}}</td>
+                                            <td>{{i.Depot}}</td>
+                                            <td>{{i.BLNumber}}</td>
+                                            <td>{{i.CustomerName}}</td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div id="notFoundDiv" ng-show="(CntrTxnsRec|filter:CntrNo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+
+</script>
+<style>
+
+    .table > tbody > tr > td {
+        white-space: nowrap;
+    }
+</style>

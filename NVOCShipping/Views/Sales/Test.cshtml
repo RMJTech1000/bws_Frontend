@@ -1,0 +1,162 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $scope.models = [{}];
+       // $scope.countries = ['India', 'Japan', 'US'];
+
+        $scope.fillCountry = function ()
+        {
+            $http({
+                method: 'POST',
+                url: '/api/Home/countryBind/',
+                data: {}
+            }).then(function (result)
+            {
+                $timeout(function () {
+
+                    $scope.countries = result.data;
+                  
+                });
+            });
+        };
+        $scope.fillCountry();
+
+
+        $scope.fillStatevalues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/ListCitiesAllData/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    //angular.forEach(result.data, function (value, key)
+                    //{
+                    //    $scope.states.push({
+                    //        INDIA: [{ 'name': result.data[key].CityName, 'ID': result.data[key].ID }]
+                    //    });
+                    //});
+                    var temp = [];
+                    for (var i in result.data) {
+                        temp[result.data[i].CountryName].push[{
+                            'name': result.data[i].CityName,
+                            'ID': result.data[i].CityID
+                        }]);
+                    }
+                   
+                    
+                    //console.log($scope.states);
+                    //console.log(temp)
+                    //$scope.states = temp;
+                    //console.log(result.data);
+
+
+                    //console.log($scope.states);
+                    //$scope.states =
+                    //{
+                    //    INDIA: [{ 'name': 'UP', 'ID': 1 }, { 'name': 'MP', 'ID': 2 }, { 'name': 'Bihar', 'ID': 3 }],
+                    //    JAPAN: [{ 'name': 'Tokyo', 'ID': 4 }, { 'name': 'Yokohama', 'ID': 5 }],
+                    //    US: [{ 'name': 'California', 'ID': 6 }, { 'name': 'Texas', 'ID': 7 }]
+
+                    //}
+                   // console.log($scope.states);
+
+                });
+            });
+        };
+        $scope.fillStatevalues();
+
+
+        //$scope.states =
+        //{
+        //    INDIA: [{ 'name': 'UP', 'ID': 1 }, { 'name': 'MP', 'ID': 2 }, { 'name': 'Bihar', 'ID': 3 }],
+        //    JAPAN: [{ 'name': 'Tokyo', 'ID': 4 }, { 'name': 'Yokohama', 'ID': 5 }],
+        //    US: [{ 'name': 'California', 'ID': 6 }, { 'name': 'Texas', 'ID': 7 }]
+
+        //}
+       
+        $scope.addRow = function () {
+            $scope.models.push({});
+        }
+        $scope.getState = function (country)
+        {
+            
+            return $scope.states[country];
+        }
+
+    });
+
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <a href="/Sales/TariffView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i>
+
+                </a>
+                <a href="/Sales/TariffMaster" class="btn btn-fill btn-warning btnedit btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </a>
+            </div>
+        </div>
+
+        <center>
+            
+            <table>
+                <tr>
+                    <th>Country</th>
+                    <th>State</th>
+                    <th>Action</th>
+                </tr>
+
+                <tr ng-repeat="model in models">
+                    <td>
+                       @*<select ng-options="country as country for country in countries"
+                ng-model="model.country"
+                ng-change='getState(model.country)'>
+        </select>*@
+
+                       <select ng-options="item.CountryName for item in countries track by item.ID"
+                ng-model="model.CountryName"
+                ng-change='getState(model.CountryName.CountryName)'>
+        </select>
+                    </td>
+                    <td>
+                        @*<select ng-options="state as state for state in getState(model.CountryName.CountryName)" ng-model="model.state">
+                        </select>*@
+
+                        <select ng-options="item.name for item in getState(model.CountryName.CountryName)" ng-model="model.name">
+                        </select>
+                    </td>
+                    <td>
+                        <button ng-click="addRow()">Add Row</button>
+                    </td>
+                </tr>
+            </table>
+            <h3 style="color:green">Selections</h3>
+            <p ng-repeat="model in models">
+                {{model.CountryName.CountryName}} - {{model.name}}
+            </p>
+        </center>
+    </div>
+</div>

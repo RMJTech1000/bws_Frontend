@@ -1,0 +1,120 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+    });
+
+
+
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+    function AddNew() {
+
+       
+    }
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div class="row">
+        <div class="col-md-12 createnew" style="text-align:right;">
+        Back
+            <a href="#" class="btn btn-fill btn-success btn-round btnadd btntop">
+                <i class="material-icons">back</i>
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card-icon">
+                                Template Dashboard
+
+                            </div>
+                        </div>
+                 
+                    </div>
+
+
+                </div>
+                <div class="card-body">
+
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Screen Name</th>
+                                    <th>Upload Template file</th>
+
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>SLOT CONTRACT</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/SLOT OPERATOR UPLOAD OPTION.xlsx">Slot Contract upload template.xls</a></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>MRG</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/MRG UPLOAD.xlsx">MRG upload template.xls</a></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>MNR</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/MNR TARIFF UPLOAD.xlsx">MNR upload template.xls</a></td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>TARIFF DETAILS</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/TARIFF MASTER UPLOAD.xlsx">Tariff upload template.xls</a></td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>PORT LOCATION CHARGES</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/PORT LOCAL TEMPLATE.xlsx">Tariff upload template.xls</a></td>
+                                </tr>
+                                <tr>
+                                    <td>6</td>
+                                    <td>IHC COST UPLOAD</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/Cost_IHC_Upload_Test.xlsx">IHC Cost upload template.xls</a></td>
+                                </tr>
+                                <tr>
+                                    <td>7</td>
+                                    <td>ON HIRE UPLOAD</td>
+                                    <td><a style="color:forestgreen" href="~/DownloadFile/CntrOnHireUpload_template.xlsx">onHire upload template.xls</a></td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

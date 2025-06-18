@@ -1,0 +1,423 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<style>
+
+    ul.autocomplete-content.dropdown-content {
+        background-color: #eee;
+        box-shadow: 0px 0px 5px #ccc;
+        top: 30px !important;
+        left: 15px !important;
+        position: absolute !important;
+        z-index: 100;
+    }
+
+        ul.autocomplete-content.dropdown-content li {
+            list-style-type: none;
+            margin-left: -40px;
+            padding-left: 10px;
+            padding-top: 8px;
+            font-size: 14px;
+            color: #040f96 !important;
+            border-bottom: 1px solid #ccc;
+        }
+
+            ul.autocomplete-content.dropdown-content li:hover {
+                background-color: #f4f4f4;
+            }
+
+    .section-search input {
+        padding: 5px !important;
+        font-size: 18px !important;
+        width: 90% !important;
+        border: #f4f4f4 3px solid !important;
+        background-color: #808080 !important;
+        float: right;
+    }
+
+    .section-search i {
+        display: block;
+    }
+
+    .section-search input.autocomplete {
+        color: #040f96;
+    }
+
+    .input-field .prefix.active {
+        color: #040f96 !important;
+    }
+
+    .dropdown-content li > a, .dropdown-content li > span {
+        color: #040f96 !important;
+    }
+
+    .autocomplete-content li .highlight {
+        color: #040f96 !important;
+    }
+
+    .bootstrap-select .btn.dropdown-toggle.select-with-transition {
+        background-image: none;
+        border: 1px solid #ccc !important;
+        margin-top: 0;
+        height: 32px;
+    }
+
+    .bootstrap-select .dropdown-toggle .filter-option {
+        padding-top: 9px;
+        padding-left: 4px;
+        padding-right: 0px;
+    }
+    /*.dropdown-toggle:after
+    {
+        margin-left: 8.255em!important;
+    }*/
+
+    .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+        max-width: 100%;
+    }
+    /*.form-control.txtarea
+    {
+        width:765px;
+    }*/
+    .bmd-form-group .form-control, .bmd-form-group input::placeholder, .bmd-form-group label {
+        padding-left: 6px;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.SelectedFiles = null;
+        $scope.Country = null;
+        $scope.fillCountry = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindCountries/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Country = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCountry();
+
+        $scope.Recordsave = function () {
+
+            var validation = "";
+            var txtCityCode = $('#txtCityCode').val();
+            if (txtCityCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter City Code</span></br>"
+
+            }
+            var txtCityName = $('#txtCityName').val();
+            if (txtCityName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter City Name</span></br>"
+            }
+
+            var ddlcountry1 = $('#ddlcountry').val();
+            if (ddlcountry1 == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Country</span></br>"
+            }
+           
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+            BussData.CityCode = $scope.txtCityCode;
+            BussData.CityName = $scope.txtCityName;
+
+            //  if ($scope.ddlcountry != "undefined")
+            BussData.CountryID = $("#ddlcountry").val();
+            //else
+            //    BussData.CountryID = 0;
+
+            BussData.StateName = $scope.txtStateName
+            if ($scope.ChkStatus == 1) {
+
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+
+            //alert(BussData.CountryID);
+            $http({
+                method: 'POST',
+                url: "/api/Home/City",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    setTimeout(function () { location.href = "/Home/CityView" }, 2000);
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+            
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+       // $scope.BindCity();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["CityRegID"] != null) {
+                $scope.HDRegId = queryString["CityRegID"].toString();
+                $scope.BindCity(queryString["CityRegID"].toString());
+              
+            }
+        });
+
+        //existing value bind
+
+        $scope.BindCity = function (CityRegID) {
+
+            var Datavalue = {}
+            var id = CityRegID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = CityRegID;
+         
+            $http({
+                method: 'POST',
+                url: '/api/Home/Cityviewedit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.txtCityCode = result.data[0].CityCode;
+                        $scope.txtCityName = result.data[0].CityName;
+                        $scope.txtStateName = result.data[0].StateName;
+                        $scope.CountryID = result.data[0].CountryID;
+                        $scope.ChkStatus = result.data[0].Status;
+                        $scope.CountryID = { CountryID: result.data[0].CountryID };
+                    }
+                    else {
+                        $scope.txtCityCode = "";
+                        $scope.txtCityName = "";
+                        $scope.txtStateName = "";
+                        $scope.ChkStatus = 0;
+                        $scope.ddlcountry = 0;
+                    }
+                });
+            });
+           
+        }
+       
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Home/CityView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">City Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>City Code</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtCityCode" ng-model="txtCityCode" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>City Name</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtCityName" autocomplete="off" ng-model="txtCityName" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>State Name</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtStateName" ng-model="txtStateName" autocomplete="off" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Country </label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+
+
+                                            <select class="form-control my-select" ng-model="CountryID" id="ddlcountry" ng-options="item.CountryName for item in Country track by item.CountryID" required>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Status</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <div class="togglebutton">
+                                            <label>
+                                                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                <span class="toggle"></span>
+
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="card-footer ">
+                    <div class="col-md-12" style="text-align:right;">
+                        <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                    </div>
+                    <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+</script>
+
+

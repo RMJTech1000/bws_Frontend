@@ -1,0 +1,508 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+           $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["ImpReg"] != null) {
+
+                $scope.RegId = queryString["ImpReg"].toString();
+                $scope.FilBookingExsitingMaster(queryString["ImpReg"].toString());
+
+            }
+           });
+
+          $scope.FilBookingExsitingMaster = function (ImpReg) {
+
+            var Datavalue = {};
+            Datavalue.ID = ImpReg;
+           
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/PreAlertDtls',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                   
+                    $scope.RegId = result.data[0].ID;                  
+                    $scope.txtBookingNo = result.data[0].BookingNo;             
+                    $scope.ddlBookingParty = { ID: result.data[0].BkgPartyID };                   
+                    $scope.ddlPOO = { ID: result.data[0].POOID };
+                    $scope.ddlPOL = { ID: result.data[0].POLID };
+                    $scope.ddlPOD = { ID: result.data[0].PODID };
+                    $scope.ddlFPOD = { ID: result.data[0].FPODID };                   
+                    $scope.ddlCommodityType = { ID: result.data[0].CommodityTypeID };
+                    $scope.ddlSurrender = { ID: result.data[0].SurrenderStatusV };                 
+                    $scope.ddlShipper = { ID: result.data[0].PartyID };                  
+                    $scope.ddlDestinationAgent = { ID: result.data[0].DestinationAgentID };
+                    $scope.txtFreeDays = result.data[0].FreeDays;
+                    $scope.txtETA = result.data[0].ETA;
+                    $scope.txtETD = result.data[0].ETD;
+                    $scope.txtVesVoy = result.data[0].VesVoy;
+                    $scope.ddlCarrier = { ID: result.data[0].BkgPartyID };  
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+               $scope.SurrenderAllvalues = null;
+        $scope.fillSurrenderValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "16"; //GeneralMaster Table seqNo 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SurrenderAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSurrenderValues();
+
+           $scope.AgencyMasterAllvalues = null;
+        $scope.fillAgencyMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMasterAllvalues = result.data;
+                  
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAgencyMasterValues();
+
+              $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+            $scope.CarrierAllvalues = null;
+        $scope.fillCarrierValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CarrierAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCarrierValues();
+
+        $scope.getPaging = function (tab) {
+            var myp = $scope.RegId;
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Import/ShipmentDetails?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Import/ContainerDetails?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Import/PreAlert?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Import/CAN?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Import/DeliveryOrder?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 6) {
+                if (myp != "0") {
+                    var url = "/Import/CustomsReports?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 7) {
+                if (myp != "0") {
+                    var url = "/Import/DetDem?ImpReg=" + encodeURIComponent(myp);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+   .downbtn .btn {
+        padding: 6px 12px;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/Import/ImportView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            @*<a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                <i class="material-icons">edit</i>
+            </a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Pre-Alert
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" ng-click="getPaging(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Shipment Details</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                <a class="nav-item nav-link active" id="nav-profile-tab" ng-click="getPaging(3);" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Pre-Alert Documents</a>
+                                <a class="nav-item nav-link" id="nav-contact-tab" ng-click="getPaging(4);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">CAN</a>
+                                <a class="nav-item nav-link" id="nav-contact-CAN" ng-click="getPaging(5);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Delivery Order/Empty Returns</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(6);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">Customs Report</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(7);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">DET/DEM Calculation</a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 downbtn">
+                            <button type="submit" class="btn btn-fill btn-default">Refresh</button>
+                            <button type="submit" class="btn btn-fill btn-rose">OFFLINE UPLOAD</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Booking/BL</label>
+                                                    <input type="text" id="txtBookingNo" ng-model="txtBookingNo" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Surrender Status</label>
+                                                    <select class="form-control my-select" id="ddlSurrender" ng-model="ddlSurrender" options="{ allowClear: true }" ng-options="item.GeneralName for item in SurrenderAllvalues track by item.ID"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>SOB Date</label>
+                                                    <input type="text" id="txtSOBDate" class="form-control datepicker" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Loading Agent</label>
+                                                    <select id="ddlLoadingAgent" class="form-control"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Destination Agent</label>
+                                                    <select class="form-control my-select" id="ddlDestinationAgent" ng-model="ddlDestinationAgent" ng-options="item.AgencyName for item in AgencyMasterAllvalues track by item.ID">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>POL</label>
+                                                    <select id="ddlPOL" class="form-control my-select" ng-model="ddlPOL" options="{ allowClear: true }" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>ETD</label>
+                                                    <input type="text" id="txtETD" ng-model="txtETD" class="form-control datepicker" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>POD</label>
+                                                    <select id="ddlPOD" class="form-control my-select" ng-model="ddlPOD" options="{ allowClear: true }" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>ETA</label>
+                                                    <input type="text" id="txtETA" ng-model="txtETA" class="form-control datepicker" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Vessel/Voyage</label>
+                                                   <input type="text" id="txtVesVoy" ng-model="txtVesVoy" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Carrier</label>
+                                                    <select id="ddlCarrier" ng-model="ddlCarrier" class="form-control my-select" ng-options="item.CustomerName for item in CarrierAllvalues track by item.ID"></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-4">
+                            <div class="col-md-12" style="border:1px solid #ccc; padding:7px;">
+                                <div class="col-md-12 padlr0" style="border-bottom:1px solid #b3b0b0;">
+                                    <h5 style="margin-bottom:0;padding-bottom: 7px;font-size: 15px;color:#168db9;font-weight: bold;">Documents</h5>
+                                </div>
+                                <div class="col-md-12" style="background-color:#cccccc47;">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">BL</h5>
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right;">
+                                            <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">eye</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="background-color:#fff;">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">TDR</h5>
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right;">
+                                            <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">eye</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="background-color:#cccccc47;">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">Frieight Manifest</h5>
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right;">
+                                            <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">eye</i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style="background-color:#fff;">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">Surrender Notice</h5>
+                                        </div>
+                                        <div class="col-md-4" style="text-align:right;">
+                                            <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">eye</i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align:right;">
+                            <div class="ml-auto">
+                                <button type="submit" class="btn btn-fill btn-success">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

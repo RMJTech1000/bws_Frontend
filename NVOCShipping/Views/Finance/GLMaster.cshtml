@@ -1,0 +1,723 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<style>
+    .card .table tr td {
+        white-space: nowrap !important;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 2 }
+        ];
+        $scope.AgencyMasterAllvalues = null;
+        $scope.fillAgencyMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAgencyMasterValues();
+
+        $scope.MainAccTypeAllvalues = null;
+        $scope.fillMainAccTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "20"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MainAccTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillMainAccTypeValues();
+
+        $scope.GLNatureAllvalues = null;
+        $scope.fillGLNatureValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "21"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GLNatureAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillGLNatureValues();
+
+        $scope.GLCategoryAllvalues = null;
+        $scope.fillGLCategoryValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "22"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GLCategoryAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillGLCategoryValues();
+
+        $scope.GLMatchingAllvalues = null;
+        $scope.fillGLMatchingValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "23"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GLMatchingAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillGLMatchingValues();
+
+        $scope.ProductTypeAllvalues = null;
+        $scope.fillProductTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "24"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ProductTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillProductTypeValues();
+
+
+        $scope.RecordSave = function () {
+
+            var validation = "";
+
+            var txtGLCode = $('#txtGLCode').val();
+            if (txtGLCode.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter GL Code</span></br>"
+            }
+            //var ddlCompany = $('#ddlCompany').val();
+            //if (ddlCompany == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Company</span></br>"
+            //}
+
+            //var ddlMainAccType = $('#ddlMainAccType').val();
+            //if (ddlMainAccType == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Main Account Type</span></br>"
+            //}
+
+            //var ddlNature = $('#ddlNature').val();
+            //if (ddlNature == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select GL Nature</span></br>"
+            //}
+
+            //var ddlCategory = $('#ddlCategory').val();
+            //if (ddlCategory == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Category</span></br>"
+            //}
+            //var ddlGLMatching = $('#ddlGLMatching').val();
+            //if (ddlGLMatching == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select GL Matching</span></br>"
+            //}
+
+            //var ddlProductType = $('#ddlProductType').val();
+            //if (ddlProductType == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Product Type</span></br>"
+            //}
+            var txtGLDes = $('#txtGLDes').val();
+            if (txtGLDes.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter GL Description</span></br>"
+            }
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+            if ($scope.RegId != "")
+                BussData.ID = $scope.RegId;
+            else
+                BussData.ID = 0;
+
+            BussData.GLCode = $("#txtGLCode").val();
+            BussData.CompanyID = $("#ddlCompany").val();
+            BussData.MainAccType = $("#ddlMainAccType").val();
+            BussData.GLNature = $("#ddlNature").val();
+            BussData.Category = $("#ddlCategory").val();
+            BussData.GLMatching = $("#ddlGLMatching").val();
+            BussData.ProductType = $("#ddlProductType").val();
+            BussData.GLDesc = $("#txtGLDes").val();
+            BussData.ProductType = 0;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            BussData.StatusID = $("#ddlStatus").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/InsertGLMaster',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0)
+                    {
+                        ShowPopup(result.data[0].AlertMessage);
+                    }
+                   // var url = "/Finance/GLMasterView";
+                   // window.location.href = url;
+                    setTimeOut(function () {
+                        var url = "/Finance/GLMasterView";
+                        window.location.href = url;
+                    }, 3000);
+                   
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["GLMasReg"] != null) {
+
+                $scope.RegId = queryString["GLMasReg"].toString();
+                $scope.BindGLMaster(queryString["GLMasReg"].toString());
+                $scope.BindGLMasterLog(queryString["GLMasReg"].toString());
+            }
+            else {
+
+                $scope.BindGLCodeForNEW();
+            }
+        });
+        $scope.BindGLCodeForNEW = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/GLMasterCodeNewEntry/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.txtGLCode = result.data[0].GLCode;
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+          
+
+        }
+        $scope.BindGLMaster = function (GlMasReg) {
+
+            var Datavalue = {};
+            var id = GlMasReg;
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = GlMasReg;
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/GLMasterRecord/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        //$scope.RegId = result.data[0].ID;
+                        $scope.txtGLCode = result.data[0].GLCode;
+                        $scope.ddlCompany = { ID: result.data[0].CompanyID };
+                        $scope.ddlMainAccType = { ID: result.data[0].MainAccType };
+                        $scope.ddlNature = { ID: result.data[0].GLNature };
+                        $scope.ddlCategory = { ID: result.data[0].Category };
+                        $scope.ddlGLMatching = { ID: result.data[0].GLMatching };
+                        //$scope.ddlProductType = { ID: result.data[0].ProductType };
+                        $scope.txtGLDes = result.data[0].GLDesc;
+                        $scope.ddlStatus = { ID: result.data[0].StatusID };
+                    }
+                    else {
+                        $('#txtGLCode').val('');
+                        $('#ddlCompany').val('');
+                        $('#ddlMainAccType').val('');
+                        $('#ddlNature').val('');
+                        $('#ddlCategory').val('');
+                        $('#ddlGLMatching').val('');
+                        $('#ddlProductType').val('');
+                        $('#txtGLDes').val('');
+                        $('#ddlSta').val('');
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+            $scope.back = function () {
+
+                window.location = "/Finance/GLMasterView";
+            }
+
+        }
+
+        $scope.BindGLMasterLog = function (GlMasReg) {
+
+            var Datavalue = {};
+            var id = GlMasReg;
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = GlMasReg;
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/GLMasterLogRecord/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        $scope.GLMasterLog = result.data;
+
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+            $scope.back = function () {
+
+                window.location = "/Finance/GLMasterView";
+            }
+
+        }
+        //$scope.BindGLMaster();
+        $("#btnLogReport").click(function () {
+            $('#demoLogReport').modal('show');
+        });
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Finance/GLMasterView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<a href="#" class="btn btn-fill btn-warning btnedit btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">GL Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12 download" style="text-align: right; margin-top: -24px !important; margin-bottom:0!important;">
+                                <button type="submit" id="btnLogReport" class="btn btn-fill btn-info btntop">
+                                    @*<i class="material-icons">clock</i>*@
+                                    Log Report
+                                </button>
+
+                            </div>
+
+                            <div class="modal fade" id="demoLogReport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" style="width:1020px;">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12" style="text-align:center;">
+                                                    <div class="row">
+                                                        <div class="col-md-8" style="text-align:right;">
+                                                            <div class="card-header card-header-primary card-header-text" style=" margin-bottom: 20px;">
+                                                                <div class="card-text">
+                                                                    <h1 class="card-title">Log Report - GL Master</h1>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="col-md-12 exceldownload" style="text-align:right;">
+
+                                                                <a href="#">Download <i class="fa fa-file-excel-o"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <div class="col-md-12" style="overflow-x:scroll; width:1000px;">
+                                                        <div class="material-datatables">
+
+                                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>GL Code</th>
+                                                                        <th>GL Description</th>
+                                                                        <th>GL Nature</th>
+                                                                        <th>Main Account Type</th>
+                                                                        <th>Category</th>
+                                                                        <th>GL Matching</th>
+
+                                                                        <th>Company</th>
+                                                                        <th>Status</th>
+                                                                        <th>Created On</th>
+                                                                        <th>Created By</th>
+                                                                        <th>Modified On</th>
+                                                                        <th>Modified By</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody>
+                                                                    <tr ng-repeat="i in GLMasterLog | filter : paginate | orderBy:'-Statusv'">
+                                                                        <td>{{i.GLCode}}</td>
+                                                                        <td>{{i.GLDesc}}</td>
+                                                                        <td>{{i.GLNatureV}}</td>
+                                                                        <td>{{i.MainAccTypeV}}</td>
+                                                                        <td>{{i.CategoryV}}</td>
+                                                                        <td>{{i.GLMatchingV}}</td>
+                                                                        <td>{{i.Company}}</td>
+                                                                        <td>{{i.Status}}</td>
+                                                                        <td>{{i.CreatedOn}}</td>
+                                                                        <td>{{i.CreatedBy}}</td>
+                                                                        <td>{{i.ModifiedOn}}</td>
+                                                                        <td>{{i.ModifiedBy}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>GL Code</label>
+                                            <input type="text" autocomplete="off" id="txtGLCode" ng-model="txtGLCode" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>GL Description</label>
+                                            <input type="text" id="txtGLDes" ng-model="txtGLDes" class="form-control" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>GL Nature</label>
+                                            <select class="form-control my-select" id="ddlNature" ng-model="ddlNature" options="{ allowClear: true }" ng-options="item.GeneralName for item in GLNatureAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Main Account Type</label>
+                                            <select class="form-control my-select" id="ddlMainAccType" ng-model="ddlMainAccType" options="{ allowClear: true }" ng-options="item.GeneralName for item in MainAccTypeAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Category</label>
+
+                                            <select class="form-control my-select" id="ddlCategory" ng-model="ddlCategory" options="{ allowClear: true }" ng-options="item.GeneralName for item in GLCategoryAllvalues track by item.ID"></select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>GL Matching</label>
+                                            <select class="form-control my-select" id="ddlGLMatching" ng-model="ddlGLMatching" options="{ allowClear: true }" ng-options="item.GeneralName for item in GLMatchingAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Company</label>
+                                            <select id="ddlCompany" ng-model="ddlCompany" class="form-control my-select" ng-options="item.AgencyName for item in AgencyMasterAllvalues track by item.ID"></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+
+                                            <select class="form-control my-select" id="ddlStatus" ng-model="ddlStatus" ng-options="item.name for item in StatusValues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="RecordSave();" class="btn btn-fill btn-success">Submit</button>
+                            <input type="hidden" id="RegId" name="RegId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

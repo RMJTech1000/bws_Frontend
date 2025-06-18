@@ -1,0 +1,292 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.viewAll = null;
+        $scope.fillview = function () {
+            var BussData = {};
+            BussData.BLNumber = $scope.txtBLNumber;
+            BussData.CorrectionNo = $scope.txtCorrectionNo;
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLSLOTCorrectorView/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.viewAll = result.data;
+                    $scope.totalItems = $scope.viewAll.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.viewAll.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillview();
+
+        $scope.fillBookingCount = function () {
+            var BussData = {};
+
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/SlotCorrectorCountRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    $scope.Draft = result.data[0].Draft;
+                    $scope.Cancelled = result.data[0].Cancelled;
+                    $scope.Confirmed = result.data[0].Confirm;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.fillBookingCount();
+
+        $scope.ClearRecords = function () {
+            $scope.txtBLNumber = "";
+            $scope.txtCorrectionNo = "";
+            $scope.fillview();
+        }
+        $scope.LoadingCorrectonPage = function (urlv) {
+            var url = "/Document/Corrector?CMRegID=" + encodeURIComponent(urlv);
+            window.location.href = url;
+        }
+        $scope.AddNew = function () {
+
+            window.location = "/Document/Corrector"
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnShow").click(function () {
+            $('#demoModal').modal('show');
+        });
+    });
+</script>
+<style>
+    .card-stats .card-header.card-header-icon i {
+        color: #ffffff !important;
+        font-size: 38px !important;
+    }
+
+    .card.card-stats.card-cancelled {
+        background-color: #f34394;
+        margin-bottom: 0;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            <a href="/Document/BLExceptionsDashboard" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            <button type="submit" id="btnAdd" ng-click="AddNew();" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">add</i> Create New
+            </button>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Slot Operator/Vessel Changing
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card bg-gradient-info card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Pending
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Draft"></span></h2></div>
+                                        <div class="col-md-6" style="text-align:right;"><h2><i class="material-icons">file_copy</i></h2></div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card bg-gradient-danger card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Cancelled
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Cancelled"></span></h2></div>
+                                        <div class="col-md-6" style="text-align:right;"><h2><i class="material-icons">clear</i></h2></div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-6">
+                            <div class="card bg-gradient-success card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Approved
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Confirmed"></span></h2></div>
+                                        <div class="col-md-6" style="text-align:right;"><h2><i class="material-icons">task_alt</i></h2></div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>CorrectionNo</th>
+                                    <th>Booking No</th>
+
+                                    <th>Date</th>
+                                    <th>Status</th>
+
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in viewAll | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.CorrectionNo}}</td>
+                                    <td>{{i.BLNumber}}</td>
+
+                                    <td>{{i.CurrentDatev}}</td>
+                                    <td>{{i.Status}}</td>
+
+
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingCorrectonPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(viewAll|filter:CorrectionNo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtCorrectionNo" ng-model="txtCorrectionNo" class="form-control" placeholder="Corrcetion No">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtBLNumber" ng-model="txtBLNumber" class="form-control" placeholder="BL Number">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="fillview();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

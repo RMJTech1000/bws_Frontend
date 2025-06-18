@@ -1,0 +1,245 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $(document).ready(function () {
+            $('.my-selectGeoLoc').select2({
+                placeholder: "Geo-Location", allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.GeoLocationList = null;
+        $scope.fillGeoLocations = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/GeoLocationsMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GeoLocationList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.fillGeoLocations();
+        $scope.ServiceSetupRecords = null;
+        $scope.ServiceSetupRecords = function () {
+
+            var BussData = {}
+
+            BussData.ServiceName = $scope.txtServiceName;
+            BussData.GeoLocID = $("#ddlGeoLoc").val();
+                      $http({
+
+                method: 'POST',
+                url: "/api/Home/ServiceSetupView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $scope.ServiceSetupRec = result.data;
+
+                $scope.totalItems = $scope.ServiceSetupRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.ServiceSetupRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.ServiceSetupViewRecords = function () {
+
+            $scope.ServiceSetupRecords();
+        }
+        $scope.ClearRecords = function () {
+            $scope.txtServiceName = "";
+            $("#ddlGeoLoc").val(null).trigger("change");
+            $scope.ServiceSetupRecords();
+        }
+        $scope.ServiceSetupRecords();
+        $scope.ServiceSetupUpdate = function (urlv)
+        {
+
+            //var url = "/VesVoy/ServiceSetup?SSID=" + encodeURIComponent(url);
+            //    window.location.href = url;
+            var ParameterValue = "SSID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/VesVoy/ServiceSetup?" + ciphertext;
+
+            window.location.href = url;
+        }
+        $scope.AddNew = function () {
+
+            window.location = "/VesVoy/ServiceSetup"
+        }
+
+          $scope.btnExcel = function () {
+
+             var ServiceName = $scope.txtServiceName;
+              var User = localStorage.getItem("UserName");
+              var GeoLocID = $("#ddlGeoLoc").val();
+
+              window.location.href = '@Url.Action("CreateServiceMasterExcel", "VoyageExcel")?ServiceName=' + ServiceName + "&GeoLocID=" + GeoLocID
+                  + "&User=" + User;
+
+        }
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Service Setup
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 exceldownload" style="text-align:right;">
+                            <a ng-click="btnExcel();">Download <i class="fa fa-file-excel-o"></i></a>
+                        </div>
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Service Name</th>
+                                    <th>Geo-Location</th>
+                                    <th>Dt Effective From</th>
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in ServiceSetupRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.ServiceName}}</td>
+                                    <td>{{i.GeoLoc}}</td>
+                                    <td>{{i.DtEffective}}</td>
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="ServiceSetupUpdate(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(ServiceSetupRec|filter:ServiceName).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtServiceName" ng-model="txtServiceName" class="form-control" placeholder="Service Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectGeoLoc" ng-model="ddlGeoLoc" id="ddlGeoLoc" ng-options="item.GeoLocation for item in GeoLocationList track by item.ID" required>
+                                <option value="" disabled selected>Geo-Location</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="ServiceSetupViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

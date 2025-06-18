@@ -1,0 +1,325 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $(document).ready(function () {
+            $('.my-selectCtry').select2({
+                placeholder: "Country", allowClear: true, width: '100%'
+            });
+
+            $('.my-selectGL').select2({
+                placeholder: "Geo-Location", allowClear: true, width: '100%'
+            });
+
+        $('.my-selectStatus').select2({
+            placeholder: "Status", allowClear: true, width: '100%'
+        });
+    });
+
+
+
+    $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.Countrylist = null;
+        $scope.fillCountry = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindCountries/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Countrylist = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.fillCountry();
+
+        $("#ddlCountry").change(function () {
+            $scope.GeoLocationListByCtry = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlCountry").val();
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/GeoLocByCountry/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GeoLocationListByCtry = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $("#ddlGeoLoc").change(function () {
+
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlGeoLoc").val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/ListDepotByGeoLoc/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+    $scope.StatusBindValues = [
+        { 'name': '--select--', 'ID': 0 },
+        { 'name': 'Active', 'ID': 1 },
+        { 'name': 'InActive ', 'ID': 2 }
+        ];
+
+        $scope.EmptyYardTariffViewRecords = null;
+        $scope.EmptyYardTariffViewRecords = function () {
+        var BussData = {};
+        BussData.CountryID = $('#ddlCountry').val();
+        BussData.GeoLocID = $('#ddlGeoLoc').val();
+        BussData.Status = $('#ddlStatus').val();
+        $http({
+            method: 'POST',
+            url: '/api/SalesApi/EmptyYardTariffViewRecord/',
+            data: JSON.stringify(BussData),
+        }).then(function (result) {
+            $timeout(function () {
+                $scope.EmptyYardTariffRec = result.data;
+                $scope.totalItems = $scope.EmptyYardTariffRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.EmptyYardTariffRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+
+
+            });
+        }, function (result) {
+            if (result.status == 500) {
+                ShowPopup("Sorry no internet connectivity Application Error.");
+            }
+            else if (result.status == 404) {
+                ShowPopup("Sorry no internet connectivity page not found.");
+            }
+            if (result.status > 0) {
+                var errorMsg = result.status + ': ' + result.data;
+                ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+            }
+        }).catch(function (result) {
+            ShowPopup('There has been an error: ' + result);
+        });
+    };
+        $scope.EmptyYardTariffViewRecords();
+
+    $scope.ClearRecords = function () {
+
+        $("#ddlCountry").val(null).trigger("change");
+        $("#ddlGeoLoc").val(null).trigger("change");
+        $("#ddlStatus").val(null).trigger("change");
+        $scope.EmptyYardTariffViewRecords();
+
+    }
+
+
+        $scope.EYTariffEdit = function (urlv) {
+
+        //var url = "/Sales/EmptyYardCntrCost?EYTariffID=" + encodeURIComponent(urlv);
+        //window.location.href = url;
+            var ParameterValue = "EYTariffID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Sales/EmptyYardCntrCost?" + ciphertext;
+
+            window.location.href = url;
+    }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            <a href="/Sales/EmptyYardCntrCost" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Empty Yard Container Cost 
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Country</th>
+                                    <th>Geo-Location</th>
+                                    <th>Empty-Yard</th>
+                                    <th>Valid From</th>
+                                    <th>Valid Till</th>
+                                    <th>Status</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                <tr ng-repeat="i in EmptyYardTariffRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.Country}}</td>
+                                    <td>{{i.GeoLocations}}</td>
+                                    <td>{{i.EmptyYard}}</td>
+                                    <td>{{i.ValidFrom}}</td>
+                                    <td>{{i.ValidTill}}</td>
+                                    <td>{{i.Status}}</td>
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="EYTariffEdit(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(EmptyYardTariffRec|filter:Country).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectCtry" ng-model="CountryID" id="ddlCountry" ng-options="item.CountryName for item in Countrylist track by item.CountryID" required>
+                            <option value="" disabled selected>Country</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectGL" ng-model="ddlGeoLoc" id="ddlGeoLoc" ng-options="item.GeoLocations for item in GeoLocationListByCtry track by item.ID" required>
+                                <option value="" disabled selected>Geo-Location</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" id="ddlStatus" ng-model="ddlStatus" class="form-control my-selectStatus" options="{ allowClear: true }" ng-options="item.name for item in StatusBindValues track by item.ID">
+                                <option value="" disabled selected>Status</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="EmptyYardTariffViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

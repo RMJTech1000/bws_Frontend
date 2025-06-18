@@ -1,0 +1,1487 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+
+<link href="~/assets/css/common.css" rel="stylesheet" />
+
+<style>
+    .nav.nav-tabs.demtab {
+        display: inline-flex
+    }
+
+    .nav-tabs.demtab > li {
+        width: 220px !important;
+    }
+
+    .nav-tabs.demtab li a:after {
+        border-bottom: none !important;
+    }
+
+    .nav-tabs.demtab li a:before {
+        border-top: none !important;
+    }
+
+    .nav-tabs.demtab .nav-link.active {
+        background-color: #e91e63 !important;
+    }
+
+    .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+        font-size: 12px !important;
+        line-height: 0 !important;
+    }
+
+    .form-check, label {
+        line-height: 0 !important;
+    }
+
+    .btndet {
+        padding: 7px 6px !important;
+        margin-top: 30px !important;
+    }
+
+    .table.dem > tbody > tr > td {
+        font-size: 11px !important;
+        padding: 6px 5px !important;
+        color: #000;
+        font-weight: 500;
+    }
+
+        .table.dem > tbody > tr > td.blue {
+            color: #0759d4;
+        }
+
+        .table.dem > tbody > tr > td.brown {
+            color: #800303;
+        }
+</style>
+
+<script type="text/javascript">
+
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $scope.HDArrayIndexV = "";
+        $scope.TaxExemptValues = [
+
+            { 'Name': 'Yes', 'ID': 1 },
+            { 'Name': 'No', 'ID': 2 },
+
+        ];
+
+
+        $scope.YesNoAlertValues = [
+
+            { 'Name': 'Yes', 'ID': 1 },
+            { 'Name': 'No', 'ID': 2 },
+
+        ];
+
+        $scope.DefaultValues = [
+
+            { 'Name': 'Yes', 'ID': 1 },
+            { 'Name': 'No', 'ID': 2 },
+
+        ];
+        $scope.StatusValues = [
+
+            { 'Name': 'Active', 'ID': 1 },
+            { 'Name': 'InActive', 'ID': 2 },
+
+        ];
+
+        $scope.DefaultValuesVendor = [
+
+            { 'Name': 'Yes', 'ID': 1 },
+            { 'Name': 'No', 'ID': 2 },
+
+        ];
+        $scope.StatusValuesVendor = [
+
+            { 'Name': 'Active', 'ID': 1 },
+            { 'Name': 'InActive', 'ID': 2 },
+
+        ];
+
+        $scope.CusSunDryAccsValues = null;
+        $scope.FillCusSunDryAccsValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/FinanceApi/SunDryAccsForCreditControl/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CusSunDryAccsValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillCusSunDryAccsValues();
+
+        $scope.VenSunDryAccsValues = null;
+        $scope.FillVenSunDryAccsValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/FinanceApi/venSunDryAccsForCreditControl/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VenSunDryAccsValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillVenSunDryAccsValues();
+
+        $scope.PartyValues = null;
+        $scope.FillPartyValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PartyValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillPartyValues();
+
+
+
+
+        $("#ddlParty").change(function () {
+            $scope.CustomerTypeByParty = null;
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlParty").val();
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/PartyTypesByCustomer/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerTypeByParty = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.BindExistingCustomerTypeByParty = function (CustomerID) {
+            $scope.CustomerTypeByParty = null;
+            var Datavalue = {};
+            Datavalue.ID = CustomerID;
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/PartyTypesByCustomer/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerTypeByParty = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.CurrencyValuesList = null;
+        $scope.FillCurrencyValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValuesList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillCurrencyValues();
+
+
+        $scope.CurrencyValuesListVend = null;
+        $scope.FillCurrencyValuesVend = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValuesListVend = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillCurrencyValuesVend();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["CrCtrlID"] != null) {
+
+                $scope.HDRegId = queryString["CrCtrlID"].toString();
+                $scope.BindCreditControl(queryString["CrCtrlID"].toString());
+      
+                    $scope.BindCreditCustomerLimitDtls(queryString["CrCtrlID"].toString());
+                    $scope.BindCreditVendorLimitDtls(queryString["CrCtrlID"].toString());
+               
+            }
+
+
+        });
+
+        $scope.BindCreditControl = function (CrCtrlID) {
+            var Datavalue = {};
+            Datavalue.ID = CrCtrlID;
+            //alert(Datavalue.AgencyID);
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/ViewCreditControlEdit",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+                        // alert(result.data[0].TaxName);
+                        $scope.ddlParty = { ID: result.data[0].PartyID };
+                        $scope.ddlCustType = { ID: result.data[0].PartyType };
+                        $scope.ddlExemptTax = { ID: result.data[0].ExemptFromTax };
+                        $scope.txtRemarks = result.data[0].Remarks;
+                        $scope.txtCreditDays = result.data[0].CusCreditDays;
+                        $scope.txtCreditLimit= result.data[0].CusCreditLimit;
+                        $scope.ddlEmailAlert = { ID: result.data[0].CusEmailAlert };
+                        $scope.txtCreditDaysV = result.data[0].VendorCreditDays;
+                        $scope.txtCreditLimitV = result.data[0].VendorCreditLimit;
+                        $scope.ddlEmailAlertV = { ID: result.data[0].VendorEmailAlert };
+                        $scope.ddlInvAppr = { ID: result.data[0].VendorInvApproval };
+                        $scope.ddlPaymentAppr = { ID: result.data[0].VendorPaymentApproval };
+                        $scope.ddlSunDry = { ID: result.data[0].CusSunDryAcc };
+                        $scope.ddlSunDryV = { ID: result.data[0].VenSunDryAcc };
+                        $scope.ddlInvAppr = { ID: result.data[0].VendorInvApproval };
+                        $scope.BindExistingCustomerTypeByParty(result.data[0].PartyID);
+                      
+                    }
+                    else {
+                        $scope.txtTaxPerc = "";
+                        $scope.ddlCountry = 0;
+                        $scope.ddlStatus = 0;
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.BindCreditCustomerLimitDtls = function (CrCtrlID) {
+            var Datavalue = {};
+            Datavalue.ID = CrCtrlID;
+
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/BindCreditCustomerLimitDtls",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $scope.DynamicGrid = [{ CCID: "", CurrencyID: "", Currency: "", DefaultID: "", DefaultC: "", StatusID: "", Status: "" }];
+
+                $timeout(function () {
+
+                    if (result.data[0].CurrencyID != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'CCID': result.data[key].CCID,
+                            'CurrencyID': result.data[key].CurrencyID,
+                            'Currency': result.data[key].Currency,
+                            'DefaultID': result.data[key].DefaultID,
+                            'DefaultC': result.data[key].DefaultC,
+                            'StatusID': result.data[key].StatusID,
+                            'Status': result.data[key].Status,
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.BindCreditVendorLimitDtls = function (CrCtrlID) {
+            var Datavalue = {};
+            Datavalue.ID = CrCtrlID;
+
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/BindCreditVendorLimitDtls",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $scope.DynamicGridV = [{ VCID: "", CurrencyVID: "", CurrencyV: "", DefaultVID: "", DefaultV: "", StatusVID: "", StatusV: "" }];
+
+                $timeout(function () {
+
+                    if (result.data[0].CurrencyVID != "") {
+                        $scope.DynamicGridV.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGridV.push({
+                            'VCID': result.data[key].VCID,
+                            'CurrencyVID': result.data[key].CurrencyVID,
+                            'CurrencyV': result.data[key].CurrencyV,
+                            'DefaultVID': result.data[key].DefaultVID,
+                            'DefaultV': result.data[key].DefaultV,
+                            'StatusVID': result.data[key].StatusVID,
+                            'StatusV': result.data[key].StatusV,
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+        //CUSTOMER CREDIT
+        $scope.DynamicGrid = [{ CCID: "", CurrencyID: "", Currency: "", DefaultID: "", DefaultC: "", StatusID: "", Status: "" }];
+
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.Selectvalues = function (DynamicGrid, index) {
+            $scope.HDArrayIndex = index;
+            $scope.CCID = $scope.DynamicGrid[index].CCID;
+            $scope.Currency = { ID: $scope.DynamicGrid[index].CurrencyID };
+            $scope.DefaultC = { ID: $scope.DynamicGrid[index].DefaultID };
+            $scope.Status = { ID: $scope.DynamicGrid[index].StatusID };
+
+        }
+        $scope.AddCusCrCtrl = function (DynamicGrid) {
+
+            var validation = "";
+
+            var ddlCurrency = $('#ddlCurrency').val();
+            if (ddlCurrency == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Currency</span></br>"
+            }
+            var ddlDefault = $('#ddlDefault').val();
+            if (ddlDefault == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select  Default</span></br>"
+            }
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            var CCIDValue;
+
+            CCIDValue = ($scope.CCID == "") ? 0 : $scope.CCID;
+
+            var val = {
+                'CCID': CCIDValue,
+                'CurrencyID': $("#ddlCurrency").val(),
+                'Currency': $("#ddlCurrency option:selected").text(),
+                'DefaultID': $("#ddlDefault").val(),
+                'DefaultC': $("#ddlDefault option:selected").text(),
+                'StatusID': $("#ddlStatus").val(),
+                'Status': $("#ddlStatus option:selected").text()
+
+
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGrid.push(val);
+            }
+            $("#ddlCurrency").val(null).trigger("change");
+            $("#ddlDefault").val(null).trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $scope.HDArrayIndex = "";
+            $scope.CCID = 0;
+
+        }
+        $scope.Remove = function (DynamicGrid, index) {
+            $scope.DynamicGrid.splice(index, 1);
+        }
+
+        //VENDOR CREDIT
+
+        $scope.DynamicGridV = [{ VCID: "", CurrencyVID: "", CurrencyV: "", DefaultVID: "", DefaultV: "", StatusVID: "", StatusV: "" }];
+
+        $scope.DynamicGridV.splice(0, 1);
+
+        $scope.SelectVendvalues = function (DynamicGridV, index) {
+            //alert('test');
+            $scope.HDArrayIndexV = index;
+            $scope.VCID = $scope.DynamicGridV[index].VCID;
+            $scope.CurrencyV = { ID: $scope.DynamicGridV[index].CurrencyVID };
+            $scope.DefaultV = { ID: $scope.DynamicGridV[index].DefaultVID };
+            $scope.StatusV = { ID: $scope.DynamicGridV[index].StatusVID };
+
+        }
+        $scope.AddVendorCrCtrl = function (DynamicGridV) {
+
+            var validation = "";
+
+            var ddlCurrencyV = $('#ddlCurrencyV').val();
+            if (ddlCurrencyV == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Currency</span></br>"
+            }
+            var ddlDefaultV = $('#ddlDefaultV').val();
+            if (ddlDefaultV == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select  Default</span></br>"
+            }
+            var ddlStatusV = $('#ddlStatusV').val();
+            if (ddlStatusV == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var VCIDValue;
+
+            VCIDValue = ($scope.VCID == "") ? 0 : $scope.VCID;
+
+            var val = {
+                'VCID': VCIDValue,
+                'CurrencyVID': $("#ddlCurrencyV").val(),
+                'CurrencyV': $("#ddlCurrencyV option:selected").text(),
+                'DefaultVID': $("#ddlDefaultV").val(),
+                'DefaultV': $("#ddlDefaultV option:selected").text(),
+                'StatusVID': $("#ddlStatusV").val(),
+                'StatusV': $("#ddlStatusV option:selected").text()
+
+
+
+            };
+            if ($scope.HDArrayIndexV != null && $scope.HDArrayIndexV.length != 0) {
+
+                $scope.DynamicGridV[$scope.HDArrayIndexV] = val;
+            } else {
+
+                $scope.DynamicGridV.push(val);
+            }
+            $("#ddlCurrencyV").val(null).trigger("change");
+            $("#ddlDefaultV").val(null).trigger("change");
+            $("#ddlStatusV").val(null).trigger("change");
+            $scope.HDArrayIndexV = "";
+            $scope.VCID = 0;
+
+        }
+
+        $scope.RemoveV = function (DynamicGridV, index) {
+            $scope.DynamicGridV.splice(index, 1);
+        }
+        $scope.back = function () {
+
+            window.location = "/Finance/CreditControlView";
+        }
+
+        $scope.SaveCreditControl = function (data, dataV) {
+            
+            var validation = "";
+            var ddlParty = $('#ddlParty').val();
+            if (ddlParty == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Party</span></br>"
+            }
+            var ddlCustType = $('#ddlCustType').val();
+            if (ddlCustType == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Party Type</span></br>"
+            }
+            var ddlExemptTax = $('#ddlExemptTax').val();
+            if (ddlExemptTax == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Exempt From Tax</span></br>"
+            }
+            if ($('#ddlCustType').val() == "49") {
+                var txtCreditDays = $('#txtCreditDays').val();
+                if (txtCreditDays.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Customer Credit Days</span></br>"
+
+                }
+                var txtCreditLimit = $('#txtCreditLimit').val();
+                if (txtCreditLimit.length == 0) {
+
+                    txtCreditLimit += "<span style='color:red;'>*</span> <span>Please Enter Customer Credit Limit</span></br>"
+
+                }
+                var ddlEmailAlert = $('#ddlEmailAlert').val();
+                if (ddlEmailAlert == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Customer EmailAlert </span></br>"
+                }
+                var ddlSunDry = $('#ddlSunDry').val();
+                if (ddlSunDry == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Customer SunDry Acc </span></br>"
+                }
+                var txtCreditDaysV = $('#txtCreditDaysV').val();
+                if (txtCreditDaysV.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Vendor Credit Days</span></br>"
+
+                }
+                var txtCreditLimitV = $('#txtCreditLimitV').val();
+                if (txtCreditLimitV.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Vendor Credit Limit</span></br>"
+
+                }
+                var ddlEmailAlertV = $('#ddlEmailAlertV').val();
+                if (ddlEmailAlertV == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor EmailAlert </span></br>"
+                }
+                var ddlSunDryV = $('#ddlSunDryV').val();
+                if (ddlSunDryV == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor SunDry Acc </span></br>"
+                }
+                var ddlInvAppr = $('#ddlInvAppr').val();
+                if (ddlInvAppr == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor Invoice Approval </span></br>"
+                }
+                var ddlPaymentAppr = $('#ddlPaymentAppr').val();
+                if (ddlPaymentAppr == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor Payment Approval </span></br>"
+                }
+                var Datav = "undefined";
+                angular.forEach(dataV, function (value, key) {
+
+                    Datav += dataV[key].CurrencyVID.ID;
+
+                });
+
+                if (Datav.toString() == "undefined") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Add Vendor Credit Currency Details</span></br>"
+                }
+                var Datac = "undefined";
+                angular.forEach(data, function (value, key) {
+
+                    Datac += data[key].CurrencyID.ID;
+
+                });
+
+                if (Datac.toString() == "undefined") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Add Customer Currency Details</span></br>"
+                }
+            }
+            if ($('#ddlCustType').val() == "44") {
+
+                var txtCreditDaysV = $('#txtCreditDaysV').val();
+                if (txtCreditDaysV.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Vendor Credit Days</span></br>"
+
+                }
+                var txtCreditLimitV = $('#txtCreditLimitV').val();
+                if (txtCreditLimitV.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Vendor Credit Limit</span></br>"
+
+                }
+                var ddlEmailAlertV = $('#ddlEmailAlertV').val();
+                if (ddlEmailAlertV == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor EmailAlert </span></br>"
+                }
+                var ddlSunDryV = $('#ddlSunDryV').val();
+                if (ddlSunDryV == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor SunDry Acc </span></br>"
+                }
+                var ddlInvAppr = $('#ddlInvAppr').val();
+                if (ddlInvAppr == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor Invoice Approval </span></br>"
+                }
+                var ddlPaymentAppr = $('#ddlPaymentAppr').val();
+                if (ddlPaymentAppr == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Vendor Payment Approval </span></br>"
+                }
+                var Datav = "undefined";
+                angular.forEach(dataV, function (value, key) {
+
+                    Datav += dataV[key].CurrencyVID.ID;
+
+                });
+
+                if (Datav.toString() == "undefined") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Add Vendor Credit Currency Details</span></br>"
+                }
+            }
+
+            if ($('#ddlCustType').val() == "45") {
+                var txtCreditDays = $('#txtCreditDays').val();
+                if (txtCreditDays.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Customer Credit Days</span></br>"
+
+                }
+                var txtCreditLimit = $('#txtCreditLimit').val();
+                if (txtCreditLimit.length == 0) {
+
+                    txtCreditLimit += "<span style='color:red;'>*</span> <span>Please Enter Customer Credit Limit</span></br>"
+
+                }
+                var ddlEmailAlert = $('#ddlEmailAlert').val();
+                if (ddlEmailAlert == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Customer EmailAlert </span></br>"
+                }
+                var ddlSunDry = $('#ddlSunDry').val();
+                if (ddlSunDry == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Customer SunDry Acc </span></br>"
+                }
+                var Datac = "undefined";
+                angular.forEach(data, function (value, key) {
+
+                    Datac += data[key].CurrencyID.ID;
+
+                });
+
+                if (Datac.toString() == "undefined") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Add Customer Currency Details</span></br>"
+                }
+
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+
+
+            BussData.PartyID = $('#ddlParty').val();
+            BussData.PartyType = $('#ddlCustType').val();
+            BussData.ExemptFromTax = $('#ddlExemptTax').val();
+            BussData.Remarks = $scope.txtRemarks;
+            BussData.CusCreditDays = $scope.txtCreditDays;
+            BussData.CusCreditLimit = $scope.txtCreditLimit;
+            BussData.CusEmailAlert = $('#ddlEmailAlert').val();
+            BussData.VendorCreditDays = $scope.txtCreditDaysV;
+            BussData.VendorCreditLimit = $scope.txtCreditLimitV;
+            BussData.VendorEmailAlert = $('#ddlEmailAlertV').val();
+            BussData.VendorInvApproval = $('#ddlInvAppr').val();
+            BussData.VendorPaymentApproval = $('#ddlPaymentAppr').val();
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            if ($('#ddlSunDry').val() == "?") {
+                BussData.CusSunDryAcc = 0
+            }
+            else {
+                BussData.CusSunDryAcc = $('#ddlSunDry').val();
+            }
+            if ($('#ddlSunDryV').val() == "?") {
+                BussData.VenSunDryAcc = 0
+            }
+            else {
+                BussData.VenSunDryAcc = $('#ddlSunDryV').val();
+            }
+            var Items = []
+            var ItemsV = []
+            //alert($('#ddlCustType').val());
+            if ($('#ddlCustType').val() == "49") {
+
+                angular.forEach(data, function (value, key) {
+                    var intCCID = data[key].CCID;
+                    if (typeof data[key].CCID == "undefined") {
+                        intCCID = 0;
+                    }
+
+                    Items.push('Insert:' + intCCID, data[key].CurrencyID, data[key].Currency, data[key].DefaultID, data[key].DefaultC, data[key].StatusID, data[key].Status
+                    );
+                });
+
+                angular.forEach(dataV, function (value, key) {
+                    var intVCID = dataV[key].VCID;
+                    if (typeof dataV[key].VCID == "undefined") {
+                        intVCID = 0;
+                    }
+
+                    ItemsV.push('Insert:' + intVCID, dataV[key].CurrencyVID, dataV[key].CurrencyV, dataV[key].DefaultVID, dataV[key].DefaultV, dataV[key].StatusVID, dataV[key].StatusV
+                    );
+                });
+                BussData.ItemsC = Items.toString();
+                BussData.ItemsV = ItemsV.toString();
+            }
+            if ($('#ddlCustType').val() == "44") {
+                angular.forEach(dataV, function (value, key) {
+                    var intVCID = dataV[key].VCID;
+                    if (typeof dataV[key].VCID == "undefined") {
+                        intVCID = 0;
+                    }
+
+                    ItemsV.push('Insert:' + intVCID, dataV[key].CurrencyVID, dataV[key].CurrencyV, dataV[key].DefaultVID, dataV[key].DefaultV, dataV[key].StatusVID, dataV[key].StatusV
+                    );
+                });
+
+                BussData.ItemsV = ItemsV.toString();
+            }
+            if ($('#ddlCustType').val() == "45") {
+                angular.forEach(data, function (value, key) {
+                    var intCCID = data[key].CCID;
+                    if (typeof data[key].CCID == "undefined") {
+                        intCCID = 0;
+                    }
+
+                    Items.push('Insert:' + intCCID, data[key].CurrencyID, data[key].Currency, data[key].DefaultID, data[key].DefaultC, data[key].StatusID, data[key].Status
+                    );
+                });
+
+                BussData.ItemsC = Items.toString();
+            }
+            // console.log(Items);
+
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/InsertCreditControl",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                   // $scope.HDRegId = result.data[0].ID;
+                  
+
+                    if (result.data.length > 0) {
+                       
+                        ShowPopup("Credit Control Saved Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Credit Control Updated");
+                    }
+                    var url = "/Finance/CreditControlView";
+                    window.location.href = url;
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+    });
+
+    
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Credit Control</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row" style="border:1px solid #ccc;">
+
+                            <div class="col-md-12" style="border-bottom:1px solid #ccc;">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Party Name<span class="man">*</span></label>
+
+                                                    <select class="form-control my-select" ng-model="ddlParty" id="ddlParty" ng-options="item.CustomerName for item in PartyValues track by item.ID" required>
+                                                    </select>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Exempt From Tax<span class="man">*</span></label>
+                                                    <select class="form-control my-select" ng-model="ddlExemptTax" id="ddlExemptTax" ng-options="item.Name for item in TaxExemptValues track by item.ID" required>
+                                                    </select>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Remarks</label>
+                                                    <input type="text" autocomplete="off" id="txtRemarks" ng-model="txtRemarks" class="form-control">
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Party Type <span class="man">*</span></label>
+                                                    <select id="ddlCustType" ng-model="ddlCustType" class="form-control my-select" ng-options="item.GeneralName for item in CustomerTypeByParty track by item.ID"></select>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12" style="border-bottom:1px solid #ccc; padding-bottom:10px;">
+                                        <div class="nav-tabs-navigation">
+                                            <div class="nav-tabs-wrapper">
+
+                                                <ul class="nav nav-tabs demtab" data-tabs="tabs">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" href="#Cuscrlimit" data-toggle="tab">
+                                                            Customer Credit Limit Setup
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" href="#Vendorcrlimit" data-toggle="tab">
+                                                            Vendor Credit Limit Setup
+                                                            <div class="ripple-container"></div>
+                                                        </a>
+                                                    </li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12" style="border-bottom:1px solid #ccc;">
+                                        <div class="tab-content" style="padding:0;">
+                                            <div class="tab-pane active" id="Cuscrlimit" style="padding-top:0px; padding-bottom:0;">
+                                                <div class="tab-pane active" id="Cuscrlimit" style="padding-top:0px; padding-bottom:0;">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+
+                                                                    <div class="row" style=" border-bottom: 1px solid #ccc;">
+
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Credit Days*<span class="man">*</span></label>
+
+                                                                                        <input type="text" autocomplete="off" id="txtCreditDays" ng-model="txtCreditDays" class="form-control">
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Credit Limit<span class="man">*</span></label>
+                                                                                        <input type="text" autocomplete="off" id="txtCreditLimit" ng-model="txtCreditLimit" class="form-control">
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Email Alert <span class="man">*</span></label>
+                                                                                        <select class="form-control my-select" ng-model="ddlEmailAlert" id="ddlEmailAlert" ng-options="item.Name for item in YesNoAlertValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>SunDry Account <span class="man">*</span></label>
+                                                                                        <select class="form-control my-select" ng-model="ddlSunDry" id="ddlSunDry" ng-options="item.SunDryAcc for item in CusSunDryAccsValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+
+                                                                    <div class="row">
+
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Currency <span class="man">*</span></label>
+                                                                                        <input type="hidden" id="HDIDv" class="form-control" ng-model="CCID" />
+                                                                                        <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                                                        <select class="form-control" ng-model="Currency" id="ddlCurrency" ng-options="item.Currency for item in CurrencyValuesList track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Default <span class="man">*</span></label>
+                                                                                        <select class="form-control" ng-model="DefaultC" id="ddlDefault" ng-options="item.Name for item in DefaultValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Status <span class="man">*</span></label>
+                                                                                        <select class="form-control" ng-model="Status" id="ddlStatus" ng-options="item.Name for item in StatusValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <button type="submit" class="btn btn-fill btn-success" ng-click="AddCusCrCtrl(gRow);" style="padding: 8px 24px; margin-top: 27px; ">
+                                                                                <i class="material-icons">save</i>
+                                                                                ADD
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div class="material-datatables">
+
+                                                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                                    <thead class="gridhead1">
+                                                                                        <tr>
+                                                                                            <th>S.No</th>
+                                                                                            <th>Currency</th>
+                                                                                            <th>Default</th>
+                                                                                            <th>Status</th>
+
+
+                                                                                            <th class="disabled-sorting text-right actwid">Action</th>
+                                                                                        </tr>
+                                                                                    </thead>
+
+                                                                                    <tbody>
+                                                                                        <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+
+
+                                                                                            <td>{{$index+1}}</td>
+
+                                                                                            <td>
+                                                                                                {{gRow.Currency}}
+
+                                                                                                <input type="hidden" id="HDCurrencyID" class="form-control" ng-model="gRow.CurrencyID" />
+                                                                                            </td>
+
+                                                                                            <td>
+                                                                                                {{gRow.DefaultC}}
+
+                                                                                                <input type="hidden" id="HDDefaultID" class="form-control" ng-model="gRow.DefaultID" />
+                                                                                            </td>
+
+                                                                                            <td>
+                                                                                                {{gRow.Status}}
+
+                                                                                                <input type="hidden" id="HDStatusID" class="form-control" ng-model="gRow.StatusID" />
+                                                                                            </td>
+
+                                                                                            <td class="td-actions text-right bindgrid">
+                                                                                                <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                                                    <i class="material-icons">delete</i>
+                                                                                                </button>
+                                                                                                <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                                                    <i class="material-icons">edit</i>
+                                                                                                </button>
+
+                                                                                                <input type="hidden" id="HDCID" class="form-control" ng-model="gRow.CCID" />
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                @*<div class="col-md-12">
+
+                                                                </div>*@
+
+
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                            <div class="tab-pane" id="Vendorcrlimit">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="row" style=" border-bottom: 1px solid #ccc;">
+                                                            <div class="col-md-12">
+                                                                <div class="col-md-12">
+                                                                    <div class="row">
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Credit Days*<span class="man">*</span></label>
+
+                                                                                        <input type="text" autocomplete="off" id="txtCreditDaysV" ng-model="txtCreditDaysV" class="form-control">
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Credit Limit<span class="man">*</span></label>
+                                                                                        <input type="text" autocomplete="off" id="txtCreditLimitV" ng-model="txtCreditLimitV" class="form-control">
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Email Alert <span class="man">*</span></label>
+                                                                                        <select class="form-control my-select" ng-model="ddlEmailAlertV" id="ddlEmailAlertV" ng-options="item.Name for item in YesNoAlertValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-3">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>SunDry Account <span class="man">*</span></label>
+                                                                                        <select class="form-control my-select" ng-model="ddlSunDryV" id="ddlSunDryV" ng-options="item.SunDryAcc for item in VenSunDryAccsValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Invoice Approval <span class="man">*</span></label>
+                                                                                        <select class="form-control my-select" ng-model="ddlInvAppr" id="ddlInvAppr" ng-options="item.Name for item in YesNoAlertValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <div class="form-group">
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <label>Payment Approval <span class="man">*</span></label>
+                                                                                        <select class="form-control my-select" ng-model="ddlPaymentAppr" id="ddlPaymentAppr" ng-options="item.Name for item in YesNoAlertValues track by item.ID" required></select>
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+
+
+                                                        </div>
+
+                                                        <div class="row" style=" border-bottom: 1px solid #ccc;">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <label>Currency <span class="man">*</span></label>
+                                                                            <input type="hidden" id="HDIDvc" class="form-control" ng-model="VCID" />
+                                                                            <input type="hidden" id="HDArrayIndexV" class="form-control" ng-model="HDArrayIndexV" />
+                                                                            <select class="form-control" ng-model="CurrencyV" id="ddlCurrencyV" ng-options="item.Currency for item in CurrencyValuesListVend track by item.ID" required></select>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <label>Default <span class="man">*</span></label>
+                                                                            <select class="form-control" ng-model="DefaultV" id="ddlDefaultV" ng-options="item.Name for item in DefaultValuesVendor track by item.ID" required></select>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <label>Status <span class="man">*</span></label>
+                                                                            <select class="form-control" ng-model="StatusV" id="ddlStatusV" ng-options="item.Name for item in StatusValuesVendor track by item.ID" required></select>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-3">
+                                                                <button type="submit" class="btn btn-fill btn-success" ng-click="AddVendorCrCtrl(gRow);" style="padding: 8px 24px; margin-top: 27px; ">
+                                                                    <i class="material-icons">save</i>
+                                                                    ADD
+                                                                </button>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12">
+
+                                                        <div class="material-datatables">
+
+                                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                <thead class="gridhead1">
+                                                                    <tr>
+                                                                        <th>S.No</th>
+                                                                        <th>Currency</th>
+                                                                        <th>Default</th>
+                                                                        <th>Status</th>
+
+
+                                                                        <th class="disabled-sorting text-right actwid">Action</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody>
+                                                                    <tr class="gridbody1" ng-repeat="gRowV in DynamicGridV">
+
+
+                                                                        <td>{{$index+1}}</td>
+
+                                                                        <td>
+                                                                            {{gRowV.CurrencyV}}
+
+                                                                            <input type="hidden" id="HDCurrencyVID" class="form-control" ng-model="gRowV.CurrencyVID" />
+                                                                        </td>
+
+                                                                        <td>
+                                                                            {{gRowV.DefaultV}}
+
+                                                                            <input type="hidden" id="HDDefaultVID" class="form-control" ng-model="gRowV.DefaultVID" />
+                                                                        </td>
+
+                                                                        <td>
+                                                                            {{gRowV.StatusV}}
+
+                                                                            <input type="hidden" id="HDStatusVID" class="form-control" ng-model="gRowV.StatusVID" />
+                                                                        </td>
+
+                                                                        <td class="td-actions text-right bindgrid">
+                                                                            <button type="button" rel="tooltip" ng-click="RemoveV(DynamicGridV,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                                <i class="material-icons">delete</i>
+                                                                            </button>
+                                                                            <button type="button" rel="tooltip" ng-click="SelectVendvalues(DynamicGridV,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                                <i class="material-icons">edit</i>
+                                                                            </button>
+
+                                                                            <input type="hidden" id="HDVID" class="form-control" ng-model="gRowV.VCID" />
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                                </div>
+                                              
+                                              
+
+                                            </div>
+                                        </div>
+                                       
+                                    </div>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-12" style="text-align:right;">
+                                                    <button type="submit" class="btn btn-fill btn-success" ng-click="SaveCreditControl(DynamicGrid,DynamicGridV);" style="padding: 8px 24px;">
+
+                                                        <i class="material-icons">save</i>
+                                                        Save
+                                                    </button>
+                                                </div>
+
+                                                <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                   
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        // Initialise the wizard
+        demo.initMaterialWizard();
+        setTimeout(function () {
+            $('.card.card-wizard').addClass('active');
+        }, 600);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+
+

@@ -1,0 +1,609 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.RRNoShowdislpay == true;
+        $scope.BLNumberNodislpay == true;
+
+        $scope.DocumentTypeAllvalues = null;
+        $scope.AccessAllvalues = null;
+        $scope.RateRequestvalues = null;
+        $scope.Bookingvalues = null;
+        $scope.Agencyvalues = null;
+        $scope.fillDocumentTypeAllvalues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "61"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DocumentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAccessAllvalues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "62"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AccessAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillRateRequestvalues = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/RRMasterAccess/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RateRequestvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBookingvalues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BLMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Bookingvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAgencyvalues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Agencyvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDocumentTypeAllvalues();
+        $scope.fillAccessAllvalues();
+        $scope.fillRateRequestvalues();
+        $scope.fillBookingvalues();
+        $scope.fillAgencyvalues();
+
+        $scope.DynamicGrid = [{ ID: "", DocumentTypeID: "", DocumentType: "", RRID: "", RRNo: "", BLID: "", BLNumber: "", AgencyID: "", Agency: "", AccessTypeID: "", AccessType:""}]
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.ClearAll = function () {
+
+            $('#ddlDocumentType').val(null).trigger('change');
+            $('#ddlRRNo').val(null).trigger('change');
+            $('#ddlBLNumber').val(null).trigger('change');
+            $('#ddlAgency').val(null).trigger('change');
+            $('#ddlAccessTypes').val(null).trigger('change');
+        }
+
+
+        $scope.Remove = function (DynamicGrid, index, TID) {
+
+            var BussData = {}
+            BussData.ID = $scope.DynamicGrid[index].ID;
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/RRBLAccessDelete',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ExistingRecordBind();
+                    ShowPopup(result.data[0].Message);
+                   
+                });
+            });
+        }
+        $scope.Selectvalues = function (DynamicGrid, index) {
+
+            //$('#ddlRRNo').val(null).trigger('change');
+            //$('#ddlBLNumber').val(null).trigger('change');
+            //$('#ddlAgency').val(null).trigger('change');
+           
+            $scope.HDArrayIndex = index;
+            $scope.HDRegID = $scope.DynamicGrid[index].ID;
+            $scope.ddlDocumentType = { ID: $scope.DynamicGrid[index].DocumentTypeID };
+            $scope.ddlRRNo = { ID: $scope.DynamicGrid[index].RRID };
+            $scope.ddlBLNumber = { ID: $scope.DynamicGrid[index].BLID };
+            $scope.ddlAgency = { ID: $scope.DynamicGrid[index].AgencyID };
+            $scope.ddlAccessTypes = { ID: $scope.DynamicGrid[index].AccessTypeID };
+            
+
+        }
+        // --VALIDATION Begin----//
+
+
+        $scope.Recordsave = function (data) {
+
+            var validation = "";
+            var BussData = {};
+            var ddlDocumentType = $('#ddlDocumentType').val();
+            if (ddlDocumentType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Document Type</span></br>"
+            }
+
+            var ddlAgency = $('#ddlAgency').val();
+            if (ddlAgency == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Agency Name</span></br>"
+            }
+
+
+            var ddlAccessTypes = $('#ddlAccessTypes').val();
+            if (ddlAccessTypes == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Access Type</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            if (HDRegID != "")
+                BussData.ID = $scope.HDRegID;
+            else
+                BussData.ID = 0;
+            BussData.DocumentTypeID = $('#ddlDocumentType').val();
+
+           
+
+            if ($('#ddlRRNo').val() != "?" && $('#ddlRRNo').val() != null)
+                BussData.RRID = $('#ddlRRNo').val();
+            else
+                BussData.RRID = 0;
+
+           
+           
+            if ($('#ddlBLNumber').val() != "?" && $('#ddlBLNumber').val() != null)
+                BussData.BLID = $('#ddlBLNumber').val();
+            else
+                BussData.BLID = 0;
+
+            BussData.AgencyID = $('#ddlAgency').val();
+            BussData.AccessTypeID = $('#ddlAccessTypes').val();
+            BussData.Createdby = localStorage.getItem("UserID");
+           
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/RRBLAccessInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result)
+            {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.HDRegID = result.data.ID;
+                        ShowPopup(result.data[0].Message);
+                        $scope.ExistingRecordBind();
+
+                     
+
+                        $('#ddlDocumentType').val(null).trigger('change');
+                        $('#ddlRRNo').val(null).trigger('change');
+                        $('#ddlBLNumber').val(null).trigger('change');
+                        $('#ddlAgency').val(null).trigger('change');
+                        $('#ddlAccessTypes').val(null).trigger('change');
+
+                    }
+                    
+                    $('#overlay').hide();
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                $('#overlay').hide();
+                ShowPopup('There has been an error: ' + result);
+            });
+
+
+        }
+
+
+        $scope.ExistingRecordBind = function () {
+
+            var IDv = 0;
+            var Datavalue = {};
+            Datavalue.ID = IDv;
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/RRBLAccessExistingRecord/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGrid = result.data;
+                    console.log($scope.DynamicGrid);
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+        $scope.ExistingRecordBind();
+
+        $("#ddlDocumentType").change(function ()
+        {
+            if ($("#ddlDocumentType").val() == "250")
+            {
+                $scope.RRNoShowdislpay = true;
+                $scope.BLNumberNodislpay = false;
+                $('#ddlBLNumber').prop('disabled', false);
+                $('#ddlRRNo').prop('disabled', true);
+                $('#ddlRRNo').val(null).trigger('change');
+            }
+            else {
+
+
+                $('#ddlBLNumber').val(null).trigger('change');
+                $('#ddlBLNumber').prop('disabled', true);
+                $('#ddlRRNo').prop('disabled', false);
+                $('#ddlRRNo').val(null).trigger('change');
+            }
+        });
+
+
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<style>
+    .bmd-form-group [class*=" bmd-label"], .bmd-form-group [class^=bmd-label] {
+        position: initial;
+    }
+
+    .nav-tabs .nav-item .nav-link.active {
+        background-color: hsl(336deg 76% 50%);
+        transition: background-color .3s .2s;
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        margin: 3px 6px;
+        background-color: #20498e;
+        padding: 5px 0;
+    }
+
+    .nav-tabs .nav-item {
+        width: 46%;
+    }
+
+    .chargedtls label {
+        font-size: 13px !important;
+    }
+
+    .nav-tabs {
+        padding: 8px 0px;
+        border-bottom: none !important;
+    }
+    /* .chargedtls
+        {
+            border:1px solid #ccc;
+        }*/
+    .card .pickupdiv .table tr td {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        /* font-weight: 600;*/
+        background-color: #f0f8ff78;
+        color: #333;
+    }
+
+    .card .pickupdiv .table tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #21277a;
+    }
+
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a ng-click="back();" class="btn btn-fill btn-success btn-round btntop" style="color:#fff;">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title"> RR/BL Access</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" style="border:1px solid #ccc; padding-bottom:20px;">
+                            <div class="col-md-12" style="border-right:1px solid #ccc;">
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Document Type</label>
+                                            <select id="ddlDocumentType" ng-model="ddlDocumentType" class="form-control my-select" options="{ allowClear: true }" ng-options="item.GeneralName for item in DocumentTypeAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Rate Request Number</label>
+                                            <select id="ddlRRNo" ng-model="ddlRRNo" ng-disabled="RRNoShowdislpay" class="form-control my-select"  ng-options="item.RatesheetNo for item in RateRequestvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>BL Number</label>
+                                            <select id="ddlBLNumber" ng-model="ddlBLNumber" ng-disabled="BLNumberNodislpay" class="form-control my-select" options="{ allowClear: true }" ng-options="item.BLNumber for item in Bookingvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label>Agency</label>
+                                            <select id="ddlAgency" ng-model="ddlAgency" class="form-control my-select" options="{ allowClear: true }" ng-options="item.AgencyName for item in Agencyvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>Access Type</label>
+                                            <select id="ddlAccessTypes" ng-model="ddlAccessTypes" class="form-control" options="{ allowClear: true }" ng-options="item.GeneralName for item in AccessAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Notes</label>
+                                            <textarea id="txtNotes" rows="2" ng-model="txtNotes" class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-12" style="text-align:right;">
+                                        <button class="btn btn-default" ng-click="ClearAll();">clear</button>
+                                        <button class="btn btn-danger" ng-click="Recordsave();">update</button>
+                                        <button class="btn btn-success" ng-click="Recordsave();">add</button>
+                                        <input type="hidden" id="HDRegID" ng-model="HDRegID" />
+                                    </div>
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-12">
+                                        <div class="material-datatables" style="overflow:scroll;">
+
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SNo</th>
+                                                        <th>Document Type</th>
+                                                        <th>RRNumber</th>
+                                                        <th>BLNumber</th>
+                                                        <th>Agency Name</th>
+                                                        <th>Access Type</th>
+                                                        <th>Createdby</th>
+                                                        <th>CreatedDate</th>
+                                                        <th>Actions</th>
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr ng-repeat="gRow in DynamicGrid">
+                                                        <td>{{$index+1}}</td>
+                                                        <td>
+                                                            {{gRow.DocumentType}}
+                                                            <input type="hidden" id="ID" ng-model="gRow.ID" />
+                                                            <input type="hidden" id="DocumentTypeID" ng-model="gRow.DocumentTypeID" />
+                                                        </td>
+                                                        <td>
+
+                                                            {{gRow.RRNo}}
+                                                            <input type="hidden" id="RRID" ng-model="gRow.RRID" />
+
+                                                        </td>
+                                                        <td>
+                                                            {{gRow.BLNumber}}
+                                                            <input type="hidden" id="BLID" ng-model="gRow.BLID" />
+                                                        </td>
+                                                        <td>
+                                                            {{gRow.Agency}}
+                                                            <input type="hidden" id="AgencyID" ng-model="gRow.AgencyID" />
+                                                        </td>
+                                                        <td>
+                                                            {{gRow.AccessType}}
+                                                            <input type="hidden" id="AccessTypeID" ng-model="gRow.AccessTypeID" />
+                                                        </td>
+                                                        <td>
+                                                            {{gRow.Createdby}}
+                                                        </td>
+                                                        <td>
+                                                            {{gRow.CreatedDate}}
+                                                        </td>
+
+                                                        <td class="td-actions text-right bindgrid">
+                                                            <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">edit</i>
+                                                            </button>
+                                                            <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index,gRow.TID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">delete</i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+
+
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+
+                                    <input type="hidden" id="HDArrayIndex" ng-model="HDArrayIndex" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="border-bottom:1px solid #ccc;">
+                            <div class="col-md-12" style="text-align:right;">
+                               
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+

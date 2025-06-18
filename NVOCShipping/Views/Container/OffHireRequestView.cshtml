@@ -1,0 +1,350 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+        //$(".js-cntrno").select2({
+        //    placeholder: 'ContainerNo'
+        //});
+    });
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+        $scope.AddNew = function () {
+            window.location = "/Container/OffHireRequest"
+        }
+
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrNo();
+
+        $scope.LeasingPartnerList = null;
+        $scope.FilLeasingPartner = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/LeasingPartner/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LeasingPartnerList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilLeasingPartner();
+
+
+        $scope.LeaseTermList = null;
+        $scope.FilLeaseTerm = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/LeaseTerm/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.LeaseTermList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FilLeaseTerm();
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.PortValue = null;
+        $scope.fillPortValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortValues();
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.OffHireRecords = null;
+        $scope.OffHireRecords = function () {
+
+
+            var BussData = {}
+            BussData.CntrID = $("#ddlCntrNo").val();
+            BussData.LeasingPartnerID = $("#ddlLeasePartner").val();
+            BussData.LeasingTermID = $("#ddlLeaseTerm").val();
+            BussData.OffHireDepotID = $("#ddlOffHireDepot").val();
+            BussData.OffHirePortID = $("#ddlOffHirePort").val();
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/ViewOffHireRequest",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.CntrRec = result.data;
+
+                $scope.totalItems = $scope.CntrRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.CntrRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        }
+
+        $scope.OffHireViewRecords = function () {
+
+            $scope.OffHireRecords();
+        }
+        $scope.ClearRecords = function () {
+            $("#ddlCntrNo").val(null).trigger("change");
+            $("#ddlLeasePartner").val(null).trigger("change");
+            $("#ddlLeaseTerm").val(null).trigger("change");
+            $("#ddlOffHireDepot").val(null).trigger("change");
+            $("#ddlOffHirePort").val(null).trigger("change");
+            $scope.OffHireRecords();
+        }
+        $scope.OffHireRecords();
+
+        $scope.OffHireUpdate = function (url) {
+            var url = "/Container/OffHireRequest?OffHireID=" + encodeURIComponent(url);
+            window.location.href = url;
+        }
+        
+    }
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Off Hire-Request
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+                       
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Container Number</th>
+                                    <th>Lease RefNo</th>
+                                    <th>Leasing Partner</th>
+                                    <th>Leasing Term</th>
+                                    <th>Off Hire Depot</th>
+                                    <th>Off Hire Port</th>
+                                    <th>Off Hire Date</th>
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in CntrRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.CntrNo}}</td>
+                                    <td>{{i.ContractRefNo}}</td>
+                                    <td>{{i.LeasingPartner}}</td>
+                                    <td>{{i.LeasingTerm}}</td>
+                                    <td>{{i.OffHireDepot}}</td>
+                                    <td>{{i.OffHirePort}}</td>
+                                    <td>{{i.DtOffHire}}</td>
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="" ng-click="OffHireUpdate(i.ID)">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(CntrRec|filter:CntrNo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-select" ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-select" ng-model="ddlLeasePartner" id="ddlLeasePartner" ng-options="item.LeasingPartner for item in LeasingPartnerList track by item.LeasingPartnerID" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+
+                            <select class="form-control my-select" ng-model="ddlLeaseTerm" id="ddlLeaseTerm" ng-options="item.LeaseTerm for item in LeaseTermList track by item.LeaseTermID" required>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-select" ng-model="ddlOffHireDepot" id="ddlOffHireDepot" ng-options="item.DepName for item in DepotValue track by item.ID" required>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-select" ng-model="ddlOffHirePort" id="ddlOffHirePort" ng-options="item.PortName for item in PortValue track by item.ID" required>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="OffHireViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

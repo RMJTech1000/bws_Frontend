@@ -1,0 +1,292 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $('.my-selectBO').select2({
+            placeholder: "Booking No", allowClear: true, width: '100%'
+        });
+        $('.my-selectBP').select2({
+            placeholder: "Booking Party", allowClear: true, width: '100%'
+        });
+
+        $scope.BookingNovalues = null;
+        $scope.fillBookingNovalues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BookingMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BookingNovalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBookingNovalues();
+
+        $scope.BookingPartyAllvalues = null;
+        $scope.fillBookingPartyValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BookingPartyAllvalues = result.data;
+                    $("#overlay").hide();
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBookingPartyValues();
+
+
+        $scope.CROview = null;
+        $scope.fillCROview = function () {
+            var BussData = {};
+            BussData.BkgID = $('#ddlBookingNo').val();
+            BussData.CusID = $('#ddlCustomer').val();
+            BussData.ReleaseOrderNo = $scope.txtCRONo;
+            BussData.AgentId = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/CROViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CROview = result.data;
+                    $scope.totalItems = $scope.CROview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.CROview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCROview();
+
+
+        $scope.LoadingCROPage = function (urlv) {
+
+            var url = "/Document/CRO?CRORegID=" + encodeURIComponent(urlv);
+            window.location.href = url;
+
+        }
+
+        $scope.btnExcel = function () {
+
+            var BkgID = $('#ddlBookingNo').val();
+            var CusID = $('#ddlCustomer').val();
+            var ReleaseOrderNo = $scope.txtCRONo;
+            var User = localStorage.getItem("UserName");
+            var AgencyID = localStorage.getItem("AgencyID");
+
+            window.location.href = '@Url.Action("CreateCROExcel", "CROExcel")?BkgID=' + BkgID + "&CusID=" + CusID
+                + "&ReleaseOrderNo=" + ReleaseOrderNo + "&User=" + User + "&AgencyID=" + AgencyID;
+
+        }
+        $scope.ClearRecords = function () {
+
+            $("#ddlBookingNo").val(null).trigger("change");
+            $("#ddlCustomer").val(null).trigger("change");
+            $scope.txtCRONo = "";;
+            $scope.fillCROview();
+        }
+
+
+        $scope.LoadingCROPrint = function (id) {
+           
+            window.open('@Url.Action("CROPDF", "BookingPDF")?id=' + id +'&AgencyID=' + localStorage.getItem("AgencyID"));
+
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+    function AddNew() {
+
+        window.location = "/Document/CRO"
+    }
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <a href="/Document/CRO" class="btn btn-fill btn-success btnadd btn-round btntop">
+                <i class="material-icons">add</i> Create New
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        CRO View
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 exceldownload" style="text-align:right;">
+                            <a ng-click="btnExcel();">Download <i class="fa fa-file-excel-o"></i></a>
+                        </div>
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Release Ref</th>
+                                    <th>Booking</th>
+                                    @*<th>Customer</th>*@
+                                    @*<th>Depot</th>*@
+                                    <th>Valid From</th>
+                                    <th>Valid Till</th>
+                                    <th>Status</th>
+                                    <th>Print</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in CROview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.ReleaseOrderNo}}</td>
+                                    <td>{{i.BookingNo}}</td>
+                                    @*<td>{{i.Custome}}</td>
+                        <td>{{i.Depot}}</td>*@
+                                    <td>{{i.Date}}</td>
+                                    <td>{{i.ValidTill}}</td>
+                                    <td>{{i.Status}}</td>
+                                    <td>
+                                        <button type="button" ng-click="LoadingCROPrint(i.ID);" rel="tooltip" class="btn btn-default btn-round btnprint" data-original-title="" title="">
+                                            <i class="material-icons">print</i>
+                                        </button>
+                                    </td>
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingCROPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            View
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(CROview|filter:ReleaseOrderNo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                   
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtCRONo" ng-model="txtCRONo" class="form-control" placeholder="CRO NO">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select type="text" autocomplete="off" id="ddlBookingNo" ng-model="ddlBookingNo" ng-change="BkgDetails();" class="form-control my-selectBO" options="{ allowClear: true }" ng-options="item.BookingNo for item in BookingNovalues track by item.ID">
+                                <option value="" disabled selected> Booking No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select id="ddlCustomer" class="form-control my-selectBP" ng-model="ddlCustomer" options="{ allowClear: true }" ng-options="item.CustomerName for item in BookingPartyAllvalues track by item.ID">
+                                <option value="" disabled selected> Booking Party</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="fillCROview();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

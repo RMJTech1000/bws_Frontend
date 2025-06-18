@@ -1,0 +1,187 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.AddNew = function () {
+            window.location = "/Masters/GeneralMaster"
+        }
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.MasterRecords = null;
+        $scope.MasterRecords = function () {
+            var BussData = {}
+            BussData.RefCode = $scope.txtRefCode;
+            BussData.GeneralName = $scope.txtGeneralName;
+            //BussData.Status = $scope.ddlStatus;
+            $http({
+                method: 'POST',
+                url: "/api/MastersApi/GeneralMaster",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.MasterRec = result.data;
+
+                $scope.totalItems = $scope.MasterRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.MasterRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.CitViewRecords = function () {
+
+            $scope.MasterRecords();
+        }
+        $scope.ClearRecords = function () {
+
+            $scope.txtRefCode = "";
+            $scope.txtGeneralName = "";
+           /* $scope.ChkStatus = "0";*/
+            $scope.MasterRecords();
+        }
+        $scope.MasterRecords();
+        $scope.GLUpdate = function (url) {
+
+            var url = "/Masters/GeneralMaster?GLRegID=" + encodeURIComponent(url);
+            window.location.href = url;
+        }
+
+    }
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        General Master
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Reference Code</th>
+                                    <th>General Name</th>
+                                    <th>Status</th>
+                                    <th>SeqNo </th>                                 
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in MasterRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.RefCode}}</td>
+                                    <td>{{i.GeneralName}}</td>
+                                    <td>{{i.StatusV}}</td>
+                                    <td>{{i.SeqNo}}</td>
+                                    <td class="td-actions text-right">
+                                        <button type="button" ng-click="GLUpdate(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(MasterRec|filter:RefCode).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtRefCode" ng-model="txtRefCode" class="form-control" placeholder="Reference Code">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtGeneralName" ng-model="txtGeneralName" class="form-control" placeholder="General Name">
+                        </div>
+                    </div>
+
+                    @*<div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>Status</label>
+                                </div>
+                                <div class="col-md-6 input-field" style="text-align:right; padding-right:0;">
+                                  <select id="ddlStatus"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="CitViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

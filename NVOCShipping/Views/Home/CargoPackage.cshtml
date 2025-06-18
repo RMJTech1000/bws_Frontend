@@ -1,0 +1,418 @@
+﻿@model  NVOCShipping.Models.MasterModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+@*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">*@
+@*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>*@
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/base/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<style>
+
+    /*.spanner {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        background: #2a2a2a55;
+        width: 100%;
+        display: block;
+        text-align: center;
+        height: 100%;
+        color: #FFF;
+        transform: translateY(-50%);
+        z-index: 1000;
+        visibility: hidden;
+    }
+
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        visibility: hidden;
+    }
+
+    .loader,
+    .loader:before,
+    .loader:after {
+        border-radius: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+        -webkit-animation: load7 1.8s infinite ease-in-out;
+        animation: load7 1.8s infinite ease-in-out;
+    }
+
+    .loader {
+        background-color: #000000;
+        color: #ffffff;
+        font-size: 10px;
+        margin: 80px auto;
+        position: relative;
+        text-indent: -9999em;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+        .loader:before,
+        .loader:after {
+            content: '';
+            position: absolute;
+            top: 0;
+        }
+
+        .loader:before {
+            left: -3.5em;
+            -webkit-animation-delay: -0.32s;
+            animation-delay: -0.32s;
+        }
+
+        .loader:after {
+            left: 3.5em;
+        }
+
+
+    .show {
+        visibility: visible;
+    }
+
+    .hide {
+        visibility: hidden;
+    }
+
+    .spanner, .overlay {
+        opacity: 0;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+    }
+
+        .spanner.show, .overlay.show {
+            opacity: 1;
+        }*/
+
+    ul.autocomplete-content.dropdown-content {
+        background-color: #eee;
+        box-shadow: 0px 0px 5px #ccc;
+        top: 30px !important;
+        left: 15px !important;
+        position: absolute !important;
+        z-index: 100;
+    }
+
+        ul.autocomplete-content.dropdown-content li {
+            list-style-type: none;
+            margin-left: -40px;
+            padding-left: 10px;
+            padding-top: 8px;
+            font-size: 14px;
+            color: #040f96 !important;
+            border-bottom: 1px solid #ccc;
+        }
+
+            ul.autocomplete-content.dropdown-content li:hover {
+                background-color: #f4f4f4;
+            }
+
+    .section-search input {
+        padding: 5px !important;
+        font-size: 18px !important;
+        width: 90% !important;
+        border: #f4f4f4 3px solid !important;
+        background-color: #808080 !important;
+        float: right;
+    }
+
+    .section-search i {
+        display: block;
+    }
+
+    .section-search input.autocomplete {
+        color: #040f96;
+    }
+
+    .input-field .prefix.active {
+        color: #040f96 !important;
+    }
+
+    .dropdown-content li > a, .dropdown-content li > span {
+        color: #040f96 !important;
+    }
+
+    .autocomplete-content li .highlight {
+        color: #040f96 !important;
+    }
+
+    .bootstrap-select .btn.dropdown-toggle.select-with-transition {
+        background-image: none;
+        border: 1px solid #ccc !important;
+        margin-top: 0;
+        height: 32px;
+    }
+
+    .bootstrap-select .dropdown-toggle .filter-option {
+        padding-top: 9px;
+        padding-left: 4px;
+        padding-right: 0px;
+    }
+    /*.dropdown-toggle:after
+    {
+        margin-left: 8.255em!important;
+    }*/
+
+    .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+        max-width: 100%;
+    }
+    /*.form-control.txtarea
+    {
+        width:765px;
+    }*/
+    .bmd-form-group .form-control, .bmd-form-group input::placeholder, .bmd-form-group label {
+        padding-left: 6px;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.Recordsave = function () {
+            var validation = "";
+            var txtPkgCode = $('#txtPkgCode').val();
+            if (txtPkgCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Package Code</span></br>"
+
+            }
+            var txtPkgDesc = $('#txtPkgDesc').val();
+            if (txtPkgDesc.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Package Desc</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+            BussData.PkgCode = $scope.txtPkgCode;
+            BussData.PkgDescription = $scope.txtPkgDesc;
+
+            if ($scope.ChkStatus == 1) {
+
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+
+
+
+            $http({
+                method: 'POST',
+                url: "/api/Home/CargoPackage",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+                    setTimeout(function () { location.href = "/Home/CargoPackageView" }, 2000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["CargoRegID"] != null) {
+                $scope.HDRegId = queryString["CargoRegID"].toString();
+                $scope.BindCargo(queryString["CargoRegID"].toString());
+
+            }
+        });
+        $scope.BindCargo = function (CargoRegID) {
+
+            var Datavalue = {}
+            var id = CargoRegID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = CargoRegID;
+            $http({
+                method: 'POST',
+                url: '/api/Home/CargoPkgviewedit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.txtPkgCode = result.data[0].PkgCode;
+                        $scope.txtPkgDesc = result.data[0].PkgDescription;
+                        $scope.ChkStatus = result.data[0].Status;
+
+                    }
+                    else {
+                        $scope.txtPkgCode = "";
+                        $scope.txtPkgDesc = "";
+                        $scope.ChkStatus = 0;
+                    }
+                });
+            });
+           
+        }
+        $scope.BindCargo();
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Home/CargoPackageView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Cargo Package Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Package Code</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtPkgCode" ng-model="txtPkgCode" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Package Description</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtPkgDesc" autocomplete="off" ng-model="txtPkgDesc" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7 input-field">
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                    <span class="toggle"></span>
+
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                        </div>
+                        <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+

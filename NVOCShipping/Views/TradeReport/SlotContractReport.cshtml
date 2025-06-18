@@ -1,0 +1,353 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+        $scope.ShipmentTypeAllvalues = [
+            { 'Name': 'EXPORT', 'ID': 1 },
+            { 'Name': 'IMPORT', 'ID': 2 },
+            { 'Name': 'TRANSHIPMENT', 'ID': 3 },
+            { 'Name': 'DAMAGE', 'ID': 4 },
+            { 'Name': 'AVAILABLE', 'ID': 5 },
+
+        ];
+        $scope.CountryList = null;
+        $scope.FillCountryMasterList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CountryMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CountryList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCountryMasterList();
+
+        $scope.SlotOperatorValue = null;
+        $scope.fillSlotOperatorValues = function () {
+
+
+            var Datavalue = {};
+            Datavalue.BussTypes = "7,8,13";
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerBussTypesMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    $scope.SlotOperatorValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSlotOperatorValues();
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortAllvalues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BindMainPorts/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortAllvalues();
+
+        $scope.ClearRecords = function () {
+
+            $("#ddlFeeder").val(null).trigger("change");
+            $("#ddlFromPort").val(null).trigger("change");
+            $("#ddlToPort").val(null).trigger("change");
+
+        }
+
+          $scope.btnPrint = function () {
+
+            //var validation = "";
+
+            //var ddlShipmentType = $('#ddlShipmentType').val();
+            //if (ddlShipmentType == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Shipment Type</span></br>"
+            //}
+            //if (validation != "") {
+            //    ShowPopup(validation);
+            //    return false;
+            //}
+              var FromPort = $('#ddlFromPort').val();
+              var  ToPort = $('#ddlToPort').val();
+              var FeederID = $('#ddlFeeder').val();
+              var EffectDate = $('#txtEffectDate').val();
+              var User = localStorage.getItem("UserName");
+              var CtryID = $('#ddlCountry').val();
+              
+              window.location.href = '@Url.Action("SlotContractReportValues", "TradeReport")?FeederID=' + FeederID + "&FromPort=" + FromPort + "&ToPort=" + ToPort + "&EffectDate=" + EffectDate + "&CtryID=" + CtryID+"&User=" + User;
+
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .card .table tr td {
+        white-space: nowrap;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > td.bgr {
+        background-color: #12759a !important;
+        color: #fff;
+    }
+
+    .table > thead > tr > td.bg1 {
+        background-color: #a7cff5 !important;
+        background-color: rgb(180,198,231);
+    }
+
+    .table > thead > tr > td.bg2 {
+        background-color: #b8e7d7 !important;
+    }
+
+    .table > thead > tr > td.bg3 {
+        background-color: #c6fdc4 !important;
+    }
+
+    .table > thead > tr > td.bg4 {
+        background-color: #fdc4c9 !important;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/AllReports/InventoryReportDashboard" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+
+
+
+                <div class="card-body">
+                    <div class="row" style="border: 1px solid #ccc;">
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                        <div class="col-md-8" style="text-align:center;">
+                            <h4 style="font-size:24px; font-weight:bold; color:#000!important; margin-top:39px;">Slot Contract Report</h4>
+                        </div>
+                        <div class="col-md-2" style="text-align:center;">
+                            <img src="~/assets/img/misrepimg.jpg" style="width:100px;" />
+                        </div>
+                    </div>
+
+                    <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+
+                        <div class="col-md-12">
+                            <div class="row">
+
+
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Feeder</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" id="ddlFeeder" ng-model="ddlFeeder" options="{ allowClear: true }" ng-options="item.CustomerName for item in SlotOperatorValue track by item.ID">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Effective Date</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <input type="date" id="txtEffectDate" ng-model="txtEffectDate" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">Country</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" id="ddlCountry" ng-model="ddlCountry" options="{ allowClear: true }" ng-options="item.CountryName for item in CountryList track by item.ID">
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">From Port</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" ng-model="ddlFromPort" id="ddlFromPort" ng-options="item.PortName for item in PortAllvalues track by item.ID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4 lbl2"><label class="lable-fond">To Port</label></div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-5">
+                                                <select class="form-control my-select" ng-model="ddlToPort" id="ddlToPort" ng-options="item.PortName for item in PortAllvalues track by item.ID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-md-8">
+                                </div>
+                                <div class="col-md-4" style="text-align:right;">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-fill btn-info" ng-model="btnPrint" ng-click="btnPrint();" style="padding: 6px 18px; margin-top: -1px;width:46%; ">
+                                                    <i class="material-icons"></i> Generate Report
+                                                </button>
+                                                <button type="submit" class="btn btn-fill btn-default" ng-model="ClearRecords" ng-click="ClearRecords();" style="padding: 6px 18px; margin-top: -1px; width: 46%;">
+                                                    <i class="material-icons">close</i> Clear
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

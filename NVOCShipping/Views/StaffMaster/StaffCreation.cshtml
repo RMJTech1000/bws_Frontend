@@ -1,0 +1,575 @@
+﻿<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+
+        //Agency State DropDown//
+        $scope.Agencies = null;
+        $scope.fillAgencies = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/PartyApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Agencies = result.data;
+
+                });
+            });
+        };
+        $scope.fillAgencies();
+
+        //Country DropDown//
+        $scope.Country = null;
+        $scope.fillCountry = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/countryBind/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Country = result.data;
+
+                });
+            });
+        };
+        $scope.fillCountry();
+
+  //City DropDown//
+        $scope.City = null;
+        $scope.fillCity = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/cityBind/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.City = result.data;
+
+                });
+            });
+        };
+        $scope.fillCity();
+        //City DropDown//
+
+        //Division DropDown//
+        $scope.Division = null;
+        $scope.fillDivision = function () {
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/Division/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Division = result.data;
+
+                });
+            });
+        };
+        $scope.fillDivision();
+        //Division DropDown//
+
+        //Department DropDown//
+        $scope.Department = null;
+        $scope.fillDepartment = function () {
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/Department/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Department = result.data;
+
+                });
+            });
+        };
+        $scope.fillDepartment();
+        //Department DropDown//
+
+        //Designation DropDown//
+        $scope.Designation = null;
+        $scope.fillDesignation = function () {
+            $http({
+                method: 'POST',
+                url: '/api/UserApi/Designation/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Designation = result.data;
+
+                });
+            });
+        };
+        $scope.fillDesignation();
+
+        //Location DropDown//
+        $scope.Location = null;
+        $scope.fillLocation = function () {
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/LocationMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Location = result.data;
+
+                });
+            });
+        };
+        $scope.fillLocation();
+
+
+        $scope.RecordSave = function ()
+        {
+            var validation = "";
+
+            var txtUserCode = $('#txtUserCode').val();
+            if (txtUserCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter User</span></br>"
+
+            }
+            var txtUserName = $('#txtUserName').val();
+            if (txtUserName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter User Name</span></br>"
+
+            }
+
+            var ddlLocation = $('#ddlLocation').val();
+            if (ddlLocation == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Location</span></br>"
+
+            }
+            var ddlBranch = $('#ddlBranch').val();
+            if (ddlBranch == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Branch</span></br>"
+
+            }
+
+            var ddlDesignation = $('#ddlDesignation').val();
+            if (ddlDesignation == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Designation</span></br>"
+
+            }
+            
+            var txtEmailID = $('#txtEmailID').val();
+            if (txtEmailID.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Email ID</span></br>"
+
+            }
+            var txtAddress = $('#txtAddress').val();
+            if (txtAddress.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Address</span></br>"
+
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var BussData = {}
+
+            var id = $scope.HdId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdId;
+            BussData.UserCode = $scope.txtUserCode;
+            BussData.UserName = $scope.txtUserName;
+            BussData.Location = $('#ddlLocation').val();
+            BussData.Designation = $('#ddlDesignation').val();
+            BussData.Branch = $('#ddlBranch').val();
+            BussData.EmailID = $scope.txtEmailID;
+            BussData.Address = $scope.txtAddress;
+            $http({
+                method: 'POST',
+                url: "/api/StaffApi/InsertStaffUser",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Save = result.data;
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Record Saved Successfully");
+                    }
+                    else {
+                        ShowPopup("Error Not Saved");
+                    }
+                    return false;
+                });
+            });
+        }
+
+        $scope.BindStaffDtls = function (StaffID) {
+
+            var Datavalue = {}
+            var id = StaffID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = StaffID;
+
+            
+            alert(StaffID);
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffMasterRecordView/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+                        $scope.HdId = result.data[0].ID;
+                        $scope.txtUserCode = result.data[0].UserCode;
+                        $scope.txtUserName = result.data[0].UserName;
+                        $scope.ddlLocation = { ID: result.data[0].Location };
+                        $scope.ddlDesignation = { ID: result.data[0].Designation };
+                        $scope.ddlBranch = { ID: result.data[0].Branch };
+                        $scope.txtEmailID = result.data[0].EmailID;
+                        $scope.txtAddress = result.data[0].Address;
+                       
+                    }
+                    else {
+                        $('#txtUserCode').val(0);
+                        $('#txtUserName').val(0);
+                        $('#ddlLocation').val('');
+                        $('#ddlDesignation').val('');
+                        $('#ddlBranch').val(0);
+                        $('#txtEmailID').val(0);
+                        $('#txtAddress').val('');
+                      
+                    }
+                });
+            });
+           
+        }
+        /*  $scope.BindStaffDtls();*/
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["StaffID"] != null) {
+               
+                $scope.HdId = queryString["StaffID"].toString();
+                $scope.BindStaffDtls(queryString["StaffID"].toString());
+
+            }
+        });
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<style>
+    .bmd-form-group [class*=" bmd-label"], .bmd-form-group [class^=bmd-label] {
+        position: initial;
+    }
+    .nav-tabs .nav-item .nav-link.active {
+        background-color: hsl(336deg 76% 50%);
+        transition: background-color .3s .2s;
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        margin: 3px 6px;
+        background-color: #20498e;
+        padding: 5px 0;
+    }
+
+    .nav-tabs .nav-item {
+        width: 46%;
+    }
+
+    .chargedtls label {
+        font-size: 13px !important;
+    }
+
+    .nav-tabs {
+        padding: 8px 0px;
+        border-bottom: none !important;
+    }
+    /* .chargedtls
+        {
+            border:1px solid #ccc;
+        }*/
+    .card .pickupdiv .table tr td {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        /* font-weight: 600;*/
+        background-color: #f0f8ff78;
+        color: #333;
+    }
+
+    .card .pickupdiv .table tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #21277a;
+    }
+
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i>
+
+                </button>
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Staff Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="nav-tabs-navigation">
+                                            <div class="nav-tabs-wrapper">
+                                                <div class="row">
+                                                    <div class="col-md-6 padlr0">
+                                                        <ul class="nav nav-tabs demtab" data-tabs="tabs">
+                                                            <li class="nav-item">
+                                                                <a class="nav-link active" href="#VesselChanging" id="VessChange" data-toggle="tab">
+                                                                    User Details
+                                                                    <div class="ripple-container"></div>
+                                                                </a>
+                                                            </li>
+                                                            <li class="nav-item">
+                                                                <a class="nav-link" href="#SlotChanging" id="SlotChange" data-toggle="tab">
+                                                                    Role Details
+                                                                    <div class="ripple-container"></div>
+                                                                </a>
+                                                            </li>
+
+                                                        </ul>
+                                                    </div>
+                                                  
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-content" style="padding:0;">
+                                            <div class="tab-pane active" id="VesselChanging">
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>User Code</label>
+                                                            <input type="text" id="txtUserCode" ng-model="txtUserCode" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>User Name</label>
+                                                            <input type="text" id="txtUserName" ng-model="txtUserName" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Location</label>
+                                                            <select id="ddlLocation" ng-model="ddlLocation" ng-options="item.GeoLocation for item in Location track by item.ID" class="form-control my-select"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Designation</label>
+                                                            <select id="ddlDesignation" ng-model="ddlDesignation" class="form-control my-select" ng-options="item.Name for item in Designation track by item.ID"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Branch</label>
+                                                            <select id="ddlBranch" ng-model="ddlBranch" class="form-control my-select" ng-options="item.CityName for item in City track by item.ID"></select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>Email ID</label>
+                                                            <input type="text" id="txtEmailID" ng-model="txtEmailID" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label>Address</label>
+                                                            <textarea id="txtAddress" ng-model="txtAddress" class="form-control" rows="5"></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-12" style="text-align:right;">
+                                                        <button class="btn btn-success" ng-click="RecordSave();">SAVE</button>
+                                                        <input type="hidden" id="HdId" ng-model="HdId" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="tab-pane" id="SlotChanging">
+
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="col-md-12" style="border:1px solid #ccc;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <label>Company Code</label>
+                                                                        <select id="ddlCompany" ng-model="ddlCompany" class="form-control"></select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <button class="btn btn-warning">Add</button>
+                                                                    <button class="btn btn-danger">Delete</button>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="material-datatables">
+                                                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>S.No</th>
+                                                                                    <th>Company Code</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td>1</td>
+                                                                                    <td>&nsub;</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="col-md-12" style="border:1px solid #ccc;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <label>Role Code</label>
+                                                                        <select id="ddlRoleCode" ng-model="ddlRoleCode" class="form-control"></select>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <button class="btn btn-warning">Add</button>
+                                                                    <button class="btn btn-danger">Delete</button>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="material-datatables">
+                                                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>S.No</th>
+                                                                                    <th>Company Code</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td>1</td>
+                                                                                    <td>&nsub;</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
+                                                    </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+    </div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>
+
+

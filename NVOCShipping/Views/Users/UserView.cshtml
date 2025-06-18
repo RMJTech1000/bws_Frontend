@@ -1,0 +1,198 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.UserDetails = function () {
+            var BussData = {}
+            BussData.UserName = $scope.txtUserName;
+            BussData.City = $scope.txtCity;
+            BussData.Department = $scope.txtDepartment;
+            BussData.Division = $scope.txtDivision;
+            BussData.Designation = $scope.txtDesignation;
+                      $http({
+                method: 'POST',
+                url: "/api/UserApi/UserView",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.UserRec = result.data;
+                $scope.totalItems = $scope.UserRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.UserRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.UserDetails();
+        $scope.SearchRecords = function () {
+
+             $scope.UserDetails();
+        }
+        $scope.ClearRecords = function () {
+            alert('tst');
+            $scope.txtUserName = "";
+            $scope.txtBranch = "";
+            $scope.txtDivision = "";
+            $scope.txtDepartment = "";
+            $scope.txtDesignation = "";
+
+
+            $scope.UserDetails();
+        }
+       $scope.UserDetails();
+        $scope.UserEdit = function (urlv)
+        {
+            //var url = "/Users/User?UserID=" + encodeURIComponent(url);
+            //window.location.href = url;
+
+            var ParameterValue = "UserID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Users/User?" + ciphertext;
+            window.location.href = url;
+        }
+        $scope.AddNew = function () {
+
+            window.location.href = "/Users/User/"
+            
+        }
+
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+    </script>
+    <div ng-app="MyApp" ng-controller="MyController">
+        <div class="row">
+            <div class="col-md-12 addbtn" style="text-align:right;">
+                <a ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">add</i> Create New
+
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header card-header-primary card-header-icon">
+                        <div class="card-icon">
+                            User Details
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="toolbar">
+                        </div>
+                        <div class="material-datatables">
+                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>S.No</th>
+                                        <th>User Name</th>
+                                        <th>User ID</th>
+                                        <th>Branch</th>
+                                        <th>Division</th>
+                                        <th>Department</th>
+                                        <th>Designation</th>
+                                        <th class="disabled-sorting text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="i in UserRec | filter : paginate | orderBy:'-Statusv'">
+                                        <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                        <td>{{i.UserName}}</td>
+                                        <td>{{i.UserID}}</td>
+                                        <td>{{i.City}}</td>
+                                        <td>{{i.Division}}</td>
+                                        <td>{{i.Department}}</td>
+                                        <td>{{i.Designation}}</td>
+                                        <td class="td-actions text-right">
+
+                                            <button type="button" ng-click="UserEdit(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                                <i class="material-icons">edit</i>
+                                            </button>
+
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                            @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                                </div>
+                                <div class="col-md-7" style="text-align:right;">
+                                    <pagination total-items="totalItems" ng-model="currentPage"
+                                                max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                    </pagination>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtUserName" ng-model="txtUserName" class="form-control" placeholder="User Name" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtBranch" ng-model="txtBranch" class="form-control" placeholder="Branch">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtDivision" ng-model="txtDivision" class="form-control" placeholder="Division">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtDepartment" ng-model="txtDepartment" class="form-control" placeholder="Department">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <input type="text" id="txtDesignation" ng-model="txtDesignation" class="form-control" placeholder="Designation">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-12 padlr0">
+                                <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                                <button type="submit" ng-click="SearchRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

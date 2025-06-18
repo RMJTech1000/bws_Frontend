@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        
+
+         $scope.btnPrint = function () {
+            window.location.href = '@Url.Action("ExportSurrenderNoticePDF", "ExportPDF")';
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+    </script>
+    <div ng-app="MyApp" ng-controller="MyController">
+
+        <div class="row">
+            <div class="col-md-12" style="text-align:right; margin-top:20px;">
+
+                <button type="submit" class="btn btn-fill btn-success" ng-click="btnPrint();">
+                    <i class="material-icons">Email</i>
+                    Send Notice
+                </button>
+              
+
+                <input type="hidden" id="RecId" ng-model="RecId" />
+
+
+            </div>
+        </div>
+    </div>

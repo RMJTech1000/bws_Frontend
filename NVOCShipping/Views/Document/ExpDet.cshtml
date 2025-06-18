@@ -1,0 +1,1017 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        //$(document).ready(function () {
+        //    $('.my-select').select2({
+        //        placeholder: "--select--",
+        //        allowClear: true,
+        //        width: '100%'
+        //    });
+        //});
+        $scope.ChargeCodeAllvalues = [
+            { 'ChargeCode': 'DETENTION CHARGES', 'ID': 28 },
+            { 'ChargeCode': 'DEMMURAGE CHARGES', 'ID': 29 },
+            { 'ChargeCode': 'GROUND RENT CHARGES', 'ID': 30 }
+        ];
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["BkgPassID"] != null) {
+
+                $scope.RegId = queryString["BkgPassID"].toString();
+                $scope.HDBLId = queryString["BOLRegID"].toString();
+                $scope.FilImpBookingCntrDetDetails(queryString["BkgPassID"].toString(), queryString["BOLRegID"].toString());
+                $scope.OnclickRetriveDetails();
+                $scope.fillExistingEstimantDetails();
+
+            }
+        });
+
+        $scope.ImpBookingCntrDetDetailsTypes = null;
+        $scope.FilImpBookingCntrDetDetails = function (ImpReg, BLIDv) {
+            var Datavalue = {};
+            Datavalue.BkgID = ImpReg;
+            Datavalue.BLID = BLIDv;
+            Datavalue.ShipmentTypeID = "1";
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDETContainerWise',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.ImpBindBLNumber = result.data[0].BLNo;
+                    $scope.ContractID = result.data[0].ID;
+                    $scope.ImpBookingCntrDetDetailsTypes = result.data;
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.GridvalueDetention = null;
+
+        $scope.GridvalueDetention = [{ IsTrue: "", ID: "", LLimit: "", ULimit: "", Currency: "", Amount: "", FDatev: "", TDatev: "", Days: "", Rate: "", TotalAmt: "", ExRate: "" }];
+
+        $scope.ImpBookingCntrDetDetails = null;
+        $scope.OnclickRetriveDetails = function () {
+
+
+            var Datavalue = {};
+            Datavalue.BkgID = $scope.RegId;
+            Datavalue.BLID = $scope.HDBLId;
+            Datavalue.ChargeCodeID = $("#ddlCharges").val();
+            Datavalue.TillDate = document.getElementById("txtCalTill").value;
+            Datavalue.ShipmentTypeID = "1";
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDETContainerWiseSearch',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ImpBookingCntrDetDetails = result.data;
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+
+
+        }
+
+        //$scope.OnclickReCalcuation = function () {
+
+        //    var validation = "";
+
+        //    var ddlCharges = $('#ddlCharges').val();
+        //    if (ddlCharges == "?") {
+        //        validation += "<span style='color:red;'>*</span> <span>Please Select Charge Code</span></br>"
+        //    }
+
+        //    var CntrNoCheck = "";
+        //    angular.forEach($scope.ImpBookingCntrDetDetails, function (value, key) {
+        //        CntrNoCheck += $scope.ImpBookingCntrDetDetails[key].IsTrue;
+
+        //    });
+        //    if (CntrNoCheck == "0") {
+        //        validation += "<span style='color:red;'>*</span> <span>Please select CntrNo</span></br>"
+        //    }
+        //    var CntrEndDate = "";
+        //    angular.forEach($scope.ImpBookingCntrDetDetails, function (value, key) {
+        //        CntrEndDate += $scope.ImpBookingCntrDetDetails[key].EndDate;
+
+        //    });
+        //    if (CntrEndDate != "") {
+        //        var txtCalTill = $('#txtCalTill').val();
+        //        if (txtCalTill.length != "")
+        //            validation += "<span style='color:red;'>*</span> <span>End date alredy existing calculation not possible </span></br>"
+        //    }
+        //    if (validation != "") {
+        //        ShowPopup(validation);
+        //        return false;
+        //    }
+        //    $('#overlay').show();
+
+
+
+        //    var ChargeCodeID = $("#ddlCharges").val();
+        //    var CntrID = $("#ddlcntrNo").val();
+        //    var CntrNo = "";
+        //    var SizeType = "";
+        //    var ExRate = ""; IDv = "";
+
+        //    if (ChargeCodeID == "28") {
+        //        $('#DTDetention').addClass('active');
+        //        $('#DTDemurage').removeClass('active');
+        //        $('#DTGroundRent').removeClass('active');
+        //    }
+        //    else if (ChargeCodeID == "29") {
+        //        alert(ChargeCodeID);
+        //        $('#DTDemurage').addClass('active');
+        //        $('#DTDetention').removeClass('active');
+        //        $('#DTGroundRent').removeClass('active');
+        //    }
+        //    else if (ChargeCodeID == "30") {
+        //        $('#DTGroundRent').addClass('active');
+        //        $('#DTDetention').removeClass('active');
+        //        $('#DTDemurage').removeClass('active');
+
+        //    }
+
+        //    angular.forEach($scope.ImpBookingCntrDetDetails, function (value, key) {
+
+        //        if ($scope.ImpBookingCntrDetDetails[key].IsTrue == true) {
+        //            IDv = $scope.ImpBookingCntrDetDetails[key]["ID"].toString();
+        //            CntrIDv = $scope.ImpBookingCntrDetDetails[key]["CntrID"].toString() + ",";
+        //            CntrNo = $scope.ImpBookingCntrDetDetails[key]["CntrNo"].toString();
+        //            SizeType = $scope.ImpBookingCntrDetDetails[key]["SizeType"].toString();
+        //            ExRate = $scope.ImpBookingCntrDetDetails[key]["ExRate"].toString();
+        //        }
+
+
+        //    });
+
+
+        //    $scope.GridvalueDetention.length = 0;
+        //    $scope.CntrNoSize = CntrNo + "-" + SizeType;
+        //    $scope.ContractID = IDv;
+        //    $scope.ExchangRate = ExRate;
+        //    var Datavalue = {};
+        //    Datavalue.ID = IDv;
+        //    Datavalue.CntrID = CntrIDv;
+        //    Datavalue.BLID = $scope.HDBLId;
+        //    Datavalue.BkgID = $scope.RegId;
+        //    var SumTotalPerCntr = 0;
+        //    var SunTotalAmount = 0;
+
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/ImportApi/ImpDETCalculationSlabe',
+        //        data: JSON.stringify(Datavalue),
+
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            $('#demoModalEstimate').modal('show');
+        //            angular.forEach(result.data, function (value, key) {
+        //                SumTotalPerCntr += parseFloat(result.data[key].Rate);
+        //                SunTotalAmount += parseFloat(result.data[key].TotalAmt);
+
+        //                $scope.GridvalueDetention.push({
+        //                    'ID': result.data[key].ID,
+        //                    'LLimit': result.data[key].LLimit,
+        //                    'ULimit': result.data[key].ULimit,
+        //                    'Currency': result.data[key].Currency,
+        //                    'Amount': result.data[key].Amount,
+        //                    'FDatev': result.data[key].FDatev,
+        //                    'TDatev': result.data[key].TDatev,
+        //                    'Days': result.data[key].Days,
+        //                    'Rate': result.data[key].Rate,
+        //                    'TotalAmt': result.data[key].TotalAmt
+
+        //                });
+
+        //            });
+        //            $scope.TotalRateCntrNo = SumTotalPerCntr;
+        //            $scope.TotalAmount = SunTotalAmount;
+
+        //            angular.forEach($scope.ImpBookingCntrDetDetails, function (value, key) {
+        //                if ($scope.ImpBookingCntrDetDetails[key].IsTrue == true) {
+
+        //                    $scope.ImpBookingCntrDetDetails[key].ChargebleAmt = SumTotalPerCntr;
+        //                    $scope.ImpBookingCntrDetDetails[key].AccountableAmt = SumTotalPerCntr;
+        //                }
+
+
+        //            });
+
+
+        //            $('#overlay').hide();
+        //            //$scope.OnBilledAmountCheck($scope.HDBLId, IDv);
+
+        //        });
+        //    }, function (result) {
+
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    });
+
+
+
+        //}
+
+        $scope.SavedetReceord = function (gRow) {
+            var CntrIDv = "";
+            var Datavalue = {};
+            angular.forEach(gRow, function (value, key) {
+                if (typeof gRow[key]["IsTrue"] != "undefined") {
+                    if (gRow[key]["IsTrue"] == "1") {
+                        IDv = gRow[key]["ID"].toString();
+                        CntrIDv += gRow[key]["CntrID"].toString() + ",";
+                    }
+                }
+            });
+            var validation = "";
+            var ddlCharges = $('#ddlCharges').val();
+            if (ddlCharges == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Code</span></br>"
+            }
+            if (CntrIDv == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container No</span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            Datavalue.BkgID = $scope.RegId;
+            Datavalue.BLID = $scope.HDBLId;
+            Datavalue.CntrIDs = CntrIDv;
+            Datavalue.TillDate = $('#txtCalTill').val();
+            Datavalue.ChargeID = $('#ddlCharges').val();
+            Datavalue.ShipmentTypeID = "1";
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            Datavalue.ChargeValue = $("#ddlCharges option:selected").text() + " CALCULATED SUCCESSFULLY";
+
+            $('#overlay').show();
+
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDDGInsert',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $('#overlay').hide();
+
+                        $scope.fillExistingEstimantDetails();
+                        ShowPopup(result.data[0]["StatusAlery"]);
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+
+        }
+
+        $scope.InserDtvalueInvoice = function () {
+            var validation = "";
+            var DDIDv = 0;
+            angular.forEach($scope.ExpExistingEstimantDetails, function (value, key) {
+                if (typeof $scope.ExpExistingEstimantDetails[key]["IsTrue"] != "undefined") {
+                    if ($scope.ExpExistingEstimantDetails[key]["IsTrue"] == "1") {
+                        DDIDv = $scope.ExpExistingEstimantDetails[key]["ID"].toString();
+
+                    }
+                }
+            });
+            if (DDIDv == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container No</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            var Datavalue = {};
+            Datavalue.BkgID = $scope.RegId;
+            Datavalue.BLID = $scope.HDBLId;
+            Datavalue.DDID = DDIDv;
+            Datavalue.PaymentModeID = 18;
+
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDDGvalueInsertInvoiceTable',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $('#overlay').hide();
+
+                        ShowPopup("Detintion invoice as Create Successfully");
+
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+
+        }
+
+        $scope.OnBilledAmountCheck = function (BLID, DDID) {
+
+            var Datavalue = {};
+            Datavalue.BLID = BLID;
+            Datavalue.DDID = DDID;
+
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/IMPDDGBilledAmount',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result)
+            {
+                $timeout(function () {
+                    $scope.TotalAmount = result.data[0]["TotalAmount"].toString();
+                    $scope.TotalBilledAmount = result.data[0]["BilledAmount"].toString();
+                    $scope.ExchangRate = result.data[0]["ExRate"].toString();
+                    $scope.FreeDaysRate = result.data[0]["WaiverAmt"].toString();
+                    $scope.TotalBilledAmountvalues = ((($scope.TotalAmount) - ($scope.TotalBilledAmount)) - ($scope.FreeDaysRate));
+                    $scope.Voyage = result.data[0]["BLVesVoy"].toString();
+                    $scope.ContractID = result.data[0]["ContID"].toString();
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.BackToBOLPage = function () {
+
+            var url = "/Document/BOL?BOLRegID=" + encodeURIComponent($scope.HDBLId) + "&BkgPassID=" + encodeURIComponent($scope.RegId);
+            window.location.href = url;
+        }
+
+
+        $scope.ExpExistingEstimantDetails = null;
+        $scope.fillExistingEstimantDetails = function () {
+
+            var Datavalue = {};
+            Datavalue.BkgID = $scope.RegId;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ExpEstimateexsitingValues',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ExpExistingEstimantDetails = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+
+
+        }
+
+       
+
+        $scope.OpenEstimateValue = function (Idv) {
+
+            var SumTotalPerCntr = 0;
+            var SunTotalAmount = 0;
+            var Datavalue = {};
+            Datavalue.ID = Idv;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/DisplayEstimateexsitingValues',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $('#demoModalEstimate').modal('show');
+                    $scope.GridvalueDetention.length = 0;
+                    $scope.GridvalueDetention = result.data[0].ItemListDDG;
+
+                    $scope.OnBilledAmountCheck($scope.HDBLId, Idv);
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $scope.DeleteEstimate = function (gRow) {
+
+            console.log(gRow);
+            var IDv = "";
+            var Datavalue = {};
+            angular.forEach(gRow, function (value, key) {
+                if (typeof gRow[key]["IsTrue"] != "undefined") {
+                    if (gRow[key]["IsTrue"] == "1") {
+                        IDv = gRow[key]["ID"].toString();
+                    }
+                }
+            });
+            Datavalue.ID = IDv;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpDDGDelete',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $('#overlay').hide();
+
+                        $scope.fillExistingEstimantDetails();
+                        if (result.data[0].StatusAlery == "Deleted")
+                            ShowPopup("Estimate Delete sucessfully ");
+                        else
+                            ShowPopup("Invoice Exist Please contact administrator");
+
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<style>
+    .nav-tabs {
+        margin-top: 5px !important;
+    }
+    .downbtn .btn {
+        padding: 6px 12px;
+    }
+</style>
+<style>
+    .nav.nav-tabs.demtab {
+        display: inline-flex
+    }
+
+    .nav-tabs.demtab > li {
+        width: 113px !important;
+    }
+
+    .nav-tabs.demtab li a:after {
+        border-bottom: none !important;
+    }
+
+    .nav-tabs.demtab li a:before {
+        border-top: none !important;
+    }
+
+    .nav-tabs.demtab .nav-link.active {
+        background-color: #e91e63 !important;
+    }
+
+    .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+        font-size: 12px !important;
+        line-height: 0 !important;
+    }
+
+    .form-check, label {
+        line-height: 0 !important;
+    }
+
+    .btndet {
+        padding: 7px 6px !important;
+        margin-top: 30px !important;
+    }
+
+    .table.dem > tbody > tr > td {
+        font-size: 11px !important;
+        padding: 6px 5px !important;
+        color: #000;
+        font-weight: 500;
+    }
+
+        .table.dem > tbody > tr > td.blue {
+            font-size: 15px !important;
+            padding: 6px 5px !important;
+            color: #21277a !important;
+            font-weight: 500;
+            text-align: right !important;
+        }
+
+        .table.dem > tbody > tr > td.red {
+            font-size: 15px !important;
+            padding: 6px 5px !important;
+            color: red !important;
+            font-weight: 500;
+            text-align: right !important;
+        }
+
+    .table.dem > tbody > tr:first-child > td {
+        border-top: 1px solid #ccc;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="#" ng-click="BackToBOLPage();" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            @*<a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+                </a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        DET/DEM Calculation
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+
+                    <div class="row" style="background-color: #f1f1f18a; border-top: 3px solid #ffa500;">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>BL Number</label>
+                                                <label ng-bind="ImpBindBLNumber"></label>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Charges</label>
+                                                <select id="ddlCharges" class="form-control my-select" ng-model="ddlCharges" options="{ allowClear: true }" ng-options="item.ChargeCode for item in ChargeCodeAllvalues track by item.ID"></select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Calculate Till</label>
+                                                <input type="date" id="txtCalTill" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-fill btn-default btndet" ng-click="SavedetReceord(ImpBookingCntrDetDetails);" style="width:45%;">Re-Calculate</button>
+                            <button type="submit" class="btn btn-fill btn-danger btndet" ng-click="DeleteEstimate(ExpExistingEstimantDetails);" style="width:45%;">Delete Calculation</button>
+                        </div>
+                    
+                    </div>
+
+                </div>
+
+                <div class="row" style="margin-left:9px;">
+                    <div class="col-md-12 padlr0">
+                        <h5 style="font-weight: bold; font-size:15px; color: #e91e63; margin-bottom: 0px;">Container Rental details Calculated</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-left:10px; margin-right:15px;">
+                    <div class="col-md-12 padlr0" style="height: 150px; border: 1px solid #ccc; ">
+                        <div class="material-datatables">
+                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr class="gridhead1">
+                                        <th>Action</th>
+                                        <th>ID</th>
+                                        <th>From Date</th>
+                                        <th>Containers</th>
+                                        <th>Detention Date</th>
+                                        <th>Inv Amt-DTI</th>
+                                        <th>Demmurage Date</th>
+                                        <th>Inv Amt DMM</th>
+                                        <th>Ground Rent Date</th>
+                                        <th>Inv-Amt-GRC</th>
+                                        <th>ExRate</th>
+                                        <th>ESTNo</th>
+                                        <th>InvNo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="gridbody1" ng-repeat="gRow in ExpExistingEstimantDetails">
+                                        <td><input type="checkbox" ng-model="gRow.IsTrue" ng-true-value="1" ng-false-value="0" /></td>
+                                        <td>{{gRow.ID}}</td>
+                                        <td>{{gRow.DtCalFrom}}</td>
+                                        <td>{{gRow.CntrIDs}}</td>
+                                        <td>{{gRow.DtPaidUptoDtn}}</td>
+                                        <td>{{gRow.DtnAmtx}}</td>
+                                        <td>{{gRow.DtPaidUptoDem}}</td>
+                                        <td>{{gRow.DemAmtx}}</td>
+                                        <td>{{gRow.DtPaidUptoGrd}}</td>
+                                        <td>{{gRow.GrdAmtx}}</td>
+                                        <td>{{gRow.ExRatex}}</td>
+                                        <td><a href="#" ng-click="OpenEstimateValue(gRow.ID);">Estimate</a></td>
+                                        <td>{{gRow.ESTNo}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row" style="margin-left:9px; margin-top:20px;">
+                    <div class="col-md-12 padlr0">
+                        <h5 style="font-weight: bold; font-size:15px; color: #e91e63; margin-bottom: 0px;">Container Details</h5>
+                    </div>
+                </div>
+                <div class="row" style="margin-left:9px; margin-right: 15px;">
+                    <div class="col-md-12 padlr0" style="width:1665px;overflow-x:scroll; height:150px; border:1px solid #ccc;">
+                        <div class="material-datatables">
+                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                <thead>
+                                    <tr class="gridhead1">
+                                        <th>Flag</th>
+                                        <th>Contract ID</th>
+                                        <th>Container No</th>
+                                        <th>Size Type</th>
+                                        <th>Charges</th>
+                                        <th>BL No</th>
+                                        <th>Start Move</th>
+                                        <th>Start Date</th>
+                                        <th>End Move</th>
+                                        <th>End Date</th>
+                                        <th>Till Date</th>
+                                        <th>Today Days</th>
+                                        <th>Free Days</th>
+                                        <th>Port Free Days</th>
+                                        <th>Chargeble Days</th>
+                                        @*<th>Cur</th>
+                                            <th>Chargeble Amt</th>
+                                            <th>Waiver Amt</th>
+                                            <th>Accountable Amt</th>*@
+
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+
+                                    <tr class="gridbody1" ng-repeat="gRow in ImpBookingCntrDetDetails">
+                                        <td>
+                                            <input type="checkbox" ng-true-value="1" ng-checked="gRow.IsTrue" ng-false-value="0" id="InvCheck" ng-model="gRow.IsTrue" />
+                                        </td>
+                                        <td>{{gRow.ID}}</td>
+                                        <td><a href="#" ng-bind="gRow.CntrNo"></a></td>
+                                        <td>{{gRow.SizeType}}</td>
+                                        <td>{{gRow.ChargeCode}}</td>
+                                        <td>{{gRow.BLNo}}</td>
+                                        <td>{{gRow.StartMove}}</td>
+                                        <td>{{gRow.StartDate}}</td>
+                                        <td>{{gRow.EndMove}}</td>
+                                        <td>{{gRow.EndDate}}</td>
+                                        <td>{{gRow.TillDate}}</td>
+                                        <td>{{gRow.Days}}</td>
+                                        <td>{{gRow.FreeDay}}</td>
+                                        <td>{{gRow.PortFreeDay}}</td>
+                                        <td>{{gRow.ChargebleDays}}</td>
+                                        @*<td>{{gRow.Currency}}</td>
+                                            <td>{{gRow.ChargebleAmt}}</td>
+                                            <td>{{gRow.WaiverAmt}}</td>
+                                            <td>{{gRow.AccountableAmt}}</td>*@
+
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:10px;">
+                    <div class="col-md-11" style="text-align:right;">
+                        <button type="submit" class="btn btn-fill btn-success" style="width:15%;" ng-click="InserDtvalueInvoice();">Save To Invoice</button>
+                    </div>
+                </div>
+
+
+                <div class="modal fade" id="demoModalEstimate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="width:1300px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                            </div>
+                            <div class="modal-body">
+                                <div class="row" style="border:1px solid #ccc; margin-left:15px; margin-right:15px;">
+                                    <div class="col-md-12" style="padding-left: 0; padding-top: 10px; border-right: 1px solid #ccc; overflow-y: scroll; height: 700px; ">
+                                        <div class="col-md-12">
+                                            <h5 style="font-weight:bold; margin-bottom:0;">Detention/Demmurage Workings-Break Up Details</h5>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="nav-tabs-navigation">
+                                                <div class="nav-tabs-wrapper">
+
+                                                    <ul class="nav nav-tabs demtab" data-tabs="tabs">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active" href="#profile" id="DTDetention" data-toggle="tab">
+                                                                Detention
+                                                                <div class="ripple-container"></div>
+                                                            </a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="#messages" id="DTDemurage" data-toggle="tab">
+                                                                Demurage
+                                                                <div class="ripple-container"></div>
+                                                            </a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link" href="#settings" id="DTGroundRent" data-toggle="tab">
+                                                                Ground Rent
+                                                                <div class="ripple-container"></div>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <div class="tab-content" style="padding:0;">
+                                                <div class="tab-pane active" id="profile">
+                                                    <div class="col-md-12 padlr0">
+                                                        <div class="row" style="border: 1px solid #8d8a8a;">
+                                                            <div class="col-md-4" style="border-right: 1px solid #8d8a8a;">
+                                                                <div class="form-group" style="margin-bottom:0;">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <label>BL Number</label>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <label style="font-weight:bold!important;"><span ng-bind="ImpBindBLNumber"></span></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4" style="border-right: 1px solid #8d8a8a;">
+                                                                <div class="form-group" style="margin-bottom:0;">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <label>Contract ID</label>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <label style="font-weight:bold!important;"><span ng-bind="ContractID"></span></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group" style="margin-bottom:0;">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <label>Voyage</label>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <label style="font-weight:bold!important;"><span ng-bind="Voyage"></span></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        @*<div class="row">
+            <div class="col-md-6">
+                <h5 style="font-size: 11px;color:#4a2e02;font-weight:bold;"><span ng-bind="CntrNoSize">CNTRNO</span></h5>
+            </div>
+            <div class="col-md-6" style="text-align:right;">
+                <h5 style="font-size: 11px;color:#e91e63;font-weight:bold;">CONTRACT ID:<span ng-bind="ContractID"></span></h5>
+            </div>
+            <div class="col-md-6">
+                <h5 style="font-size: 11px;color:#4a2e02;font-weight:bold;">BLNumber<span ng-bind="ImpBindBLNumber"></span></h5>
+            </div>
+            <div class="col-md-6" style="text-align:right;">
+                <h5 style="font-size: 11px;color:#e91e63;font-weight:bold;">Voyage:<span ng-bind="Voyage"></span></h5>
+            </div>
+        </div>*@
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 padlr0" ng-repeat="gRow in GridvalueDetention">
+                                                            <div class="panel" style="border: 1px solid #ccc;">
+                                                                <div class="panel-heading" style="background-color: #21277a; color: #fff; font-size: 14px; padding: 12px 7px;">
+                                                                    <div class="row" style="margin-left:0px;margin-right:15px;">
+                                                                        <div class="col-md-12 padlr0">
+                                                                            <span style="font-size:25px">{{gRow.CntrNo}} - {{gRow.CntrTypes}}</span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                                <div class="col-md-12 padlr0">
+                                                                    <div class="material-datatables">
+                                                                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Lower</th>
+                                                                                    <th>Upper</th>
+                                                                                    <th>$</th>
+                                                                                    <th>From</th>
+                                                                                    <th>To</th>
+                                                                                    <th>Days</th>
+                                                                                    <th>x</th>
+                                                                                    <th>Rate</th>
+                                                                                    <th>=</th>
+                                                                                    <th>Amount</th>
+                                                                                    <th>Amount RS</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr ng-repeat="gR in gRow.AttribDtlsDDG">
+                                                                                    <td>{{gR.LLimit}}</td>
+                                                                                    <td>{{gR.ULimit}}</td>
+                                                                                    <td>{{gR.Amount}}</td>
+                                                                                    <td>{{gR.FDatev}}</td>
+                                                                                    <td>{{gR.TDatev}}</td>
+                                                                                    <td>{{gR.Days}}</td>
+                                                                                    <td>x</td>
+                                                                                    <td style="text-align:right;">{{gR.Amount}}</td>
+                                                                                    <td>=</td>
+                                                                                    <td class="blue" style="text-align:right;">{{gR.Rate}}</td>
+                                                                                    <td class="blue" style="text-align:right;">{{gR.TotalAmt}}</td>
+
+                                                                                </tr>
+                                                                            </tbody>
+                                                                            <tr>
+                                                                                <td colspan="9" style="text-align: right; font-size: 20px; color: red; ">Per Cntr.Total</td>
+                                                                                <td class="blue" style="text-align:right; font-size:20px; color:red; "><span ng-bind="{{gRow.USDAmount}}"></span></td>
+                                                                                <td class="blue" style="text-align: right; font-size: 20px; color: red; "><span ng-bind={{gRow.Total}}></span></td>
+                                                                            </tr>
+
+
+                                                                        </table>
+
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <table class="table dem" cellspacing="0" width="100%" style="width:100%">
+                                                            <tr>
+                                                                <td colspan="10" class="blue">Total Amount for selected Containers</td>
+                                                                <td class="red">$ : </td>
+                                                                <td class="red"><span ng-bind="TotalAmount"></span> </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="10" class="blue">Already Billed Amount</td>
+                                                                <td class="red">$ : </td>
+                                                                <td class="red"><span ng-bind="TotalBilledAmount"></span> </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="10" class="blue">Percentage</td>
+                                                                <td class="red">$ : </td>
+                                                                <td class="red">0.00 </td>
+
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="10" class="blue">Waiver</td>
+                                                                <td class="red">$ : </td>
+                                                                <td class="red"><span ng-bind="FreeDaysRate"></span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="10" class="blue">Exchange Rate:$ = Rs</td>
+                                                                <td class="red">$ : </td>
+                                                                <td class="red"><span ng-bind="ExchangRate"></span></td>
+
+
+                                                            </tr>
+
+                                                            <tr>
+                                                                <td colspan="10" class="blue">Estimated Total</td>
+                                                                <td class="red">$ : </td>
+                                                                <td class="red"><span ng-bind="TotalBilledAmountvalues"></span></td>
+                                                            </tr>
+                                                        </table>
+
+                                                    </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" style="text-align:right;">
+                        <div class="ml-auto">
+
+                            @*<button type="submit" class="btn btn-fill btn-primary btndet" ng-click="SavedetReceord(ImpBookingCntrDetDetails);">
+
+                                    Generate Proforma
+                                </button>*@
+                            <input type="hidden" ng-model="HDBLId" id="HDBLId" />
+                            <input type="hidden" ng-model="RegId" id="RegId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+
+
+
+
+
+
+

@@ -1,0 +1,635 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+        $scope.ValidationDetails = [
+            { 'Name': 'Mandatory', 'ID': 1 },
+            { 'Name': 'Optional', 'ID': 2 },
+            { 'Name': 'Not Required', 'ID': 3 }
+        ];
+
+        $scope.StatusList = [
+            { 'Name': 'Active', 'ID': 1 },
+            { 'Name': 'InActive', 'ID': 2 }
+        ];
+
+
+        $scope.StatusCodeList = null;
+        $scope.fillStatusCodeList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindStatusCodeList/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.StatusCodeList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillStatusCodeList();
+
+        $("#ddlToStatus").change(function () {
+            $scope.ToStatusDescription = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlToStatus").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/StatusDescriptionByStatusCode/',
+                data: JSON.stringify(Datavalue),
+                //  data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ToStatusDescription = result.data[0].StatusDescription;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.DynamicGrid = [{ SID: "", ToStatusID: "", ToStatus: "", ToStatusDescription: "" }];
+
+        $scope.DynamicGrid.splice(0, 1);
+
+
+
+        $scope.BindExistsStatusCodePossiblemove = function (STID) {
+
+            var Datavalue = {};
+            Datavalue.ID = STID;
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/StatusDescriptionByStatusCode/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ToStatusDescription = result.data[0].StatusDescription;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.Selectvalues = function (DynamicGrid, index) {
+            $scope.HDArrayIndex = index;
+            $scope.SID = $scope.DynamicGrid[index].SID;
+            $scope.ToStatus = { ID: $scope.DynamicGrid[index].ToStatusID };
+            //$scope.ToStatusDescription = $scope.DynamicGrid[index].ToStatusDescription;
+            $scope.BindExistsStatusCodePossiblemove($scope.DynamicGrid[index].ToStatusID)
+        }
+        $scope.Add = function (DynamicGrid) {
+
+            //var validation = "";
+
+            //var ddlBLNo = $('#ddlBLNo').val();
+            //if (ddlBLNo == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Booking/BLNO </span></br>"
+            //}
+            //if (validation != "") {
+            //    ShowPopup(validation);
+            //    return false;
+            //}
+
+
+            var SIDValue;
+
+            SIDValue = ($scope.SID == "") ? 0 : $scope.SID;
+
+            var val = {
+                'SID': SIDValue,
+                'ToStatusID': $("#ddlToStatus").val(),
+                'ToStatus': $("#ddlToStatus option:selected").text(),
+                'ToStatusDescription': $scope.ToStatusDescription,
+
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGrid.push(val);
+            }
+            $("#ddlToStatus").val("");
+            $scope.ToStatusDescription = "";
+            $scope.HDArrayIndex = "";
+            $scope.SID = 0;
+
+        }
+
+
+
+        $scope.Remove = function (DynamicGrid,index, SIDv, ToStatus) {
+  
+            var BussData = {}
+            BussData.SID = SIDv;
+            BussData.Itemsv = ToStatus;
+            BussData.UserID = localStorage.getItem("UserID");
+            $scope.DynamicGrid.splice(index, 1);
+         
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/NextMoveDelete/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                });
+            });
+
+
+        }
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["StCodeID"] != null) {
+                $scope.HdStatusCodeId = queryString["StCodeID"].toString();
+                $scope.BindStatusCode(queryString["StCodeID"].toString());
+                $scope.BindPossiblemoves(queryString["StCodeID"].toString());
+
+            }
+        });
+
+        $scope.BindStatusCode = function (StCodeID) {
+
+
+            var Datavalue = {}
+            var id = StCodeID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = StCodeID;
+
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/StatusCodesEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    console.log(result);
+
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+
+                        $scope.txtStatus = result.data[0].Status
+                        $scope.txtStatusDesc = result.data[0].StatusDescription
+                        $scope.ddlStatus = { ID: result.data[0].StatusID };
+                        $scope.ddlVslVoy = { ID: result.data[0].ValidVslVoy };
+                        $scope.ddlNxtLoc = { ID: result.data[0].ValidNextLoc };
+                        $scope.ddlTransMode = { ID: result.data[0].ValidTransMode };
+                        $scope.ddlDepot = { ID: result.data[0].ValidDepot };
+                        $scope.ddlBL = { ID: result.data[0].ValidBL };
+                        $scope.ddlCustomer = { ID: result.data[0].ValidCustomer };
+
+                    }
+                    else {
+                        $('#ddlNxtLoc').val('');
+                        $('#ddlVslVoy').val('');
+                        $('#ddlTransMode').val('');
+                        $('#ddlDepot').val('');
+                        $('#ddlCustomer').val('');
+                        $('#ddlStatus').val
+                        $('#ddlBL').val('');
+                        $('#txtStatus').val('');
+                        $('#txtStatusDesc').val('');
+                    }
+                });
+            });
+            //$scope.back = function () {
+            //    window.location = "/Party/CustomerView";
+            //}
+        }
+
+        $scope.BindPossiblemoves = function (StCodeID) {
+            var Datavalue = {};
+            Datavalue.ID = StCodeID;
+
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindStatusCodePossiblemoves/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                //$scope.DynamicGrid = [{
+                //    SID: "", Status: "", StatusDescription: ""
+                //}];
+                $timeout(function () {
+
+                    if (result.data[0].Status != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'SID': result.data[key].SID,
+                            'ToStatusID': result.data[key].ToStatusID,
+                            'ToStatus': result.data[key].Status,
+                            'ToStatusDescription': result.data[key].StatusDescription,
+
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+        $scope.Recordsave = function (data) {
+            var validation = "";
+
+
+            var txtStatus = $('#txtStatus').val();
+            if (txtStatus.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Status Code</span></br>"
+            }
+
+            var txtStatusDesc = $('#txtStatusDesc').val();
+            if (txtStatusDesc.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Status Description</span></br>"
+            }
+
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+
+            var BussData = {}
+
+            var id = $scope.HdStatusCodeId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdStatusCodeId;
+
+
+            BussData.Status = $scope.txtStatus;
+            BussData.StatusDescription = $scope.txtStatusDesc;
+            BussData.StatusID = $('#ddlStatus').val();
+            BussData.ValidVslVoy = $('#ddlVslVoy').val();
+            BussData.ValidNextLoc = $('#ddlNxtLoc').val();
+            BussData.ValidTransMode = $('#ddlTransMode').val();
+            BussData.ValidDepot = $('#ddlDepot').val();
+            BussData.ValidBL = $('#ddlBL').val();
+            BussData.ValidCustomer = $('#ddlCustomer').val();
+
+            var Items = []
+
+
+            angular.forEach(data, function (value, key) {
+                var intSID = data[key].SID;
+                if (typeof data[key].SID == "undefined") {
+                    intSID = 0;
+                }
+
+                Items.push('Insert:' + intSID, data[key].ToStatusID, data[key].ToStatus, data[key].ToStatusDescription
+                );
+            });
+
+            BussData.Itemsv = Items.toString();
+            BussData.UserID = localStorage.getItem("UserID");
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/InsertContainerStatusCreation",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Status Code Updated Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Status Code Saved Successfully");
+                    }
+                    setTimeout(function () { location.href = "/Container/InventoryStatusCreationView" }, 1500);
+                    //setTimeOut(function () {
+                    //    window.location = "/";
+                    //}, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+
+        $scope.back = function () {
+
+            window.location = "/Container/InventoryStatusCreationView";
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 btnback" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Inventory Status Creation</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status Code</label>
+                                            <input type="text" id="txtStatus" autocomplete="off" ng-model="txtStatus" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status Description</label>
+                                            <input type="text" id="txtStatusDesc" autocomplete="off" ng-model="txtStatusDesc" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <select id="ddlStatus" ng-model="ddlStatus" class="form-control my-select" ng-options="item.Name for item in StatusList track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                @*style="border-top: 1px dashed #4c4b4b;padding-top:10px;"*@
+                                <h5 class="cardtitle">Validation Details</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vessel/Voyage</label>
+                                            <select id="ddlVslVoy" ng-model="ddlVslVoy" class="form-control my-select" ng-options="item.Name for item in ValidationDetails track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Next Location</label>
+                                            <select id="ddlNxtLoc" ng-model="ddlNxtLoc" class="form-control my-select" ng-options="item.Name for item in ValidationDetails track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Transit Mode</label>
+                                            <select id="ddlTransMode" ng-model="ddlTransMode" class="form-control my-select" ng-options="item.Name for item in ValidationDetails track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Depot </label>
+                                            <select id="ddlDepot" ng-model="ddlDepot" class="form-control my-select" ng-options="item.Name for item in ValidationDetails track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>BL Number </label>
+                                            <select id="ddlBL" ng-model="ddlBL" class="form-control my-select" ng-options="item.Name for item in ValidationDetails track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Customer </label>
+                                            <select id="ddlCustomer" ng-model="ddlCustomer" class="form-control my-select" ng-options="item.Name for item in ValidationDetails track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                @*style="border-top: 1px dashed #4c4b4b;padding-top:10px;"*@
+                                <h5 class="cardtitle">Allowed Next Status</h5>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="60%" style="width:60%">
+                                        <thead>
+                                            <tr>
+
+                                                <th>S.No</th>
+                                                <th>Status</th>
+                                                <th>Status Description</th>
+                                                <th class="disabled-sorting text-right actwid">Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody style="margin-top:20px!important;">
+                                            <tr class="gridbody">
+                                                <td></td>
+                                                <td>
+                                                    <input type="hidden" id="HDIDv" class="form-control" ng-model="SID" />
+                                                    <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                    <select id="ddlToStatus" ng-model="ToStatus" class="form-control" ng-options="item.Status for item in StatusCodeList track by item.ID"></select>
+                                                </td>
+                                                <td class="amt"><input type="text" id="txtStatusDescV" class="form-control" ng-model="ToStatusDescription" /></td>
+                                                <td class="td-actions text-right entrygrid">
+                                                    <button type="button" rel="tooltip" ng-click="Add(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">add</i>
+                                                    </button>
+
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+
+                                        <tbody>
+
+
+                                            <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                                <td>{{$index+1}}</td>
+
+
+                                                <td class="txtright">
+                                                    {{gRow.ToStatus}}
+                                                    <input type="hidden" id="HDToStatusID" class="form-control" ng-model="gRow.ToStatusID" />
+                                                </td>
+
+                                                <td class="txtright">
+                                                    {{gRow.ToStatusDescription}}
+
+                                                </td>
+
+                                                <td class="td-actions text-right bindgrid">
+                                                    <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index,gRow.SID,gRow.ToStatus)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                    <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">edit</i>
+                                                    </button>
+
+                                                    <input type="hidden" id="HDID" class="form-control" ng-model="gRow.SID" />
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+
+                                    @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="Recordsave(DynamicGrid);" class="btn btn-fill btn-rose">Submit</button>
+                                <input type="hidden" id="HdStatusCodeId" ng-model="HdStatusCodeId" />
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

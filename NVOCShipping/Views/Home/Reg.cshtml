@@ -1,0 +1,499 @@
+﻿@{
+    Layout = null;
+}
+
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+<link rel="stylesheet" href="../../../../maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<link href="~/assets/css/material-dashboard.min6c54.css" rel="stylesheet" />
+<link href="~/assets/demo/demo.css" rel="stylesheet" />
+@*<link href="~/assets/css/custom.css" rel="stylesheet" />*@
+
+<style>
+@@-webkit-keyframes load7 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 2.5em 0 -1.3em;
+  }
+  40% {
+    box-shadow: 0 2.5em 0 0;
+  }
+}
+@@keyframes load7 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 2.5em 0 -1.3em;
+  }
+  40% {
+    box-shadow: 0 2.5em 0 0;
+  }
+}
+    .btn.btn-rose.btn-link, .btn.btn-rose.btn-link:active, .btn.btn-rose.btn-link:focus, .btn.btn-rose.btn-link:hover {
+        background-color: transparent;
+        color: #00adef;
+    }
+
+    .card {
+        margin-top: 170px;
+    }
+
+    #spinner {
+        float: left;
+        width: 100%;
+    }
+
+        #spinner img {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            position: absolute;
+        }
+
+    .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+        background: #00467f !important;
+        color: #fff !important;
+    }
+
+    .ui-widget-header {
+        background: #1976d2 !important;
+        color: #fff !important;
+    }
+
+    .spanner{
+  position:absolute;
+  top: 50%;
+  left: 0;
+  background: #2a2a2a55;
+  width: 100%;
+  display:block;
+  text-align:center;
+  height: 100%;
+  color: #FFF;
+  transform: translateY(-50%);
+  z-index: 1000;
+  visibility: hidden;
+}
+
+.overlay{
+  position: fixed;
+	width: 100%;
+	height: 100%;
+  background: rgba(0,0,0,0.5);
+  visibility: hidden;
+}
+
+.loader,
+.loader:before,
+.loader:after {
+  border-radius: 50%;
+  width: 2.5em;
+  height: 2.5em;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  -webkit-animation: load7 1.8s infinite ease-in-out;
+  animation: load7 1.8s infinite ease-in-out;
+}
+.loader {
+  color: #ffffff;
+  font-size: 10px;
+  margin: 80px auto;
+  position: relative;
+  text-indent: -9999em;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+.loader:before,
+.loader:after {
+  content: '';
+  position: absolute;
+  top: 0;
+}
+.loader:before {
+  left: -3.5em;
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.loader:after {
+  left: 3.5em;
+}
+
+
+.show{
+  visibility: visible;
+}
+.hide{
+  visibility: hidden;
+}
+
+.spanner, .overlay{
+	opacity: 0;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+.spanner.show, .overlay.show {
+	opacity: 1
+}
+.swal2-popup .swal2-title
+{
+    font-size:18px!important;
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/base/jquery-ui.css" rel="Stylesheet" type="text/css" />
+<script type="text/javascript">
+
+    angular.module('MyApp', []).controller('MyController', function ($scope, $http) {
+
+        $scope.Recordsave = function () {
+
+            var txtUser = $('#txtName').val();
+           
+            if (txtUser.length == 0) {
+                ShowPopup("Enter Customer")
+                return false;
+            }
+            var BussData = {}
+
+            BussData.ID = 0;
+            BussData.Name = $('#txtName').val();
+            BussData.MobileNo = $('#txtMobileNo').val();
+            BussData.Email = $('#txtEmail').val();
+            BussData.UserName = $('#txtUserName').val();
+            BussData.Password = $('#txtPassword').val();
+            BussData.UserCode = $('#txtUserCode').val();
+            BussData.Location = $('#ddlLocation').val();
+            BussData.Designation = $('#ddlBranch').val();
+            BussData.Branch = $('#ddlDesignation').val();
+            BussData.Address = $('#txtAddress').val();
+             $("div.spanner").addClass("show");
+            $("div.overlay").addClass("show");
+
+          
+            $http({
+                method: 'POST',
+                url: "/api/Home/Register",
+                data: JSON.stringify(BussData),
+            }).success(function (result) {
+                
+                $("div.spanner").addClass("hide");
+                $("div.overlay").addClass("hide");
+                 setInterval(function () {                        
+                    }, 7000);
+                $scope.Save = result;
+                $('#txtName').val('');
+                $('#txtMobileNo').val('');
+                $('#txtEmail').val('');
+                $('#txtPassword').val('');
+                $('#txtUserCode').val('');
+                $('#ddlLocation').val('');
+                $('#ddlBranch').val('');
+                $('#ddlDesignation').val('');
+                $('#txtAddress').val('');
+                ShowPopup("Registration Successfull");
+                 
+                return false;
+                
+            });
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<!-- Navbar -->
+
+<div class="overlay"></div>
+<div class="spanner">
+    <div class="loader"></div>
+    <p>Please wait...</p>
+</div>
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
+    <div class="container">
+        <div class="navbar-wrapper">
+            <a class="navbar-brand" href="javascript:;">Nerida Shipping</a>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                @*<li class="nav-item">
+                        <a href="../dashboard.html" class="nav-link">
+                            <i class="material-icons">dashboard</i>
+                            Dashboard
+                        </a>
+                    </li>*@
+                <li class="nav-item ">
+                    <a href="register.html" class="nav-link">
+                        <i class="material-icons">person_add</i>
+                        Register
+                    </a>
+                </li>
+                @*<li class="nav-item  active ">
+                        <a href="login.html" class="nav-link">
+                            <i class="material-icons">fingerprint</i>
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a href="lock.html" class="nav-link">
+                            <i class="material-icons">lock_open</i>
+                            Lock
+                        </a>
+                    </li>*@
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- End Navbar -->
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="wrapper wrapper-full-page">
+        <div class="page-header login-page header-filter" filter-color="black" style="background-image: url('../../assets/img/loginbg1.jpg'); background-size: cover; background-position: top center;">
+            <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
+
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-8 ml-auto mr-auto">
+
+                        <div class="card card-login card-hidden">
+                            <div class="card-header card-header-primary text-center">
+                                <h4 class="card-title">Register</h4>
+
+                            </div>
+                            <div class="card-body ">
+
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">face</i>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="txtName" autocomplete="off" class="form-control" placeholder="Name" />
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="txtMobileNo" autocomplete="off" placeholder="Mobile No" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="txtEmail" autocomplete="off" placeholder="Email" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="txtUserName" autocomplete="off" placeholder="User Name" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <input type="password" id="txtPassword" autocomplete="off" placeholder="Password" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <input type="text" id="txtUserCode" autocomplete="off" placeholder="User Code" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <select id="ddlLocation" class="form-control">
+                                                    <option value="0">--Select--</option>
+                                                    <option value="1">Chennai</option>
+                                                    <option value="2">Mumbai</option>
+                                                    <option value="3">Kolkatta</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <select id="ddlBranch" class="form-control">
+                                                    <option value="0">--Select--</option>
+                                                    <option value="1">Chennai</option>
+                                                    <option value="2">Mumbai</option>
+                                                    <option value="3">Kolkatta</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <select id="ddlDesignation" class="form-control">
+                                                    <option value="0">--Select--</option>
+                                                    <option value="1">CEO</option>
+                                                    <option value="2">Manager</option>
+                                                    <option value="3">Executive</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="bmd-form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <div class="input-group-text">
+                                                        <i class="material-icons">lock_outline</i>
+                                                    </div>
+                                                </div>
+                                                <textarea id="txtAddress" placeholder="Address" class="form-control" rows="5"></textarea>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            <div class="card-footer justify-content-center">
+                                <a ng-click="Recordsave();" class="btn btn-rose btn-link btn-lg">Lets Go</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container">
+                    <div class="copyright float-center">
+                        &copy;
+                        All Rights Reserved.Nerida Shipping
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!--   Core JS Files   -->
+@*<script src="~/assets/js/core/jquery.min.js"></script>*@
+<script src="~/assets/js/core/popper.min.js"></script>
+<script src="~/assets/js/core/bootstrap-material-design.min.js"></script>
+<script src="~/assets/js/plugins/perfect-scrollbar.min.js"></script>
+<!-- Plugin for the momentJs  -->
+<script src="~/assets/js/plugins/moment.min.js"></script>
+<!--  Plugin for Sweet Alert -->
+<script src="~/assets/js/plugins/sweetalert2.js"></script>
+<!-- Forms Validations Plugin -->
+<script src="~/assets/js/plugins/jquery.validate.min.js"></script>
+<!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+<script src="~/assets/js/plugins/jquery.bootstrap-wizard.js"></script>
+<!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+<script src="~/assets/js/plugins/bootstrap-selectpicker.js"></script>
+<!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+<script src="~/assets/js/plugins/bootstrap-datetimepicker.min.js"></script>
+<!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
+<script src="~/assets/js/plugins/jquery.dataTables.min.js"></script>
+<!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+<script src="~/assets/js/plugins/bootstrap-tagsinput.js"></script>
+<!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+<script src="~/assets/js/plugins/jasny-bootstrap.min.js"></script>
+<!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+<script src="~/assets/js/plugins/fullcalendar.min.js"></script>
+<!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
+<script src="~/assets/js/plugins/jquery-jvectormap.js"></script>
+<!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+<script src="~/assets/js/plugins/nouislider.min.js"></script>
+<!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
+<script src="../../../cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+<!-- Library for adding dinamically elements -->
+<script src="~/assets/js/plugins/arrive.min.js"></script>
+<!--  Google Maps Plugin    -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Yno10-YTnLjjn_Vtk0V8cdcY5lC4plU"></script>
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="../../../buttons.github.io/buttons.js"></script>
+<!-- Chartist JS -->
+<script src="~/assets/js/plugins/chartist.min.js"></script>
+<!--  Notifications Plugin    -->
+<script src="~/assets/js/plugins/bootstrap-notify.js"></script>
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="~/assets/js/material-dashboard.min6c54.js?v=2.2.2" type="text/javascript"></script>
+
+<!-- Sharrre libray -->
+<script src="../../assets/demo/jquery.sharrre.js"></script>
+<script>
+    $(document).ready(function () {
+        md.checkFullPageBackgroundImage();
+        setTimeout(function () {
+            // after 1000 ms we add the class animated to the login/register card
+            $('.card').removeClass('card-hidden');
+        }, 700);
+    });
+</script>

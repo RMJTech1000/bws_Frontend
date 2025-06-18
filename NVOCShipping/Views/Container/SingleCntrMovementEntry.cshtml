@@ -1,0 +1,973 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    $(function () {
+        var dtToday = new Date();
+
+        var month = dtToday.getMonth() + 1;
+        var day = dtToday.getDate();
+        var year = dtToday.getFullYear();
+        var HH = dtToday.getHours();
+        var MM = dtToday.getMinutes();
+        if (month < 10)
+            month = '0' + month.toString();
+        if (day < 10)
+            day = '0' + day.toString();
+        if (HH < 10)
+            HH = '0' + HH.toString();
+        if (MM < 10)
+            MM = '0' + MM.toString();
+
+        //var minDate = year + '-' + month + '-' + day + 'T' + HH + ':' + MM;
+        var maxDate = year + '-' + month + '-' + day + 'T' + HH + ':' + MM;
+
+        // $('#txtDtMovement').attr('min', minDate);
+        $('#txtDtMovement').attr('max', maxDate);
+
+        // Set initial value to current date and time
+        var initialDateTime = year + '-' + month + '-' + day + 'T' + HH + ':' + MM;
+        $('#txtDtMovement').val(initialDateTime);
+
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        //$scope.txtDtMovement = moment();
+
+        $scope.StatusCodePossibleMoves = null;
+        $scope.fillSTPossibleMoves = function () {
+            var BussData = {}
+            BussData.StatusCode = localStorage.getItem("FromStatusCode");
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/StatusCodesPossibleMoves/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.StatusCodePossibleMoves = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillSTPossibleMoves();
+
+        // BL DROPDOWN
+        $scope.BLNumberlist = null;
+        $scope.fillBlNumber = function () {
+            var Datavalue = {};
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BookingBLList/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BLNumberlist = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillBlNumber();
+
+
+        $scope.PortList = null;
+        $scope.fillPortList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillPortList();
+
+        $("#ddlNextLoc").change(function () {
+
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlNextLoc").val();
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/ListDepotByPort/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+
+        $scope.DepotValue = null;
+        $scope.fillExistDepotValues = function (LocID) {
+
+            var Datavalue = {};
+            Datavalue.ID = LocID;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/ListDepotByPort/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+
+        $scope.VesVoyList = null;
+        $scope.fillVesVoyList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/VesVoyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VesVoyList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillVesVoyList();
+
+        $scope.TransitModeList = null;
+        $scope.fillTransitModeList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/TransitModeValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TransitModeList = result.data;
+
+                });
+            }, function (
+            ) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillTransitModeList();
+
+        $scope.PartyValues = null;
+        $scope.FillPartyValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/ContainerApi/PartyList/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PartyValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillPartyValues();
+
+        document.getElementById("txtFromStatus").disabled = true;
+        document.getElementById("ddlFromLoc").disabled = true;
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["CntrID"] != null) {
+                $scope.HDRegId = queryString["CntrID"].toString();
+                var Items = [];
+                var Id = queryString["CntrID"].toString();
+                Items.push(Id);
+                $scope.BindCntrTxnsRecords(Items.toString());
+                $scope.txtFromStatus = localStorage.getItem("FromStatusCode");
+                $scope.ddlFromLoc = { ID: localStorage.getItem("FromLocID") };
+                $scope.HdAgencyID = localStorage.getItem("AgentID");
+                $scope.HdLocID = localStorage.getItem("FromLocID");
+                $scope.HdDepotID = localStorage.getItem("DepotID");
+                $scope.HdAgGeolocID = localStorage.getItem("AgencyGeoLocID");
+                /* $scope.BindexistingRecords(localStorage.getItem("FromStatusCode"), localStorage.getItem("FromLocID"), localStorage.getItem("DepotID"), localStorage.getItem("CustomerID"), localStorage.getItem("BLID"), localStorage.getItem("VesVoyID"), localStorage.getItem("TransitID"));*/
+            }
+        });
+
+        $scope.BindexistingRecords = function (StCode, LocID, DepotID, CustomerID, BLID, VesVoyID, TransitID, ConsigneeID) {
+
+
+            if (StCode != "MS" && StCode != "FC" && StCode != "OF" && StCode != "OH" && StCode != "SI" && StCode != "SO" && StCode != "MO" && StCode != "KI" && StCode != "TL" && StCode != "FR" && StCode != "RC" && StCode != "SZ" && StCode != "SZ" && StCode != "SD" && StCode != "MB" && StCode != "CT" && StCode != "MI" && StCode != "ML" && StCode != "PENDING" && StCode != "MV" && StCode != "MU" && StCode != "SOLDOUT" && StCode != "AV" && StCode != "UR") {
+
+                if (StCode == "TZ" || StCode == "TZFB" || StCode == "FV") {
+
+                    if (StCode == "TZ" || StCode == "FV") {
+                        $scope.ddlNextLoc = { ID: 0 };
+                        $scope.ddlDepot = { ID: DepotID };
+                        $scope.ddlVesVoy = { ID: VesVoyID };
+                        $scope.ddlModeofTrans = { ID: TransitID };
+                        $scope.ddlParty = { ID: ConsigneeID };
+                        $scope.ddlBLNo = { ID: BLID }
+
+                    }
+                    else {
+
+
+                        $scope.ddlNextLoc = { ID: LocID };
+                        $scope.fillExistDepotValues(LocID);
+                        $scope.ddlDepot = { ID: DepotID };
+                        $scope.ddlVesVoy = { ID: VesVoyID };
+                        $scope.ddlModeofTrans = { ID: TransitID };
+                        $scope.ddlParty = { ID: ConsigneeID };
+                        $scope.ddlBLNo = { ID: BLID }
+
+                    }
+
+                }
+                else {
+
+                    $scope.ddlNextLoc = { ID: LocID };
+                    $scope.fillExistDepotValues(LocID);
+                    $scope.ddlDepot = { ID: DepotID };
+                    $scope.ddlVesVoy = { ID: VesVoyID };
+                    $scope.ddlModeofTrans = { ID: TransitID };
+                    $scope.ddlParty = { ID: CustomerID };
+                    $scope.ddlBLNo = { ID: BLID }
+                }
+            }
+            else {
+
+
+
+                $scope.ddlNextLoc = { ID: 0 };
+                $scope.ddlDepot = { ID: 0 };
+                $scope.ddlVesVoy = { ID: 0 };
+                $scope.ddlModeofTrans = { ID: 0 };
+                $scope.ddlParty = { ID: 0 };
+                $scope.ddlBLNo = { ID: 0 }
+
+            }
+        }
+        $scope.BindCntrTxnsRecords = function (CntrID) {
+            // alert(CntrID);
+            var Items = [];
+            var CntrID = CntrID;
+            Items.push(CntrID);
+            var BussData = {}
+            BussData.ItemsCntrIDs = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/ContainersTxnEntryView",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+
+                $scope.CntrTxnsRec = result.data;
+
+            });
+
+        };
+
+        //$scope.BindCntrTxnsRecords();
+        $("#ddlToStatuscode").change(function () {
+
+            $scope.BindexistingRecords($("#ddlToStatuscode option:selected").text(), $scope.CntrTxnsRec[0].NextPortID, $scope.CntrTxnsRec[0].DepotID, $scope.CntrTxnsRec[0].CustomerID, $scope.CntrTxnsRec[0].BLID, $scope.CntrTxnsRec[0].VesVoyID, $scope.CntrTxnsRec[0].ModeOfTransportID, $scope.CntrTxnsRec[0].ConsigneeID);
+
+
+            var validation = "";
+            var DataVal = {}
+            DataVal.Status = $("#ddlToStatuscode option:selected").text()
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CheckStatusCodeValidation/',
+                data: JSON.stringify(DataVal),
+            }).then(function (result) {
+
+                if (result.data[0].ValidVslVoy != 1) {
+
+                    document.getElementById("ddlVesVoy").disabled = true;
+                }
+                if (result.data[0].ValidNextLoc != 1) {
+
+                    document.getElementById("ddlNextLoc").disabled = true;
+
+                }
+                if (result.data[0].ValidTransMode != 1) {
+
+                    document.getElementById("ddlModeofTrans").disabled = true;
+
+                }
+                if (result.data[0].ValidCustomer != 1) {
+                    document.getElementById("ddlParty").disabled = true;
+
+                }
+                if (result.data[0].ValidDepot != 1) {
+                    document.getElementById("ddlDepot").disabled = true;
+
+                }
+                if (result.data[0].ValidBL != 1) {
+                    document.getElementById("ddlBLNo").disabled = true;
+
+                }
+
+                if (validation != "") {
+
+                    ShowPopup(validation);
+                    return false;
+                }
+
+            });
+
+        });
+
+        $scope.Recordsave = function (CntrTxnsRec) {
+            var validation = "";
+
+            var txtDtMovement = $('#txtDtMovement').val();
+            if (txtDtMovement.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Movement Date </span></br>"
+            }
+            var ddlToStatuscode = $('#ddlToStatuscode').val();
+            if (ddlToStatuscode == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select To Status Code</span></br>"
+            }
+            var ddlToStatuscode = $('#ddlToStatuscode').val();
+            if (ddlToStatuscode == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select To Status Code</span></br>"
+            }
+            var ddlNextLoc = $('#ddlNextLoc').val();
+            if (document.getElementById("ddlNextLoc").disabled == false && ddlNextLoc == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Next Location</span></br>"
+
+            }
+            var ddlModeofTrans = $('#ddlModeofTrans').val();
+            if (document.getElementById("ddlModeofTrans").disabled == false && ddlModeofTrans == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Mode Of Transport</span></br>"
+
+            }
+            var ddlVesVoy = $('#ddlVesVoy').val();
+            if (document.getElementById("ddlVesVoy").disabled == false && ddlVesVoy == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Vessel Voy</span></br>"
+
+            }
+            var ddlParty = $('#ddlParty').val();
+            if (document.getElementById("ddlParty").disabled == false && ddlParty == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Customer</span></br>"
+
+            }
+            var ddlDepot = $('#ddlDepot').val();
+            if (document.getElementById("ddlDepot").disabled == false && ddlDepot == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Depot</span></br>"
+
+            }
+            var ddlBLNo = $('#ddlBLNo').val();
+            if (document.getElementById("ddlBLNo").disabled == false && ddlBLNo == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select BLNumber</span></br>"
+
+            }
+            if ($("#ddlToStatuscode option:selected").text() == "FV" && localStorage.getItem("CountryID") != 114) {
+                if ($scope.HdLocID == $('#ddlNextLoc').val()) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Change Location For FV Status</span></br>"
+                }
+            }
+            if ($("#txtFromStatus").val() == "SO") {
+
+                if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "23" && localStorage.getItem("UserID") != "24") {
+                    validation += "<span style='color:red;'>*</span> <span>Movement Entry Restricted</span></br>"
+                }
+            }
+
+            if (localStorage.getItem("UserID") != "1" && $("#txtFromStatus").val() == "SOLDOUT") {
+                if (localStorage.getItem("UserID") != "23" && localStorage.getItem("UserID") != "24") {
+                    validation += "<span style='color:red;'>*</span> <span>Movement Entry Restricted</span></br>"
+                }
+            }
+            if (localStorage.getItem("UserID") != "1" && $("#ddlToStatuscode option:selected").text() == "OH") {
+                if (localStorage.getItem("UserID") != "23" && localStorage.getItem("UserID") != "24") {
+                    validation += "<span style='color:red;'>*</span> <span>Movement Entry Restricted,Contact EQC Team</span></br>"
+                }
+            }
+            //var statuscodeV = "";
+            //for (var i = 0; i < CntrTxnsRec.length; i++) {
+            //    {
+            //        statuscodeV = CntrTxnsRec[i].StatusCode;
+
+            //        if (statuscodeV = "FB" && $("#ddlBLNo option:selected").text() != "") {
+            //            if (CntrTxnsRec[i].BLNumber != $("#ddlBLNo option:selected").text()) {
+            //                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid BL </span></br>"
+            //            }
+            //        }
+
+            //    }
+            //}
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var DataVal = {}
+            var ItemsV = [];
+            var Id = $scope.HDRegId;
+            ItemsV.push(Id);
+
+            DataVal.ItemsCntrIDs = ItemsV.toString();
+            //DataVal.Status = $("#ddlToStatuscode option:selected").text();
+            DataVal.DtMovement = $('#txtDtMovement').val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrDtMovementValidation/',
+                data: JSON.stringify(DataVal),
+            }).then(function (result) {
+                if (result.data[0].DateValidation != "0") {
+                    validation += "<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date.</span></br>"
+                }
+                //var getdate = moment.utc(result.data[0].CurrentDate).local().format('MMM DD YYYY h:mm A');
+                //var SelectedDate = moment.utc(result.data[0].SelectedDate).local().format('MMM DD YYYY h:mm A');
+                var getdate = moment.utc(result.data[0].CurrentDate).local().format('MMM DD YYYY');
+                var SelectedDate = moment.utc(result.data[0].SelectedDate).local().format('MMM DD YYYY');
+
+                //if (Date.parse(SelectedDate) > Date.parse(getdate)) {
+                //    validation += "<span style='color:red;'>*</span> <span>Date of Movement should not be greater than CurrentDate.</span></br>"
+                //}
+                //if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "3" && localStorage.getItem("UserID") != "11" && localStorage.getItem("UserID") != "12" && localStorage.getItem("UserID") != "13") {
+                //    if (result.data[0].Days > "5") {
+                //        validation += "<span style='color:red;'>*</span> <span>Please Contact EQC Team For the Movement Updation</span></br>"
+                //    }
+                //}
+                const dateSelect = moment.utc(getdate).local().format('YYYY-MM-DD');
+                const dateMvPrev = moment.utc(SelectedDate).local().format('YYYY-MM-DD');
+                const dateSelect1 = new Date(dateSelect);
+                const dateMvPrev1 = new Date(dateMvPrev);
+                const diffTime = Math.abs(dateSelect1 - dateMvPrev1);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const diffdaysV = diffDays - 1;
+
+
+                //if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "23" && localStorage.getItem("UserID") != "24") {
+                //    if (diffDays >= 6) {
+                //        validation += "<span style='color:red;'>*</span> <span>Current Date of Movement exceeds 5 days limits, Please contact EQC team</span></br>"
+                //    }
+                //}
+                if ($("#txtFromStatus").val() != "TZFB" || $("#ddlToStatuscode option:selected").text() != "FV" ||
+                    localStorage.getItem("CountryID") != 114) {
+                    if ($("#txtFromStatus").val() != "AV" || $("#ddlToStatuscode option:selected").text() != "MS" ||
+                        localStorage.getItem("CountryID") != 114) {
+                        if ($("#txtFromStatus").val() != "SO" || $("#ddlToStatuscode option:selected").text() != "SI") {
+                            if ($("#txtFromStatus").val() != "MI" || $("#ddlToStatuscode option:selected").text() != "MA") {
+                                if ($("#txtFromStatus").val() != "MI" || $("#ddlToStatuscode option:selected").text() != "OF") {
+                                    if ($("#txtFromStatus").val() != "FI" || $("#ddlToStatuscode option:selected").text() != "PL") {
+                                        if ($("#txtFromStatus").val() != "FI" || $("#ddlToStatuscode option:selected").text() != "FVCFS") {
+                                            if ($("#txtFromStatus").val() != "FI" || $("#ddlToStatuscode option:selected").text() != "FVICD") {
+                                                if ($("#txtFromStatus").val() != "MS" || $("#ddlToStatuscode option:selected").text() != "FL" || localStorage.getItem("CountryID") != "53") {
+
+                                                    if ($("#ddlToStatuscode option:selected").text() == "FV" || $("#ddlToStatuscode option:selected").text() == "TZ" || $("#ddlToStatuscode option:selected").text() == "MV" || $("#txtFromStatus").val() == "SO" || $("#ddlToStatuscode option:selected").text() == "FVCFS") {
+                                                        if ($scope.HdAgencyID == localStorage.getItem("AgencyID")) {
+                                                            validation += "<span style='color:red;'>*</span> <span>Agency Should be different for this particular statuscode</span></br>"
+                                                        }
+
+
+                                                    }
+                                                    else {
+                                                        if ($("#txtFromStatus").val() == "AV" || $("#txtFromStatus").val() == "OH") {
+
+                                                            if ($scope.HdAgencyID != localStorage.getItem("AgencyID")) {
+                                                                if ($scope.HdAgGeolocID == "0") {
+                                                                    validation += "<span style='color:red;'>*</span> <span>Please Update GeoLocation in Agency Master</span></br>"
+                                                                }
+                                                                if (localStorage.getItem("GeoLocationID") != $scope.HdAgGeolocID) {
+
+                                                                    validation += "<span style='color:red;'>*</span> <span>Location/Agency Differs</span></br>"
+
+                                                                }
+                                                            }
+                                                        }
+                                                        else {
+                                                            if ($("#ddlToStatuscode option:selected").text() != "OH") {
+                                                                if ($scope.HdAgencyID != localStorage.getItem("AgencyID")) {
+                                                                    validation += "<span style='color:red;'>*</span> <span>Agency Must Be Same for this particular statuscode</span></br>"
+                                                                }
+                                                            }
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (validation != "") {
+
+                    ShowPopup(validation);
+                    return false;
+                }
+
+                for (var i = 0; i < $scope.CntrTxnsRec.length; i++) {
+                    if ($("#txtFromStatus").val()=="FB")
+                    {
+                        if ($("#ddlToStatuscode option:selected").text() == "FV") {
+                           
+                            if ($scope.CntrTxnsRec[i].DesAgentID != localStorage.getItem("AgencyID")) {
+                                validation += "<span style='color:red;'>*</span> <span>Destination Agent and Login Agent Must Be Same for this particular statuscode</span></br>"
+                            }
+                        }
+
+                    }
+                    if ($("#txtFromStatus").val() == "FB") {
+                        if ($("#ddlToStatuscode option:selected").text() == "TZ") {
+
+                            if ($scope.CntrTxnsRec[i].TSAgentID != localStorage.getItem("AgencyID")) {
+                                validation += "<span style='color:red;'>*</span> <span>Transhipment Agent and Login Agent Must Be Same for this particular statuscode</span></br>"
+                            }
+                        }
+                    }
+                    if ($("#txtFromStatus").val() == "TZFB") {
+                        if ($("#ddlToStatuscode option:selected").text() == "FV") {
+                          
+                            //if ($scope.CntrTxnsRec[i].DesAgentID != localStorage.getItem("AgencyID")) {
+                            //    validation += "<span style='color:red;'>*</span> <span>Destination Agent and Login Agent Must Be Same for this particular statuscode</span></br>"
+                            //}
+                        }
+
+                    }
+                }
+
+                if (validation != "") {
+                    ShowPopup(validation);
+                    return false;
+                }
+
+                $('#overlay').fadeIn().delay(100).fadeOut();
+
+                var BussData = {}
+                BussData.ID = 0;
+
+                var Items = [];
+                var Id = $scope.HDRegId;
+                Items.push(Id);
+
+                BussData.ItemsCntrIDs = Items.toString();
+
+                BussData.LocationID = $("#ddlNextLoc").val();
+                // BussData.FromStatusCode = "MA",
+                BussData.StatusCode = $("#ddlToStatuscode option:selected").text();
+                BussData.DtMovement = $('#txtDtMovement').val();
+                BussData.VesVoyID = $("#ddlVesVoy").val();
+                BussData.NextPortID = $("#ddlNextLoc").val();
+                BussData.ModeOfTransportID = $("#ddlModeofTrans").val();
+                BussData.DepotID = $("#ddlDepot").val();
+                BussData.BLID = $("#ddlBLNo").val();
+                BussData.CustomerID = $("#ddlParty").val();
+                BussData.UserID = localStorage.getItem("UserID");
+                BussData.AgencyID = localStorage.getItem("AgencyID");
+
+                $http({
+                    method: 'POST',
+                    url: "/api/ContainerApi/SingleInsertContainersTxns",
+                    data: JSON.stringify(BussData),
+
+                }).then(function (result) {
+                    $timeout(function () {
+                        //BussData.ID = result.data[0].ID;
+                        //alert(result.data[0].ID);
+                        var Items = [];
+                        var Id = $scope.HDRegId;
+                        Items.push(Id);
+                        $scope.BindCntrTxnsRecords(Items.toString());
+                        if (result.data.length > 0) {
+                            $("#overlay").hide();
+                            ShowPopup("Container Movement Updated");
+                        }
+                        else {
+                            $("#overlay").hide();
+                            ShowPopup("Container Movement Not Updated");
+                        }
+                        var url = "/Container/SingleCntrMovementView";
+                        window.location.href = url;
+
+                        setTimeout(function () { location.href = "/Container/SingleCntrMovementView" }, 1500);
+                    });
+                }, function (result) {
+                    if (result.status == 500) {
+                        ShowPopup("Sorry no internet connectivity Application Error.");
+                    }
+                    else if (result.status == 404) {
+                        ShowPopup("Sorry no internet connectivity page not found.");
+                    }
+
+
+                    if (result.status > 0) {
+                        var errorMsg = result.status + ': ' + result.data;
+                        // $(".modal").hide();
+                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                    }
+                }).catch(function (result) {
+                    // This is set in the event of an error.
+                    console.log(result);
+                    ShowPopup('There has been an error: ' + result);
+                });
+
+            });
+
+
+
+
+        }
+
+        //  $scope.BindVessel();
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Container/SingleCntrMovementView" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Single Movement Entry</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>From Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input class="form-control" id="txtFromStatus" ng-model="txtFromStatus" required>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>From Location</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlFromLoc" id="ddlFromLoc" ng-options="item.PortName for item in PortList track by item.ID" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>To Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlToStatuscode" id="ddlToStatuscode" ng-options="item.ToStatus for item in StatusCodePossibleMoves" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Date Of Movement</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="datetime-local" onkeypress="return false" id="txtDtMovement" ng-model="txtDtMovement" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Vessel Voyage</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlVesVoy" id="ddlVesVoy" ng-options="item.VesVoy for item in VesVoyList track by item.ID" required></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label> Location</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlNextLoc" id="ddlNextLoc" ng-options="item.PortName for item in PortList track by item.ID" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Transit Mode </label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlModeofTrans" id="ddlModeofTrans" ng-options="item.GeneralName for item in TransitModeList track by item.ID" required> </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Depot </label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlDepot" id="ddlDepot" ng-options="item.PickUpDepot for item in DepotValue track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>BL Number </label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlBLNo" id="ddlBLNo" ng-options="item.BLNumber for item in BLNumberlist track by item.ID" required>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Customer</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select class="form-control my-select" ng-model="ddlParty" id="ddlParty" ng-options="item.CustomerName for item in PartyValues track by item.ID" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave(CntrTxnsRec);" class="btn btn-fill btn-rose">Save</button>
+                            <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                            <input type="hidden" id="HdAgencyID" ng-model="HdAgencyID" />
+                            <input type="hidden" id="HdLocID" ng-model="HdLocID" />
+                            <input type="hidden" id="HdDepotID" ng-model="HdDepotID" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="material-datatables" style="border: 1px solid #ccc; padding: 5px; overflow:scroll;height:300px;">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+
+                                            <th>Container No</th>
+                                            <th>Size Type</th>
+                                            <th>Status</th>
+                                            <th>Move Dt</th>
+                                            <th>Agency</th>
+                                            <th>Location</th>
+                                            <th>Vessel/Voyage</th>
+                                            <th>Transit </th>
+                                            <th>Depot</th>
+                                            <th>BL Number</th>
+                                            <th>Customer</th>
+                                            @*<th class="disabled-sorting text-right">Actions</th>*@
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="i in CntrTxnsRec | filter : paginate | orderBy:'-Statusv'">
+
+                                            <td>{{i.CntrNo}}</td>
+                                            <td>{{i.Size}}</td>
+                                            <td>{{i.StatusCode}}</td>
+                                            <td>{{i.DtMovement}}</td>
+                                            <td>{{i.AgencyName}}</td>
+                                            <td>{{i.FromPort}}</td>
+                                            <td>{{i.VesVoy}}</td>
+                                            <td>{{i.TransitMode}}</td>
+                                            <td>{{i.Depot}}</td>
+                                            <td>{{i.BLNumber}}</td>
+                                            <td>{{i.CustomerName}}</td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                @*<div id="notFoundDiv" ng-show="(TaxEngineRec|filter:ChgCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+<style>
+
+    .table > tbody > tr > td {
+        white-space: nowrap;
+    }
+</style>
+
+

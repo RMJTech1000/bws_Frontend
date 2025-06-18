@@ -1,0 +1,2137 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+    $(function () {
+        $("#btnShow").click(function () {
+            $('#demoModal').modal('show');
+        });
+    });
+</script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $("#overlay").show();
+        $scope.isDisapleSOBDate = true;
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.BLPrintCompanyType = [
+            { 'name': '--select--', 'ID': 0 },
+            { 'name': 'Oceanus BL', 'ID': 1 },
+            { 'name': 'Stride Maritime BL', 'ID': 2 },
+            { 'name': 'Avisa BL', 'ID': 3 },
+
+
+        ];
+
+        $scope.BLPrintLayoutAllvalues = null;
+        $scope.fillBLPrintLayoutAllvalues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLPrintLayout/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BLPrintLayoutAllvalues = result.data;
+                    $("#overlay").hide();
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBLPrintLayoutAllvalues();
+
+
+
+        document.getElementById("txtBLDate").value = new Date().toISOString().slice(0, 10);
+        $scope.BLPrintDropdown = null;
+        $scope.BlPrintFuncation = function (Status)
+        {
+
+            if (Status == "DRAFT")
+            {
+                $scope.BLPrintDropdown = [
+                    { 'name': '--select--', 'ID': 0 },
+                    { 'name': 'DRAFT', 'ID': 1 },
+                    { 'name': 'NON-NEGOTIABLE', 'ID': 12 }
+
+                ];
+            }
+            else
+            {
+                if ($scope.HDSurrenderStatus == "37")
+                {
+                    if (localStorage.getItem("UserID") == "23" || localStorage.getItem("UserID") == "1") {
+
+
+                        $scope.BLPrintDropdown = [
+                            { 'name': '--select--', 'ID': 0 },
+                            { 'name': 'DRAFT', 'ID': 1 },
+                            { 'name': 'FIRST ORIGINAL', 'ID': 2 },
+                            { 'name': 'SECOND ORIGINAL', 'ID': 3 },
+                            { 'name': 'THIRD ORIGINAL', 'ID': 4 },
+                            { 'name': 'RFS FIRST ORIGINAL', 'ID': 8 },
+                            { 'name': 'RFS 2ND ORIGINAL', 'ID': 9 },
+                            { 'name': 'RFS 3RD ORIGINAL', 'ID': 10 },
+                            { 'name': 'BACK PAGE', 'ID': 11 },
+                            { 'name': 'NON-NEGOTIABLE', 'ID': 12 }
+                        ];
+                    }
+                    else {
+
+                        $scope.BLPrintDropdown = [
+                            { 'name': '--select--', 'ID': 0 },
+                            { 'name': 'DRAFT', 'ID': 1 },
+                            { 'name': 'FIRST ORIGINAL', 'ID': 2 },
+                            { 'name': 'SECOND ORIGINAL', 'ID': 3 },
+                            { 'name': 'THIRD ORIGINAL', 'ID': 4 },
+                            { 'name': 'BACK PAGE', 'ID': 11 },
+                            { 'name': 'NON-NEGOTIABLE', 'ID': 12 }
+                        ];
+                    }
+                }
+                else if ($scope.HDSurrenderStatus == "38") {
+                    $scope.BLPrintDropdown = [
+                        { 'name': '--select--', 'ID': 0 },
+                        { 'name': 'DRAFT', 'ID': 1 },
+                        { 'name': 'SURRENDER BL', 'ID': 7 },
+                        { 'name': 'BACK PAGE', 'ID': 11 },
+                        { 'name': 'NON-NEGOTIABLE', 'ID': 12 }
+                    ];
+                }
+                else if ($scope.HDSurrenderStatus == "39") {
+
+                    $scope.BLPrintDropdown = [
+                        { 'name': '--select--', 'ID': 0 },
+                        { 'name': 'DRAFT', 'ID': 1 },
+                        { 'name': 'SEAWAY BL', 'ID': 5 },
+                        { 'name': 'BACK PAGE', 'ID': 11 },
+                        { 'name': 'NON-NEGOTIABLE', 'ID': 12 }
+                    ];
+                }
+
+
+            }
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["BOLRegID"] != null) {
+
+                $scope.RegId = queryString["BOLRegID"].toString();
+                $scope.fillExsBLReleasecheckValue();
+
+
+            }
+
+        });
+        $scope.fillExsBLReleasecheckValue = function () {
+            $("#overlay").show();
+            var BussData = {}
+            BussData.BLID = $scope.RegId;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLReleaseExisCheckRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result)
+            {
+                $timeout(function ()
+                {
+
+                    if (result.data.length > 0)
+                    {
+
+                        $scope.fillExsitingBLReleaseValue();
+                       // $scope.fillCntrExsitingBLValue();
+                    }
+                    else
+                    {
+
+                        $scope.fillExsitingBLValue();
+                        $scope.fillCntrExsitingBLValue();
+
+                    }
+                });
+                $("#overlay").hide();
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.fillExsitingBLValue = function()
+        {
+
+            var BussData = {}
+            BussData.BLID = $scope.RegId;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLReleaseExistingViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        $scope.BkgId = result.data[0].BkgID;
+                        $scope.BindBLNo = result.data[0].BLNumber;
+                        $scope.BindVesselVoyage = result.data[0].VesVoy;
+                        $scope.txtBookingNo = result.data[0].BLNumber;
+                        $scope.txtVesVoy = result.data[0].VesVoy;
+                        if (result.data[0].POO == "")
+                            $scope.txtPOO = result.data[0].POL;
+                        else
+                            $scope.txtPOO = result.data[0].POO;
+
+                        $scope.txtPOL = result.data[0].POL;
+                        $scope.txtPOD = result.data[0].POD;
+
+                        if (result.data[0].FPOD == "")
+                            $scope.txtFPOD = result.data[0].POD;
+                        else
+                            $scope.txtFPOD = result.data[0].FPOD;
+                        $scope.txtShipper = result.data[0].Shipper;
+                        $scope.txtShipperAddress = result.data[0].ShipperAddress;
+                        $scope.txtConsignee = result.data[0].Consignee;
+                        $scope.txtConsigneeAddress = result.data[0].ConsigneeAddress;
+                        $scope.txtNotify1 = result.data[0].Notify1;
+                        $scope.txtNotify1Address = result.data[0].Notify1Address;
+                        $scope.txtNotify2 = result.data[0].Notify2;
+                        $scope.txtNotify2Address = result.data[0].Notify2Address;
+                        $scope.txtDesAgent = result.data[0].Agent;
+                        $scope.txtDesAgentAddress = result.data[0].AgentAddress;
+                        $scope.txtGrWt = result.data[0].GrsWt;
+                        $scope.txtNtWt = result.data[0].NtWt;
+                        $scope.txtCBM = result.data[0].CBM;
+                        $scope.txtPackages = result.data[0].Packages;
+                        $scope.txtCargoDesc = result.data[0].Description;
+                        $scope.txtMarks = result.data[0].Marks;
+                        $scope.txtFrPaymentCentre = result.data[0].FreightPayment;
+                        $scope.txtFreeDays = result.data[0].intFreeDays;
+                        //$scope.ExistCntrBooking($scope.BkgId);
+                        $scope.txtIssuedat = localStorage.getItem("GeoLocation");
+
+                        txtshiperEmail = result.data[0].ShiperEmail;
+                        txtShiperContactNo = result.data[0].ShiperContactNo;
+
+                        txtConsigneeEmail = result.data[0].ConsigneeEmail;
+                        txtConsigneeContactNo = result.data[0].ConsigneeContactNo;
+
+                        txtNotify1Email = result.data[0].Notify1Email;
+                        txtNotify1ContactNo = result.data[0].Notify1ContactNo;
+
+                        txtNotify2Email = result.data[0].Notify2Email;
+                        txtNotify2ContactNo = result.data[0].Notify2ContactNo;
+
+                        $scope.HDStatus = result.data[0].BLStatus;
+
+                        $scope.HDSurrenderStatus = result.data[0].SurrenderStatus;
+                        $scope.BlPrintFuncation($scope.HDStatus);
+
+                        if (result.data[0].BLTypes == "41") {
+                            $scope.isDisapleSOBDate = false;
+                        }
+                        if (result.data[0].FreightPayment == "COLLECT") {
+                            $scope.txtFreightPaidat = result.data[0].POD;
+                        }
+                        else { $scope.txtFreightPaidat = result.data[0].POL;}
+
+                    }
+                    else {
+
+                    }
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.fillCntrExsitingBLValue = function () {
+
+            var BussData = {}
+            BussData.BLID = $scope.RegId;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLReleaseCntrViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.txtContDtls = result.data[0].CntrDetails;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.BookingNovalues = null;
+        $scope.fillBookingNovalues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BLMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BookingNovalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBookingNovalues();
+
+
+        $scope.NotesClause = null;
+        $scope.fillNotesClause = function () {
+
+            var BussData = {}
+            BussData.DocID = 264;
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BindNotsClauses/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.NotesClause = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillNotesClause();
+
+
+
+        $scope.btnPrint = function () {
+
+            //alert($scope.BlPrintFuncation());
+            var validation = "";
+
+            if (typeof $scope.BLRelesedId == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Save then SI</span></br>"
+            }
+
+            //var txtSOBDate = $('#txtSOBDate').val();
+            //if (txtSOBDate == "") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+            //}
+
+
+            var ddlBLlayout = $('#ddlBLlayout').val();
+
+            if (ddlBLlayout == "?" || ddlBLlayout == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select BL LayOut</span></br>"
+            }
+
+
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            $('#ModalPrint').modal('show');
+
+        }
+        $("#ddlBLlayout").change(function ()
+        {
+
+            if ($('#ddlBLlayout').val() == "1") {
+                $scope.BlPrintFuncation();
+            }
+            if ($('#ddlBLlayout').val() == "2") {
+                $scope.BlPrintStrideMaritimeFuncation();
+            }
+
+
+        });
+
+        $scope.BLPrintPDF = function ()
+        {
+            var validation = "";
+            var ddlPrint = $('#ddlPrint').val();
+            if (ddlPrint == "?")
+            {
+                validation += "<span style='color:red;'>*</span> <span>Please select Print Types</span></br>"
+            }
+            var txtSOBDate = $('#txtSOBDate').val();
+
+            if (ddlPrint == "2") {
+                if (txtSOBDate == "") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+                }
+            }
+
+            if (ddlPrint == "3") {
+                if (txtSOBDate == "") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+                }
+            }
+            if (ddlPrint == "4") {
+                if (txtSOBDate == "") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+                }
+            }
+            if (ddlPrint == "5") {
+                if (txtSOBDate == "") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+                }
+            }
+            if (ddlPrint == "6") {
+                if (txtSOBDate == "") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+                }
+            }
+            if (ddlPrint == "7") {
+                if (txtSOBDate == "") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Select SOB Date</span></br>"
+                }
+            }
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {}
+            BussData.AgentName = localStorage.getItem("Agency");
+            BussData.Type = $('#ddlPrint').val();
+            BussData.Reason = $scope.txtLogReson;
+            BussData.PrintBy = localStorage.getItem("UserName");
+           // BussData.DeletedBy = localStorage.getItem("UserName");
+            BussData.LocationID = localStorage.getItem("LocationID");
+            BussData.GeoLocationID = localStorage.getItem("GeoLocationID");
+            /*localStorage.getItem("GeoLocationID");*/
+
+            BussData.BkgID = $scope.BkgId;
+            BussData.BLID = $scope.RegId;
+            BussData.Errer = "PRINT";
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLPrintLogInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result)
+            {
+                $timeout(function () {
+
+
+
+                    if (result.data.length > 0)
+                    {
+                         var printvalue = $('#ddlPrint').val();
+                        var layout = $('#ddlBLlayout').val();
+                        if (printvalue == "11" && $('#ddlBLlayout').val() == "1") {
+                            window.open('@Url.Action("GlobalBackPage", "BLPrint")?printvalue=' + printvalue + '&layout=' + layout);
+                        }
+
+                        if (result.data[0].ErrorID == "2") {
+
+                            ShowPopup(result.data[0].Errer);
+                            return;
+                        }
+
+                        if (result.data[0].Errer == "PRINT")
+                        {
+
+                            if ($('#ddlBLlayout').val() == "1") {
+                                window.open('@Url.Action("BLBWSPrintPDF", "BLPrint")?id=' + $scope.RegId + '&printvalue=' + printvalue + '&LocID=' + localStorage.getItem("GeoLocationID") + '&SessionFinYear=' + localStorage.getItem("SessionFinYear"));
+                            }
+
+                        }
+                        else {
+                            ShowPopup("Alredy printed check");
+                        }
+
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.SaveRecord = function () {
+            var validation = "";
+            var txtBLDate = $('#txtBLDate').val();
+            if (txtBLDate == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select BLDate</span></br>"
+            }
+
+
+            var ddlBLlayout = $('#ddlBLlayout').val();
+            if (ddlBLlayout == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select BL Layout</span></br>"
+            }
+            var txtFreightPaidat = $('#txtFreightPaidat').val();
+            if (txtFreightPaidat == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Freight Paid At</span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $("#overlay").show();
+
+            var BussData = {}
+
+            if ($scope.BLRelesedId == "")
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.BLRelesedId;
+
+            BussData.BkgId = $scope.BkgId;
+            BussData.BLID = $scope.RegId;
+            BussData.BLNo = $scope.txtBookingNo;
+            BussData.BLDate = $("#txtBLDate").val();
+
+            BussData.VesVoy = $scope.txtVesVoy;
+            BussData.POO = $scope.txtPOO;
+            BussData.POL = $scope.txtPOL;
+            BussData.POD = $scope.txtPOD;
+            BussData.FPOD = $scope.txtFPOD;
+            BussData.Shipper = $scope.txtShipper;
+            BussData.ShipperAddress = $scope.txtShipperAddress;
+            BussData.Consignee = $scope.txtConsignee;
+            BussData.ConsigneeAddress = $scope.txtConsigneeAddress;
+            BussData.Notify1 = $scope.txtNotify1;
+            BussData.Notify1Address = $scope.txtNotify1Address;
+            BussData.Notify2 = $scope.txtNotify2;
+            BussData.Notify2Address = $scope.txtNotify2Address;
+            BussData.Agent = $scope.txtDesAgent;
+            BussData.AgentAddress = $scope.txtDesAgentAddress;
+            BussData.GrsWt = $scope.txtGrWt;
+            BussData.NtWt = $scope.txtNtWt;
+            BussData.CBM = $scope.txtCBM;
+            BussData.Packages = $scope.txtPackages;
+            BussData.Description = $scope.txtCargoDesc;
+            BussData.Marks = $scope.txtMarks;
+            BussData.FreightPayment = $scope.txtFrPaymentCentre;
+
+            if ($("#ddlFreeDays").val() != "?" && $("#ddlFreeDays").val() != null && $("#ddlFreeDays").val() != "")
+                BussData.FreeDays = $("#ddlFreeDays").val();
+            else
+                BussData.FreeDays = 0;
+
+            if ($scope.txtFreeDays != "")
+                BussData.intFreeDays = $scope.txtFreeDays;
+            else
+                BussData.intFreeDays = 0;
+
+            if ($("#txtSOBDate").val() != "")
+                BussData.SOBDate = $("#txtSOBDate").val();
+
+            BussData.CntrDetails = $scope.txtContDtls;
+            BussData.IssuedAt = $scope.txtIssuedat;
+            BussData.shiperEmail = $scope.txtshiperEmail;
+            BussData.ShiperContactNo = $scope.txtShiperContactNo;
+            BussData.ConsigneeEmail = $scope.txtConsigneeEmail;
+            BussData.ConsigneeContactNo = $scope.txtConsigneeContactNo;
+            BussData.Notify1Email = $scope.txtNotify1Email;
+            BussData.Notify1ContactNo = $scope.txtNotify1ContactNo;
+            BussData.Notify2Email = $scope.txtNotify2Email;
+            BussData.Notify2ContactNo = $scope.txtNotify2ContactNo;
+            BussData.AgentEmail = $scope.txtAgentEmail;
+            BussData.AgentContactNo = $scope.txtAgentContactNo;
+            BussData.BLLayout = $("#ddlBLlayout").val();
+            BussData.FreightPaidAt = $scope.txtFreightPaidat;
+            if ($("#ddlSignedAs").val() != "?" && $("#ddlSignedAs").val() != null && $("#ddlSignedAs").val() != "")
+                BussData.SignedAs = $("#ddlSignedAs").val();
+            else
+                BussData.SignedAs = 0;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLReleaseInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0)
+                    {
+                        $scope.BLRelesedId = result.data[0].ID;
+                        $("#overlay").hide();
+                        ShowPopup("BLRelease Saved Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+
+        }
+
+        $scope.UpdateSOAOnclick = function ()
+        {
+            var BussData = {};
+            BussData.BLID = $scope.RegId;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLReleaseSOBDateCheckExValuea/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0)
+                    {
+
+                        if (result.data[0].Message == "Success")
+                        {
+                            //$('#ModalSOA').modal('show');
+                            $scope.ExistCntrBooking($scope.BkgId, $scope.RegId);
+                        }
+                        else
+                        {
+                            ShowPopup("Please Save BL Released .");
+                        }
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+
+        }
+
+        $scope.fillExsitingBLReleaseValue = function ()
+        {
+            $("#overlay").show();
+            var BussData = {}
+            BussData.BLID = $scope.RegId;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLReleaseViewValus/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BkgServiceTypeID = result.data[0].BkgServiceTypeID
+                    $scope.BLRelesedId = result.data[0].ID;
+                    $scope.BkgId = result.data[0].BkgID;
+                    $scope.BindBLNo = result.data[0].BLNumber;
+                    $scope.BindVesselVoyage = result.data[0].VesVoy;
+                    $scope.txtBookingNo = result.data[0].BLNumber;
+                    $scope.txtVesVoy = result.data[0].VesVoy;
+                    $scope.txtPOO = result.data[0].POO;
+                    $scope.txtPOL = result.data[0].POL;
+                    $scope.txtPOD = result.data[0].POD;
+                    $scope.txtFPOD = result.data[0].FPOD;
+                    $scope.txtShipper = result.data[0].Shipper;
+                    $scope.txtShipperAddress = result.data[0].ShipperAddress;
+                    $scope.txtConsignee = result.data[0].Consignee;
+                    $scope.txtConsigneeAddress = result.data[0].ConsigneeAddress;
+                    $scope.txtNotify1 = result.data[0].Notify1;
+                    $scope.txtNotify1Address = result.data[0].Notify1Address;
+                    $scope.txtNotify2 = result.data[0].Notify2;
+                    $scope.txtNotify2Address = result.data[0].Notify2Address;
+                    $scope.txtDesAgent = result.data[0].Agent;
+                    $scope.txtDesAgentAddress = result.data[0].AgentAddress;
+                    $scope.txtGrWt = result.data[0].GrsWt;
+                    $scope.txtNtWt = result.data[0].NtWt;
+                    $scope.txtCBM = result.data[0].CBM;
+                    $scope.txtPackages = result.data[0].Packages;
+                    $scope.txtCargoDesc = result.data[0].Description;
+                    $scope.txtMarks = result.data[0].Marks;
+                    $scope.txtFrPaymentCentre = result.data[0].FreightPayment;
+                    $scope.ddlFreeDays = { ID: result.data[0].FreeDays };
+                    $scope.txtFreeDays = result.data[0].intFreeDays;
+
+                    $('#txtBLDate').val(result.data[0].BLDate);
+                    $('#txtSOBDate').val(result.data[0].SOBDate);
+                    $scope.txtContDtls = result.data[0].CntrDetails;
+                    $scope.txtIssuedat = result.data[0].IssuedAt;
+
+                    $scope.txtshiperEmail = result.data[0].ShiperEmail;
+                    $scope.txtShiperContactNo = result.data[0].ShiperContactNo;
+                    $scope.txtConsigneeEmail = result.data[0].ConsigneeEmail;
+                    $scope.txtConsigneeContactNo = result.data[0].ConsigneeContactNo;
+                    $scope.txtNotify1Email = result.data[0].Notify1Email;
+                    $scope.Notify1ContactNo = result.data[0].Notify1ContactNo;
+                    $scope.Notify2Email = result.data[0].Notify2Email;
+                    $scope.Notify2ContactNo = result.data[0].Notify2ContactNo;
+                    $scope.AgentEmail = result.data[0].AgentEmail;
+                    $scope.AgentContactNo = result.data[0].AgentContactNo;
+                    $scope.HDStatus = result.data[0].BLStatus;
+                    $scope.HDSurrenderStatus = result.data[0].SurrenderStatus;
+                    $scope.ddlSignedAs = { ID: result.data[0].SignedAs };
+                    //$scope.ExistCntrBooking($scope.BkgId);
+                    $scope.BlPrintFuncation($scope.HDStatus);
+                    $scope.ddlBLlayout = { ID: result.data[0].BLLayout };
+
+                    if (result.data[0].FreightPaidAt != "" || result.data[0].FreightPaidAt != null) {
+
+                        if (result.data[0].FreightPayment == "COLLECT") {
+                            $scope.txtFreightPaidat = result.data[0].POD;
+                        }
+                        else { $scope.txtFreightPaidat = result.data[0].POL; }
+                    }
+                    else {
+
+                        $scope.txtFreightPaidat = result.data[0].FreightPaidAt;
+                    }
+                    $scope.HDVoyID = result.data[0].VesVoyID;
+                    $scope.HDCusID = result.data[0].CustomerID;
+                    if (result.data[0].BLTypes == "41")
+                    {
+                        $scope.isDisapleSOBDate = false;
+                    }
+
+                    $("#overlay").hide();
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.ExistCntrBooking = function (BkgID, BLID) {
+            $("#overlay").show();
+            var BussData = {};
+            BussData.BkgID = BkgID;
+            BussData.ID = BLID;
+            $http({
+                method: 'POST',
+               // url: '/api/CntrPickupApi/ExtPickcntrBookingMaster/',
+                url:'/api/CntrPickupApi/ExtPickcntrBlReleaseMaster/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                  
+
+
+                    $scope.FillExstingCntrBookingValues = result.data;
+
+                    if ($scope.BkgServiceTypeID != 5) {
+                        $('#ModalSOA').modal('show');
+                        $('#txtDepartureDate').val(result.data[0].FBDateSOB);
+                        $('#txtSOBDate').val(result.data[0].FBDateSOB);
+                        if (result.data[0].FBDateSOB != "") {
+                            document.getElementById("btnSoBSave").disabled = true;
+                        }
+                        else {
+                            document.getElementById("btnSoBSave").disabled = false;
+                        }
+                        $("#overlay").hide();
+                    }
+                    else {
+                        $('#ModalSOAEmpty').modal('show');
+                        $('#txtDepartureDateEM').val(result.data[0].MBDateSOB);
+                        $('#txtSOBDate').val(result.data[0].MBDateSOB);
+                        if (result.data[0].MBDateSOB != "") {
+                            document.getElementById("btnSoBSaveEm").disabled = true;
+                        }
+                        else {
+                            document.getElementById("btnSoBSaveEm").disabled = false;
+                        }
+                        $("#overlay").hide();
+                    }
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.PortDepartureupdate = function (gDate) {
+
+
+            var DataVal = {};
+            var CntrNo = "";
+            var ItemsV = "";
+            var date1;
+            var currentdate;
+            angular.forEach(gDate, function (value, key) {
+
+                if (gDate[key].IsTrue == 0) {
+                    ItemsV = gDate[key].ID;
+                    date1 = gDate[key].FLDateF;
+                    currentdate = gDate[key].CurrentDate;
+                }
+                else {
+                    CntrNo += gDate[key].CntrNo + ",";
+                }
+
+            });
+
+
+            var validation = "";
+
+            var ddlLocationFB = $('#ddlLocationFB').val();
+            if (ddlLocationFB == "?" || ddlLocationFB == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+            var PickupDate = $('#txtDepartureDate').val();
+            if (PickupDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select Departure Date </span></br>"
+            }
+
+            var Local1 = moment.utc(date1).local().format('MMM DD YYYY h:mm A');
+            var local = moment.utc(PickupDate).local().format('MMM DD YYYY h:mm A');
+           // var getdate = moment.utc(currentdate).local().format('MMM DD YYYY h:mm A');
+
+            if (Date.parse(Local1) >= Date.parse(local)) {
+
+                validation += "<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>"
+            }
+
+            var GivenDate = $('#txtDepartureDate').val();
+            var CurrentDate = new Date();
+            GivenDate = new Date(GivenDate);
+
+            var SelectedDate = moment.utc(GivenDate).local().format('YYYY-MM-DD');
+            var CurrentDateV = moment.utc(CurrentDate).local().format('YYYY-MM-DD');
+
+            if (SelectedDate > CurrentDateV) {
+                validation += "<span style='color:red;'>*</span> <span>Date of Movement should not be greater than CurrentDate.</span></br>"
+            }
+
+            if (gDate.length == 0) {
+                ShowPopup("kindly assign the Container");
+                return false;
+                validation += "<span style='color:red;'>*</span>kindly assign the Container</span></br>"
+            }
+            else {
+                angular.forEach(gDate, function (value, key) {
+                    if (gDate[key].FLDate == "") {
+
+                        validation += "<span style='color:red;'>*</span>Container status was not gated in, Pls update Gate in Move For: " + gDate[key].CntrNo + "</span></br>"
+                        return false;
+                    }
+                });
+            }
+
+            //const dateSelect = moment.utc(GivenDate).local().format('YYYY-MM-DD');
+            //const dateMvPrev = moment.utc(date1).local().format('YYYY-MM-DD');
+            //const dateSelect1 = new Date(dateSelect);
+            //const dateMvPrev1 = new Date(dateMvPrev);
+            //const diffTime = Math.abs(dateSelect1 - dateMvPrev1);
+            //const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            //if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "3" && localStorage.getItem("UserID") != "11" && localStorage.getItem("UserID") != "12" && localStorage.getItem("UserID") != "13") {
+            //    if (diffDays > 5) {
+            //        validation += "<span style='color:red;'>*</span> <span>Please Contact EQC Team For the Movement Updation</span></br>"
+            //    }
+            //}
+            //const dateSelect = moment.utc(GivenDate).local().format('YYYY-MM-DD');
+           // const dateMvPrev = moment.utc(SelectedDate).local().format('YYYY-MM-DD');
+
+            const dateSelect1 = new Date(CurrentDateV);
+            const dateMvPrev1 = new Date(SelectedDate);
+            const diffTime = Math.abs(dateSelect1 - dateMvPrev1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffdaysV = diffDays - 1;
+            //if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "3" && localStorage.getItem("UserID") != "11" && localStorage.getItem("UserID") != "12" && localStorage.getItem("UserID") != "13") {
+            //    if (diffDays >= 6) {
+            //        validation += "<span style='color:red;'>*</span> <span>Current Date of Movement exceeds 5 days limits, Please contact EQC team</span></br>"
+            //    }
+            //}
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.BkgId;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.BLID = $scope.RegId;
+            BussData.LocationID = $('#ddlLocationFB').val();
+            BussData.PickupDate = $('#txtDepartureDate').val();
+            BussData.AgentName = localStorage.getItem("Agency");
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.CustomerID = $scope.HDCusID;
+
+            BussData.UserID = localStorage.getItem("UserID");
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 0) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, gDate[key].CurrentDepotID);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrDepaturePortMaster/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Departure");
+                    $('#txtSOBDate').val($('#txtDepartureDate').val());
+                    $scope.ExistCntrBooking($scope.BkgId, $scope.RegId);
+                    $('#ModalSOA').modal('hide');
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.PortDepartureupdateMB = function (gDate) {
+            
+
+            var DataVal = {};
+            var CntrNo = "";
+            var ItemsV = "";
+            var date1Em;
+            var currentdateEm;
+            angular.forEach(gDate, function (value, key) {
+
+                if (gDate[key].IsTrue == 0) {
+                    ItemsV = gDate[key].ID;
+                    date1Em = gDate[key].MLDateF;
+                    currentdateEm = gDate[key].CurrentDate;
+                }
+                else {
+                    CntrNo += gDate[key].CntrNo + ",";
+                }
+
+            });
+
+
+            var validation = "";
+           
+            var ddlLocationMB = $('#ddlLocationMB').val();
+            if (ddlLocationMB == "?" || ddlLocationMB == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+            var PickupDateEm = $('#txtDepartureDateEM').val();
+            if (PickupDateEm.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select Departure Date </span></br>"
+            }
+
+            var Local1 = moment.utc(date1Em).local().format('MMM DD YYYY h:mm A');
+            var local = moment.utc(PickupDateEm).local().format('MMM DD YYYY h:mm A');
+            // var getdate = moment.utc(currentdate).local().format('MMM DD YYYY h:mm A');
+
+            if (Date.parse(Local1) >= Date.parse(local)) {
+
+                validation += "<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>"
+            }
+
+            var GivenDateEm = $('#txtDepartureDateEM').val();
+            var CurrentDateEm = new Date();
+            GivenDateEm = new Date(GivenDateEm);
+
+            var SelectedDateEm = moment.utc(GivenDateEm).local().format('YYYY-MM-DD');
+            var CurrentDateVEm = moment.utc(CurrentDateEm).local().format('YYYY-MM-DD');
+
+            if (SelectedDateEm > CurrentDateVEm) {
+                validation += "<span style='color:red;'>*</span> <span>Date of Movement should not be greater than CurrentDate.</span></br>"
+            }
+
+            if (gDate.length == 0) {
+                ShowPopup("kindly assign the Container");
+                return false;
+                validation += "<span style='color:red;'>*</span>kindly assign the Container</span></br>"
+            }
+            else {
+                angular.forEach(gDate, function (value, key) {
+                    if (gDate[key].MLDate == "") {
+
+                        validation += "<span style='color:red;'>*</span>Container status was not Empty Port in(ML), Pls update Empty Port(ML) in Move For: " + gDate[key].CntrNo + "</span></br>"
+                        return false;
+                    }
+                });
+            }
+
+            //const dateSelect = moment.utc(GivenDate).local().format('YYYY-MM-DD');
+            //const dateMvPrev = moment.utc(date1).local().format('YYYY-MM-DD');
+            //const dateSelect1 = new Date(dateSelect);
+            //const dateMvPrev1 = new Date(dateMvPrev);
+            //const diffTime = Math.abs(dateSelect1 - dateMvPrev1);
+            //const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            //if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "3" && localStorage.getItem("UserID") != "11" && localStorage.getItem("UserID") != "12" && localStorage.getItem("UserID") != "13") {
+            //    if (diffDays > 5) {
+            //        validation += "<span style='color:red;'>*</span> <span>Please Contact EQC Team For the Movement Updation</span></br>"
+            //    }
+            //}
+            //const dateSelect = moment.utc(GivenDate).local().format('YYYY-MM-DD');
+            // const dateMvPrev = moment.utc(SelectedDate).local().format('YYYY-MM-DD');
+
+            const dateSelect1 = new Date(CurrentDateVEm);
+            const dateMvPrev1 = new Date(SelectedDateEm);
+            const diffTime = Math.abs(dateSelect1 - dateMvPrev1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const diffdaysV = diffDays - 1;
+            //if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "3" && localStorage.getItem("UserID") != "11" && localStorage.getItem("UserID") != "12" && localStorage.getItem("UserID") != "13") {
+            //    if (diffDays >= 6) {
+            //        validation += "<span style='color:red;'>*</span> <span>Current Date of Movement exceeds 5 days limits, Please contact EQC team</span></br>"
+            //    }
+            //}
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.BkgId;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.BLID = $scope.RegId;
+            BussData.LocationID = $('#ddlLocationMB').val();
+            BussData.PickupDate = $('#txtDepartureDateEM').val();
+            BussData.AgentName = localStorage.getItem("Agency");
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.CustomerID = $scope.HDCusID;
+
+            BussData.UserID = localStorage.getItem("UserID");
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 0) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, gDate[key].CurrentDepotID);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrDepaturePortMasterMB/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Departure");
+                    $('#txtSOBDate').val($('#txtDepartureDateEM').val());
+                    $scope.ExistCntrBooking($scope.BkgId, $scope.RegId);
+                    $('#ModalSOAEmpty').modal('hide');
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.BackToBOLPage = function () {
+
+            var url = "/Document/BOL?BOLRegID=" + encodeURIComponent($scope.RegId) + "&BkgPassID=" + encodeURIComponent($scope.BkgId);
+            window.location.href = url;
+        }
+
+        $scope.ALLBLPrintLogView = null
+        $scope.BLPrintLog = function () {
+
+            $('#ModalPrintLog').modal('show');
+            $("#overlay").show();
+            var BussData = {}
+            BussData.BkgID = $scope.BkgId;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLPrintLogView/',
+                data: JSON.stringify(BussData),
+            }).then(function (result)
+            {
+                $timeout(function ()
+                {
+                    $scope.ALLBLPrintLogView = result.data;
+                    $("#overlay").hide();
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+
+        }
+
+
+        $scope.PrintLogDelete = function () {
+
+            var validation = "";
+            var txtLogReson = $('#txtLogReson').val();
+            if (txtLogReson == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Reson</span></br>"
+            }
+
+
+
+            var IDv = 0;
+            angular.forEach($scope.ALLBLPrintLogView, function (value, key) {
+
+                if ($scope.ALLBLPrintLogView[key].IsFinal == 1) {
+                    IDv = $scope.ALLBLPrintLogView[key].ID;
+                }
+
+            });
+
+            if (IDv == "0") {
+                validation += "<span style='color:red;'>*</span> <span>Please check Delete Reson</span></br>"
+            }
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {}
+            BussData.ID = IDv
+            BussData.Reason = $scope.txtLogReson;
+            BussData.DeletedBy = localStorage.getItem("UserName");
+            BussData.BkgID = $scope.BkgId;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BLPrintLogDelete',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0)
+                    {
+                        $scope.BLPrintLog();
+                        ShowPopup("Print Log delete");
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+                    //setTimeOut(function () {
+                    //    window.location = "/";
+                    //}, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+
+        $scope.NotesSignedAs = null;
+        $scope.fillNotesSignedAs = function () {
+
+            var BussData = {}
+            BussData.DocID = 329;
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BindNotsClauses/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.NotesSignedAs = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillNotesSignedAs();
+
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <a href="#" ng-click="BackToBOLPage();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons" style="margin-top:-8px!important;">reply</i>
+
+                </a>
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">BL Release</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-12 padlr0">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Booking/BL No</label>
+                                                            <input type="text" autocomplete="off" id="txtBookingNo" ng-model="txtBookingNo" class="form-control" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Vessel & Voyage</label>
+                                                            <input type="text" id="txtVesVoy" disabled ng-model="txtVesVoy" class="form-control" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>BL Date</label>
+                                                            <input type="date" id="txtBLDate" ng-bind="txtInvDate" class="form-control">
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Shipper</label>
+                                                            <input type="text" id="txtShipper" disabled ng-model="txtShipper" class="form-control" />
+                                                            <textarea id="txtShipperAddress" ng-model="txtShipperAddress" class="form-control" style="margin-top:7px;" rows="5"></textarea>
+                                                            <input type="text" id="txtshiperEmail" ng-model="txtshiperEmail" class="form-control" placeholder="Email ID" />
+                                                            <input type="text" id="txtShiperContactNo" ng-model="txtShiperContactNo" class="form-control" placeholder="Contact No" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Consignee</label>
+                                                            <input type="text" id="txtConsignee" disabled ng-model="txtConsignee" class="form-control" />
+                                                            <textarea id="txtConsigneeAddress" ng-model="txtConsigneeAddress" class="form-control" style="margin-top:7px;" rows="5"></textarea>
+                                                            <input type="text" id="txtConsigneeEmail" ng-model="txtConsigneeEmail" class="form-control" placeholder="Email ID" />
+                                                            <input type="text" id="txtConsigneeContactNo" ng-model="txtConsigneeContactNo" class="form-control" placeholder="Contact No" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Notify 1</label>
+                                                            <input type="text" id="txtNotify1" disabled ng-model="txtNotify1" class="form-control" />
+                                                            <textarea id="txtNotify1Address" ng-model="txtNotify1Address" class="form-control" style="margin-top:7px;" rows="5"></textarea>
+                                                            <input type="text" id="txtNotify1Email" ng-model="txtNotify1Email" class="form-control" placeholder="Email ID" />
+                                                            <input type="text" id="txtNotify1ContactNo" ng-model="txtNotify1ContactNo" class="form-control" placeholder="Contact No" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Notify 2</label>
+                                                            <input type="text" id="txtNotify2" disabled ng-model="txtNotify2" class="form-control" />
+                                                            <textarea id="txtNotify2Address" ng-model="txtNotify2Address" class="form-control" style="margin-top:7px;" rows="6"></textarea>
+                                                            <input type="text" id="txtNotify2Email" ng-model="txtNotify2Email" class="form-control" placeholder="Email ID" />
+                                                            <input type="text" id="txtNotify2ContactNo" ng-model="txtNotify2ContactNo" class="form-control" placeholder="Contact No" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Designation Agent</label>
+                                                            <input type="text" id="txtDesAgent" ng-model="txtDesAgent" class="form-control" />
+                                                            <textarea id="txtDesAgentAddress" ng-model="txtDesAgentAddress" class="form-control" style="margin-top:7px;" rows="6"></textarea>
+                                                            <input type="text" id="txtAgentEmail" ng-model="txtAgentEmail" class="form-control" placeholder="Email ID" />
+                                                            <input type="text" id="txtAgentContactNo" ng-model="txtAgentContactNo" class="form-control" placeholder="Contact No" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Place Of Origin</label>
+                                                            <input type="text" id="txtPOO" ng-model="txtPOO" class="form-control" />
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>Port Of Loading</label>
+                                                            <input type="text" id="txtPOL" ng-model="txtPOL" class="form-control" />
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>Port Of Discharge</label>
+                                                            <input type="text" id="txtPOD" ng-model="txtPOD" class="form-control" />
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>Final Destination</label>
+                                                            <input id="txtFPOD" ng-model="txtFPOD" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Gross.Wt</label>
+                                                            <input id="txtGrWt" ng-model="txtGrWt" class="form-control" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Net.Wt</label>
+                                                            <input id="txtNtWt" ng-model="txtNtWt" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>CBM</label>
+                                                            <input id="txtCBM" ng-model="txtCBM" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Packages</label>
+                                                            <input id="txtPackages" ng-model="txtPackages" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Freight Payment Centre</label>
+                                                            <input type="text" disabled id="txtFrPaymentCentre" ng-model="txtFrPaymentCentre" class="form-control" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-4 padr0">
+                                                            <label>Free Days</label>
+                                                            <input id="txtFreeDays" width="70" ng-model="txtFreeDays" disabled class="form-control" />
+
+
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <label>&nbsp;</label>
+                                                            <select id="ddlFreeDays" class="form-control my-select" ng-model="ddlFreeDays" options="{ allowClear: true }" ng-options="item.Notes for item in NotesClause track by item.ID"></select>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="row">
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Cargo Description</label>
+                                                            <textarea id="txtCargoDesc" ng-model="txtCargoDesc" class="form-control" rows="6"></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Marks & No</label>
+                                                            <textarea id="txtMarks" ng-model="txtMarks" class="form-control" rows="6"></textarea>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Container Details</label>
+                                                            <textarea id="txtContDtls" ng-model="txtContDtls" class="form-control" rows="6"></textarea>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+
+
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>SOB Date</label>
+                                                            <input type="datetime-local" ng-disabled="isDisapleSOBDate" id="txtSOBDate" ng-bind="BindDateSOBValues" ng-model="txtSOBDate" class="form-control" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Issued At</label>
+                                                            <input id="txtIssuedat" ng-model="txtIssuedat" class="form-control" />
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>BL Layout</label>
+                                                            <select id="ddlBLlayout" ng-model="ddlBLlayout" class="form-control" ng-options="item.Description for item in BLPrintLayoutAllvalues track by item.ID">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Freight Paid At</label>
+                                                            <input id="txtFreightPaidat" ng-model="txtFreightPaidat" class="form-control" />
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Signed As</label>
+                                                            <select id="ddlSignedAs" ng-model="ddlSignedAs" class="form-control" ng-options="item.Notes for item in NotesSignedAs track by item.ID">
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12" style="text-align:right; margin-top:50px;">
+
+                                        <a class="btn btn-fill btn-warning" href="#" ng-click="UpdateSOAOnclick();">
+                                            <i class="material-icons">directions_boat</i>
+                                            Update SOB Details
+                                        </a>
+                                        <a href="#" ng-click="btnPrint();" class="btn btn-fill btn-rose btntop">
+                                            <i class="material-icons">print</i>
+                                            BL Print
+                                        </a>
+                                        <button type="submit" ng-click="SaveRecord();" class="btn btn-fill btn-success">
+                                            <i class="material-icons">save</i>
+                                            Save
+                                        </button>
+
+                                        <div class="modal" id="ModalSOA" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content" style="width:750px;margin:0 auto;">
+                                                    <div class="modal-header" style="background-color: #057ba7;padding: 3px 24px 0;">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel" style="color:#fff;">Update SOB Details</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row" style="border:1px solid #ccc;">
+                                                            <div class="col-md-6" style="border-right:1px solid #ccc;">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <label>BL Number</label>
+
+                                                                        </div>
+                                                                        <div class="col-md-1">
+                                                                            :
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label ng-bind="BindBLNo"></label>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <label>Vessel/Voyage Details</label>
+                                                                        </div>
+                                                                        <div class="col-md-1">:</div>
+                                                                        <div class="col-md-6">
+                                                                            <label ng-bind="BindVesselVoyage"></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="border:1px solid #ccc;">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div class="material-datatables">
+                                                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Container#</th>
+                                                                                            <th>Size Type</th>
+                                                                                            <th>PLOT OUT(MS)</th>
+                                                                                            <th>PLOT IN(FL)</th>
+                                                                                            <th>DEPARTURE(FB)</th>
+
+                                                                                        </tr>
+                                                                                    </thead>
+
+                                                                                    <tbody>
+                                                                                        <tr ng-repeat="gRow in FillExstingCntrBookingValues">
+
+                                                                                            <td>{{gRow.CntrNo}}</td>
+                                                                                            <td>{{gRow.Size}}</td>
+                                                                                            <td>{{gRow.MSDate}}</td>
+                                                                                            <td>{{gRow.FLDate}}</td>
+                                                                                            <td>{{gRow.FBDate}}</td>
+
+                                                                                        </tr>
+                                                                                    </tbody>
+
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+                                                                            <div class="col-md-4">
+                                                                                <label>SOB/Vessel Departure Date(FB)</label>
+
+                                                                            </div>
+                                                                            <div class="col-md-1">
+                                                                                :
+                                                                            </div>
+                                                                            <div class="col-md-7">
+                                                                                <input type="datetime-local" ng-model="txtDepartureDate" ng-bind="BindDateSOBValues" id="txtDepartureDate" class="form-control" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row" style="margin-top:15px;">
+                                                                            <div class="col-md-4">
+                                                                                <label>Location</label>
+
+                                                                            </div>
+                                                                            <div class="col-md-1">
+                                                                                :
+                                                                            </div>
+                                                                            <div class="col-md-7">
+                                                                                <select id="ddlLocationFB" ng-model="ddlLocationFB" class="form-control my-select" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12" style="text-align:right;">
+                                                                <button type="submit" id="btnSoBSave" ng-click="PortDepartureupdate(FillExstingCntrBookingValues);" class="btn btn-fill btn-success">
+                                                                    <i class="material-icons">save</i>
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal" id="ModalSOAEmpty" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content" style="width:750px;margin:0 auto;">
+                                                    <div class="modal-header" style="background-color: #057ba7;padding: 3px 24px 0;">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel" style="color:#fff;">Update SOB Details</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row" style="border:1px solid #ccc;">
+                                                            <div class="col-md-6" style="border-right:1px solid #ccc;">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <label>BL Number</label>
+
+                                                                        </div>
+                                                                        <div class="col-md-1">
+                                                                            :
+                                                                        </div>
+                                                                        <div class="col-md-6">
+                                                                            <label ng-bind="BindBLNo"></label>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <label>Vessel/Voyage Details</label>
+                                                                        </div>
+                                                                        <div class="col-md-1">:</div>
+                                                                        <div class="col-md-6">
+                                                                            <label ng-bind="BindVesselVoyage"></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row" style="border:1px solid #ccc;">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <div class="material-datatables">
+                                                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Container#</th>
+                                                                                            <th>Size Type</th>
+                                                                                            <th>EMPTY OUT REPO(MO)</th>
+                                                                                            <th>EMPTY PORT IN(ML)</th>
+                                                                                            <th>EMPTY DEPARTURE(MB)</th>
+
+                                                                                        </tr>
+                                                                                    </thead>
+
+                                                                                    <tbody>
+                                                                                        <tr ng-repeat="gRow in FillExstingCntrBookingValues">
+
+                                                                                            <td>{{gRow.CntrNo}}</td>
+                                                                                            <td>{{gRow.Size}}</td>
+                                                                                            <td>{{gRow.MODate}}</td>
+                                                                                            <td>{{gRow.MLDate}}</td>
+                                                                                            <td>{{gRow.MBDate}}</td>
+
+                                                                                        </tr>
+                                                                                    </tbody>
+
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+                                                                            <div class="col-md-4">
+                                                                                <label>SOB/Vessel Departure Date(MB)</label>
+
+                                                                            </div>
+                                                                            <div class="col-md-1">
+                                                                                :
+                                                                            </div>
+                                                                            <div class="col-md-7">
+                                                                                <input type="datetime-local" ng-model="txtDepartureDateEM" ng-bind="BindDateSOBValues" id="txtDepartureDateEM" class="form-control" />
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="row" style="margin-top:15px;">
+                                                                            <div class="col-md-4">
+                                                                                <label>Location</label>
+
+                                                                            </div>
+                                                                            <div class="col-md-1">
+                                                                                :
+                                                                            </div>
+                                                                            <div class="col-md-7">
+                                                                                <select id="ddlLocationMB" ng-model="ddlLocationMB" class="form-control my-select" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                                                </select>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12" style="text-align:right;">
+                                                                <button type="submit" id="btnSoBSaveEm" ng-click="PortDepartureupdateMB(FillExstingCntrBookingValues);" class="btn btn-fill btn-success">
+                                                                    <i class="material-icons">save</i>
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade cargo" id="ModalPrint" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content" style="width:550px!important; margin:0 auto;">
+                                                    <div class="modal-header" style="background-color: #057ba7;padding: 3px 24px 0;">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel" style="color:#fff;">BL Print</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="form-group">
+                                                                    <div class="row">
+                                                                        <div class="col-md-4">
+                                                                            <label>BL Print</label>
+
+                                                                        </div>
+                                                                        <div class="col-md-1">
+                                                                            :
+                                                                        </div>
+                                                                        <div class="col-md-7">
+                                                                            <select id="ddlPrint" class="form-control my-select" ng-model="ddlPrint" options="{ allowClear: true }" ng-options="item.name for item in BLPrintDropdown track by item.ID"></select>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12" style="text-align:right;">
+                                                                <button type="submit" ng-click="BLPrintPDF();" class="btn btn-fill btn-success">
+                                                                    <i class="material-icons">save</i>
+                                                                    GENERATE
+                                                                </button>
+                                                                <button type="submit" ng-click="BLPrintLog();" class="btn btn-fill btn-info">
+                                                                    <i class="material-icons">save</i>
+                                                                    PRINT LOG
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal fade cargo" id="ModalPrintLog" style=" margin:0 auto;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header" style="background-color: #21277a; padding: 3px 24px 0;">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="margin-top: -34px; color: #fff;">&times;</button>
+                                                        <h4 class="modal-title" id="myModalLabel" style="color: #fff; font-size: 17px; font-weight: bold; ">BL Print Log</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-md-12" style="text-align:left;">
+                                                                <a href="#" ng-click="PrintLogDelete();" class="btn btn-fill btn-danger btntop">
+                                                                    <i class="material-icons">delete</i>
+                                                                    Delete
+                                                                </a>
+                                                            </div>
+                                                            <div class="col-md-12" style="margin-bottom:18px;">
+                                                                <textarea type="text" class="form-control" ng-model="txtLogReson" rows="5" placeholder="Reason"></textarea>
+                                                            </div>
+                                                            <div class="col-md-12">
+                                                                <div class="material-datatables">
+                                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th></th>
+                                                                                <th>S.No</th>
+                                                                                <th>Agency</th>
+                                                                                <th>Copy</th>
+                                                                                <th>Type</th>
+                                                                                <th>Status</th>
+                                                                                <th>Reason</th>
+                                                                                <th>Printed By</th>
+                                                                                <th>Printed On</th>
+                                                                                <th>Deleted By</th>
+                                                                                <th>Deleted On</th>
+
+                                                                            </tr>
+                                                                        </thead>
+
+                                                                        <tbody>
+                                                                            <tr ng-repeat="gR in ALLBLPrintLogView">
+                                                                                <td>
+                                                                                    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="gRow.IsFinal == 1" ng-model="gR.IsFinal" id="PrintLogCheck" />
+                                                                                </td>
+                                                                                <td>{{$index+1}}</td>
+                                                                                <td>{{gR.AgentName}}</td>
+                                                                                <td>{{gR.Copy}}</td>
+                                                                                <td>{{gR.Type}}</td>
+                                                                                <th>{{gR.Status}}</th>
+                                                                                <td>{{gR.Reason}}</td>
+                                                                                <td>{{gR.PrintBy}}</td>
+                                                                                <td>{{gR.PrintedOn}}</td>
+                                                                                <td>{{gR.DeletedBy}}</td>
+                                                                                <td>{{gR.DeletedOn}}</td>
+                                                                            </tr>
+
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="RegId" ng-model="RegId" />
+                                        <input type="hidden" id="BLRelesedId" ng-model="BLRelesedId" />
+                                        <input type="hidden" id="BkgId" ng-model="BkgId" />
+                                        <input type="hidden" id="HDVoyID" ng-model="HDVoyID" />
+                                        <input type="hidden" id="HDStatus" ng-model="HDStatus" />
+                                        <input type="hidden" id="HDCusID" ng-model="HDCusID" />
+                                        <input type="hidden" id="HDSurrenderStatus" ng-model="HDSurrenderStatus" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

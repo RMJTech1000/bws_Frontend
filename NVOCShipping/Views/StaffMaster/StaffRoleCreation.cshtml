@@ -1,0 +1,794 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+        $scope.MenuModulValues = null;
+        $scope.fillMenuModulValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleMenuModule/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.MenuModulValues = result.data;
+
+                });
+            });
+        };
+        $scope.fillMenuModulValues();
+
+
+
+        $("#ddlModuleName").change(function () {
+            $scope.fillMenuValues();
+        });
+
+        $scope.MenuValues = null;
+        $scope.fillMenuValues = function () {
+            var BussData = {}
+            BussData.IsCommonID = $("#ddlModuleName").val();
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleMenu/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.MenuValues = result.data;
+
+                });
+            });
+        };
+
+        $("#ddlProgramName").change(function () {
+
+            $scope.fillMenuAccessValues();
+        });
+
+
+        $scope.MenuAccessValues = null;
+        $scope.fillMenuAccessValues = function () {
+            var BussData = {}
+            BussData.MenuID = $("#ddlProgramName").val();
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleMenuAccess/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.MenuAccessValues = result.data;
+
+                });
+            });
+        };
+
+        // $scope.fillMenuAccessValues();
+
+        $scope.StaffRoleRec = [{ MID: "", MenuID: "", MenuName: "", CreateID: "", UpdateID: "", DeleteID: "", ViewID: "" }];
+        $scope.StaffRoleRec.splice(0, 1);
+
+
+        $scope.StaffRoleSubMenu = [{ MID: "", MenuID: "", MenuName: "", CreateID: "", UpdateID: "", DeleteID: "", ViewID: "" }];
+        $scope.StaffRoleSubMenu.splice(0, 1);
+
+
+        $scope.AddRecord = function (StaffRoleRec) {
+            var validation = "";
+
+            var ddlProgramName = $('#ddlProgramName').val();
+            if (ddlProgramName == "?" || ddlProgramName == "")
+            {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Program Name</span></br>"
+            }
+
+            for (var i = 0; i < $scope.StaffRoleRec.length; i++) {
+                if ($scope.StaffRoleRec[i].MenuID === $("#ddlProgramName").val()) {
+                    validation += "<span style='color:red;'>*</span> <span>Already Exists </span></br>"
+                }
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var TIDValue;
+            TIDValue = ($("#ddlProgramName").val() == "") ? 0 : $("#ddlProgramName").val();
+            var val = {
+                'MID': TIDValue,
+                'MenuID': $("#ddlProgramName").val(),
+                'MenuName': $("#ddlProgramName option:selected").text(),
+                'CreateID': $scope.ChkProgCreate,
+                'UpdateID': $scope.ChkProgUpdate,
+                'DeleteID': $scope.ChkProgDelete,
+                'ViewID': $scope.ChkProgView
+
+
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+                $scope.StaffRoleRec[$scope.HDArrayIndex] = val;
+            } else {
+                $scope.StaffRoleRec.push(val);
+            }
+
+
+            // $("#ddlProgramName").val("");
+
+            $scope.HDArrayIndex = "";
+            $scope.TID = 0;
+
+        }
+        $scope.Selectvalues = function (StaffRoleRec, index) {
+
+            $("#ddlProgramName").val("0");
+            $scope.HDArrayIndex = index;
+            $scope.MID = StaffRoleRec[index].MID;
+            $scope.ddlProgramName = { ID: StaffRoleRec[index].MenuID };
+
+            $scope.ChkProgCreate = StaffRoleRec[index].CreateID;
+            $scope.ChkProgUpdate = StaffRoleRec[index].UpdateID;
+            $scope.ChkProgDelete = StaffRoleRec[index].DeleteID;
+            $scope.ChkProgView = StaffRoleRec[index].ViewID;
+            $scope.OnselectGridValue($scope.StaffRoleRec[index].MenuID);
+
+
+
+        }
+
+        $scope.Remove = function (StaffRoleRec, index, MIDv) {
+            $('#overlay').show();
+            var BussData = {}
+            BussData.MID = MIDv;
+          
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleAccess/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                   
+                    if (result.data.length > 0)
+                    {
+                        $scope.StaffRoleRec.splice(index, MID);
+                        $scope.BindExistingGridValues($scope.RegId);
+                        ShowPopup(result.data[0].Message);
+                    }
+                    $('#overlay').hide();
+                });
+            });
+        }
+        $scope.AddRecordMenuAccess = function (StaffRoleSubMenu) {
+            var validation = "";
+
+            var ddlProcessName = $('#ddlProcessName').val();
+            if (ddlProcessName == "?" || ddlProcessName == "")
+            {
+                validation += "<span style='color:red;'>*</span> <span>Please Select ProcessName</span></br>"
+            }
+
+            for (var i = 0; i < StaffRoleSubMenu.length; i++) {
+
+                if (StaffRoleSubMenu[i].MenuID == $("#ddlProcessName").val()) {
+                    validation += "<span style='color:red;'>*</span> <span>Already Exists Sub Menus </span></br>"
+                }
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var TIDValue;
+            TIDValue = ($("#ddlProcessName").val() == "") ? 0 : $("#ddlProcessName").val();
+            var val = {
+                'MID': TIDValue,
+                'MenuID': $("#ddlProcessName").val(),
+                'MenuName': $("#ddlProcessName option:selected").text(),
+                'CreateID': $scope.ChkCreate,
+                'UpdateID': $scope.ChkUpdate,
+                'DeleteID': $scope.ChkDelete,
+                'ViewID': $scope.ChkView
+
+
+            };
+            if ($scope.HDArrayIndex1 != null && $scope.HDArrayIndex1.length != 0) {
+                $scope.StaffRoleSubMenu[$scope.HDArrayIndex] = val;
+            } else {
+                $scope.StaffRoleSubMenu.push(val);
+            }
+
+
+            $("#ddlProcessName").val("0");
+            $scope.HDArrayIndex1 = "";
+            $scope.TID = 0;
+
+        }
+
+        $scope.SelectvaluesMenus = function (StaffRoleSubMenu, index) {
+            $("#ddlProcessName").val("0");
+            $scope.HDArrayIndex = index;
+            $scope.MID = $scope.StaffRoleSubMenu[index].MID;
+            $scope.ddlProcessName = { ID: $scope.StaffRoleSubMenu[index].MenuID };
+            $scope.ChkCreate = $scope.StaffRoleSubMenu[index].CreateID;
+            $scope.ChkUpdate = $scope.StaffRoleSubMenu[index].UpdateID;
+            $scope.ChkDelete = $scope.StaffRoleSubMenu[index].DeleteID;
+            $scope.ChkView = $scope.StaffRoleSubMenu[index].ViewID;
+        }
+        $scope.RecordSave = function (datav, dataX) {
+            var validation = "";
+
+
+            var txtRoleCode = $('#txtRoleCode').val();
+            if (txtRoleCode.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Role Code</span></br>"
+            }
+
+            var txtDescription = $('#txtDescription').val();
+            if (txtDescription.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Description</span></br>"
+            }
+
+            var ddlModuleName = $('#ddlModuleName').val();
+            if (ddlModuleName == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please select  Module</span></br>"
+            }
+
+
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {}
+            if ($scope.RegId != "")
+                BussData.ID = $scope.RegId;
+            else
+                BussData.ID = 0;
+
+            BussData.RoleCode = $scope.txtRoleCode;
+            BussData.RoleDes = $scope.txtDescription;
+            BussData.ModulID = $('#ddlModuleName').val();
+
+
+            var Items = [];
+            var ItemsData = [];
+
+            angular.forEach(datav, function (value, key) {
+                Items.push('Insert:' + datav[key].MenuID, datav[key].CreateID, datav[key].UpdateID, datav[key].DeleteID, datav[key].ViewID
+                );
+            });
+            angular.forEach(dataX, function (value, key) {
+                ItemsData.push('Insert:' + dataX[key].MenuID, dataX[key].CreateID, dataX[key].UpdateID, dataX[key].DeleteID, dataX[key].ViewID
+                );
+            });
+
+            BussData.Items = Items.toString();
+            BussData.ItemsData = ItemsData.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/StaffApi/StaffRoleInsert",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Save = result.data;
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Record Saved Successfully");
+                        $scope.txtRoleCode = "";
+                        $scope.txtDescription = "";
+                        //$scope.ddlProgramName = 0;
+                    }
+                    else {
+                        ShowPopup("Error Not Saved");
+                    }
+                    return false;
+                });
+            });
+        }
+        $scope.BindRolesRecord = function (RoleID) {
+            var BussData = {}
+            BussData.ID = RoleID;
+
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleBindRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.RegId = result.data[0].ID;
+                        $scope.txtRoleCode = result.data[0].RoleCode;
+                        $scope.txtDescription = result.data[0].RoleDes;
+                        $scope.ddlModuleName = { ID: result.data[0].ModulID };
+                        $scope.BindExistingData(result.data[0].ModulID);
+                        $scope.BindExistingGridValues(result.data[0].ID)
+                    }
+                });
+            });
+        }
+
+        $scope.BindExistingData = function (Iscommon) {
+
+            var BussData = {}
+            BussData.IsCommonID = Iscommon;
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleMenu/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.MenuValues = result.data;
+
+                });
+            });
+        }
+
+
+        $scope.BindExistingGridValues = function (Ids) {
+
+            var BussData = {}
+            BussData.ID = Ids;
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/RoleMenuExistingRecordBindGrid/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+
+                        $scope.StaffRoleRec = result.data;
+                    }
+                });
+            });
+        }
+
+
+        $scope.OnselectGridValue = function (MenuID) {
+
+            var BussData = {}
+            BussData.MenuID = MenuID;
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/StaffRoleMenuAccess/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+
+                    if (result.data.length > 0) {
+                        $scope.MenuAccessValues = result.data;
+                        $scope.BindExistingGridAccessValues(MenuID);
+                    }
+                    else {
+                        $scope.MenuAccessValues.length = 0;
+                        $scope.StaffRoleSubMenu.length = 0;
+
+                    }
+
+
+                });
+            });
+        }
+        $scope.BindExistingGridAccessValues = function (MenuID) {
+
+            var BussData = {}
+            BussData.MenuID = MenuID;
+            $http({
+                method: 'POST',
+                url: '/api/StaffApi/RoleMenuExistingRecordBindGridAccess/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                if (result.data.length > 0) {
+
+                    $scope.StaffRoleSubMenu = result.data;
+                }
+                else {
+                    StaffRoleSubMenu.data.length = 0;
+                }
+            });
+
+        }
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["RoleID"] != null) {
+
+                $scope.RegId = queryString["RoleID"].toString();
+                $scope.BindRolesRecord(queryString["RoleID"].toString());
+
+
+            }
+        });
+        $scope.back = function () {
+
+            window.location = "/StaffMaster/StaffRoleView";
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<style>
+    .bmd-form-group [class*=" bmd-label"], .bmd-form-group [class^=bmd-label] {
+        position: initial;
+    }
+
+    .nav-tabs .nav-item .nav-link.active {
+        background-color: hsl(336deg 76% 50%);
+        transition: background-color .3s .2s;
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        margin: 3px 6px;
+        background-color: #20498e;
+        padding: 5px 0;
+    }
+
+    .nav-tabs .nav-item {
+        width: 46%;
+    }
+
+    .chargedtls label {
+        font-size: 13px !important;
+    }
+
+    .nav-tabs {
+        padding: 8px 0px;
+        border-bottom: none !important;
+    }
+    /* .chargedtls
+        {
+            border:1px solid #ccc;
+        }*/
+    .card .pickupdiv .table tr td {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        /* font-weight: 600;*/
+        background-color: #f0f8ff78;
+        color: #333;
+    }
+
+    .card .pickupdiv .table tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #21277a;
+    }
+
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a ng-click="back();" class="btn btn-fill btn-success btn-round btntop" style="color:#fff;">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title"> Role Management</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" style="border:1px solid #ccc; padding-bottom:20px;">
+                            <div class="col-md-6" style="border-right:1px solid #ccc;">
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Role Code</label>
+                                            <input type="text" id="txtRoleCode" ng-model="txtRoleCode" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Role Description</label>
+                                            <input type="text" id="txtDescription" ng-model="txtDescription" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Program Name</label>
+                                            <select id="ddlProgramName" ng-model="ddlProgramName" ng-options="item.FileName for item in MenuValues track by item.ID" class="form-control my-select"></select>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row" style="margin-top:41px;">
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkProgCreate" ng-model="ChkProgCreate" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">Create</label>
+                                            </div>
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkProgUpdate" ng-model="ChkProgUpdate" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">Update</label>
+                                            </div>
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkProgDelete" ng-model="ChkProgDelete" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">Delete</label>
+                                            </div>
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkProgView" ng-model="ChkProgView" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">View</label>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                    </div>
+
+
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-12" style="text-align:right;">
+                                        <button class="btn btn-warning" ng-click="AddRecord(gRow);">ADD</button>
+                                        @*<input type="hidden" id="RegId" ng-model="RegId" />
+                                            <input type="hidden" id="HdId" ng-model="HdId" />*@
+                                        <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col-md-12">
+                                        <div class="material-datatables" style="overflow:scroll;">
+
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Program Name</th>
+                                                        <th>Create</th>
+                                                        <th>Update</th>
+                                                        <th>Delete</th>
+                                                        <th>View</th>
+                                                        <th>Action</th>
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr ng-repeat="gRow in StaffRoleRec | filter : paginate | orderBy:'-Statusv'">
+                                                        <td>
+                                                            {{gRow.MenuName}}
+                                                            <input type="hidden" id="MID" ng-model="gRow.MenuID" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.CreateID" ng-true-value="1" ng-false-value="0" id="Create" />
+
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.UpdateID" ng-true-value="1" ng-false-value="0" id="Update" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.DeleteID" ng-true-value="1" ng-false-value="0" id="Delete" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.ViewID" ng-true-value="1" ng-false-value="0" id="View" />
+                                                        </td>
+                                                        <td class="td-actions text-right bindgrid">
+                                                            <button type="button" rel="tooltip" ng-click="Selectvalues(StaffRoleRec,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">edit</i>
+                                                            </button>
+                                                            <button type="button" rel="tooltip" ng-click="Remove(StaffRoleRec,$index,gRow.MID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">delete</i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+
+
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Module Name</label>
+                                            <select id="ddlModuleName" ng-model="ddlModuleName" ng-options="item.Description for item in MenuModulValues track by item.ID" class="form-control my-select"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Process Name</label>
+                                            <select id="ddlProcessName" ng-model="ddlProcessName" ng-options="item.Description for item in MenuAccessValues track by item.ID" class="form-control"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row" style="margin-top:41px;">
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkCreate" ng-model="ChkCreate" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">Create</label>
+                                            </div>
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkUpdate" ng-model="ChkUpdate" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">Update</label>
+                                            </div>
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkDelete" ng-model="ChkDelete" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">Delete</label>
+                                            </div>
+                                            <div class="col-md-3" style="text-align:center;">
+                                                <input type="checkbox" id="ChkView" ng-model="ChkView" ng-true-value="1" ng-false-value="0" />
+                                                <label style="padding: 0px 4px;">View</label>
+                                            </div>
+                                        </div>
+
+
+
+
+
+                                    </div>
+                                </div>
+                                <div class="row" style="border-bottom:1px solid #ccc;">
+                                    <div class="col-md-12" style="text-align:right;">
+                                        <button class="btn btn-warning" ng-click="AddRecordMenuAccess(StaffRoleSubMenu);">ADD</button>
+                                        @*<input type="hidden" id="RegId" ng-model="RegId" />
+                                            <input type="hidden" id="HdId" ng-model="HdId" />*@
+                                        <input type="hidden" id="HDArrayIndex1" class="form-control" ng-model="HDArrayIndex1" />
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top:10px;">
+                                    <div class="col-md-12">
+                                        <div class="material-datatables" style="overflow:scroll;">
+
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Process Name</th>
+                                                        <th>Create</th>
+                                                        <th>Update</th>
+                                                        <th>Delete</th>
+                                                        <th>View</th>
+                                                        <th>Action</th>
+
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr ng-repeat="gRow in StaffRoleSubMenu | filter : paginate | orderBy:'-Statusv'">
+                                                        <td>
+                                                            {{gRow.MenuName}}
+                                                            <input type="hidden" id="MID" ng-model="gRow.MenuID" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.CreateID" ng-true-value="1" ng-false-value="0" id="Create" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.UpdateID" ng-true-value="1" ng-false-value="0" id="Update" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.DeleteID" ng-true-value="1" ng-false-value="0" id="Delete" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" ng-model="gRow.ViewID" ng-true-value="1" ng-false-value="0" id="View" />
+                                                        </td>
+                                                        <td class="td-actions text-right bindgrid">
+                                                            <button type="button" rel="tooltip" ng-click="SelectvaluesMenus(StaffRoleSubMenu,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">edit</i>
+                                                            </button>
+                                                            <button type="button" rel="tooltip" ng-click="" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">delete</i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+
+
+
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button class="btn btn-success" ng-click="RecordSave(StaffRoleRec,StaffRoleSubMenu);">SAVE</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>
+

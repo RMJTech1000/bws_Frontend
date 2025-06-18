@@ -1,0 +1,1398 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 2 }
+        ];
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["MNRID"] != null) {
+                $scope.HDRegId = queryString["MNRID"].toString();
+                //$scope.BindGeoLocEdit(queryString["GeoLocID"].toString());
+
+            }
+        });
+
+        //$scope.BindGeoLocEdit = function (GeoLocID) {
+
+        //    var Datavalue = {}
+        //    var id = GeoLocID;
+
+        //    if (id == "" || id == null)
+        //        Datavalue.ID = 0;
+        //    else
+        //        Datavalue.ID = GeoLocID;
+
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/Home/GeoLocationEdit/',
+        //        data: JSON.stringify(Datavalue),
+        //    }).then(function (result) {
+        //        $timeout(function () {
+
+        //            if (Datavalue.ID != "") {
+        //                $scope.HDRegId = result.data[0].ID;
+        //                $scope.txtGeoLoc = result.data[0].GeoLocation;
+        //                $scope.ddlCountry = { CountryID: result.data[0].CountryID };
+        //                $scope.ddlStatus= { ID: result.data[0].Status };
+
+        //            }
+        //            else {
+        //                $scope.txtGeoLoc = "";
+        //                $scope.ddlCountry = "";
+        //                $scope.ddlStatus = "";
+
+        //            }
+        //        });
+        //    });
+
+        //}
+
+        $scope.back = function () {
+            window.location = "/MNRNew/MNRHistoryView";
+        }
+    });
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<style>
+    legend {
+        background-color: #0585b5;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout, Upload) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+        $scope.disablebuttons = true;
+        $scope.MNRCostToList = null;
+        $scope.fillMNRCostToList = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRBindCostToDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRCostToList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRCostToList();
+
+        $scope.MNRItemList = null;
+        $scope.fillMNRItemList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRLineItemDropdown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRItemList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRItemList();
+
+
+        $scope.MNRAttachTypeComleteList = null;
+        $scope.filMNRAttachTypeComleteList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRAttachType',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRAttachTypeComleteList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.filMNRAttachTypeComleteList();
+
+        $scope.MNRAttachTypeList = null;
+        $scope.fillMNRAttachTypeList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRAttachTypeEstimate/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRAttachTypeList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRAttachTypeList();
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrNo();
+
+        $scope.MNRStatusList = null;
+        $scope.fillMNRStatusList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/BindMNRNewStatus/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.MNRStatusList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillMNRStatusList();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+
+        $scope.AgencyMaster = null;
+        $scope.FillAgencyMaster = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyMaster = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillAgencyMaster();
+
+        $scope.PortList = null;
+        $scope.fillPortList = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillPortList();
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["MNRID"] != null) {
+                $scope.HDRegId = queryString["MNRID"].toString();
+                $scope.BindMNRHistoryEdit(queryString["MNRID"].toString());
+                $scope.BindAttachmetDownloadDetails(queryString["MNRID"].toString());
+                $scope.BindRecoveryDetails(queryString["MNRID"].toString());
+            }
+        });
+
+        $scope.BindMNRHistoryEdit = function (MNRID) {
+
+            var BussData = {}
+            var id = MNRID;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = MNRID;
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRNewApi/MNRHistoryEdit",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        $scope.HDRegId = result.data[0].ID;
+                        $scope.HDCntrID = result.data[0].CntrID;
+                        $scope.txtMNRNo = result.data[0].MNRRefNo;
+                        $scope.ddlMNRStatus = { ID: result.data[0].MNRStatusID };
+                        $("#ddlMNRStatus").val(result.data[0].MNRStatusID).trigger("change");
+                        $scope.ddlLocation = { ID: result.data[0].LocationID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlAgency = { ID: result.data[0].AgencyID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlCntrNo = { ID: result.data[0].CntrID };
+                        $scope.txtConsignee = result.data[0].Consignee;
+                        $scope.txtBLNumber = result.data[0].BLNumber;
+                        $scope.ddlSizeType = { TypeID: result.data[0].CntrTypeID };
+                        document.getElementById('txtEmptyDate').value = result.data[0].EmptyGateIN;
+                        document.getElementById('txtSurveyDate').value = result.data[0].SurveyDate;
+                        document.getElementById('txtEstDate').value = result.data[0].EstimateDate;
+                        document.getElementById('txtApprDate').value = result.data[0].ApprovedDate;
+                        document.getElementById('txtMCDate').value = result.data[0].MNRCompleteDate;
+                        $scope.txtEstAmt = result.data[0].Estimate;
+                        $scope.txtApprAmt = result.data[0].Approved;
+                        $scope.txtCustomer = result.data[0].RecoveryCustomer;
+                        $scope.txtAgent = result.data[0].RecoveryAgent;
+                        $scope.txtPrincipal = result.data[0].RecoveryPrincipal;
+                        $scope.ApprovedValue = result.data[0].Approved;
+                        if (result.data[0].MNRStatusID == 294) {
+                            if (localStorage.getItem("UserID") != "1" && localStorage.getItem("UserID") != "12" && localStorage.getItem("UserID") != "14") {
+
+                                document.getElementById("btnSave").disabled = true;
+                                document.getElementById("btnSave").style.cursor = 'not-allowed';
+                                $scope.disablebuttons = true;
+                            }
+                            else {
+                                document.getElementById("btnSave").disabled = false;
+                                document.getElementById("btnSave").style.cursor = 'allowed';
+                                $scope.disablebuttons = false;
+                            }
+                        }
+                        else {
+                            document.getElementById("btnSave").disabled = true;
+                            document.getElementById("btnSave").style.cursor = 'not-allowed';
+                            $scope.disablebuttons = true;
+                        }
+
+                    }
+
+                });
+            });
+
+
+        }
+
+        $scope.DynamicGrid = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "" ,IsDepot:0}];
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.BindAttachmetDownloadDetails = function (MNRID) {
+
+            var Datavalue = {};
+
+           // Datavalue.CntrID = CntrID;
+            Datavalue.MNRID = MNRID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRNewDocumentsHistoryEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        if (result.data[0].AttachTypeID != "") {
+                            $scope.DynamicGrid.splice(0, 1);
+
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGrid.push({
+                                'AID': result.data[key].AID,
+                                'FileName': result.data[key].FileName,
+                                'AttachmentType': result.data[key].AttachmentType,
+                                'AttachmentTypeID': result.data[key].AttachTypeID,
+                                'IsDepot': result.data[key].IsDepot,
+                            });
+
+                        });
+
+                    }
+                    //$scope.onEstimateClickBindForAttach($scope.ItemsCntrIDs);
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+
+        $scope.DynamicGridRecovery = [{ RID: "", Accountability: "", AccountabilityID: "", ItemNo: "", ItemNoID: "", RecoveryAmount: "" }];
+        $scope.DynamicGridRecovery.splice(0, 1);
+
+        $scope.AddRecovery = function (DynamicGridRecovery) {
+
+            var validation = "";
+
+
+            var ddlAcct = $('#ddlAcct').val();
+            if (ddlAcct == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Accountability </span></br>"
+            }
+            var ddlLineItem = $('#ddlLineItem').val();
+            if (ddlLineItem == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Line Item </span></br>"
+            }
+
+            var txtRecoveryAmount = $('#txtRecoveryAmount').val();
+            if (txtRecoveryAmount.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Recovery Amount</span></br>"
+            }
+            var txtRecoveryRemarks = $('#txtRecoveryRemarks').val();
+            if (txtRecoveryRemarks.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Recovery Remarks</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            for (var i = 0; i < $scope.DynamicGridRecovery.length; i++) {
+
+                //if ($scope.DynamicGridRecovery[i].AccountabilityID == $('#ddlAcct').val() ) {
+
+                //    validation += "<span style='color:red;'>*</span> <span>Accountability Already Exists </span></br>"
+                //}
+
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var RIDValue;
+
+            RIDValue = ($scope.RID == "") ? 0 : $scope.RID;
+
+            var val = {
+                'RID': RIDValue,
+                'AccountabilityID': $("#ddlAcct").val(),
+                'Accountability': $("#ddlAcct option:selected").text(),
+                'ItemNoID': $("#ddlLineItem").val(),
+                'ItemNo': $("#ddlLineItem option:selected").text(),
+                'RecoveryAmount': $("#txtRecoveryAmount").val(),
+                'RecoveryRemarks': $("#txtRecoveryRemarks").val(),
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGridRecovery[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGridRecovery.push(val);
+            }
+            $("#ddlAcct").val("");
+            $("#ddlLineItem").val("");
+            $("#txtRecoveryAmount").val("");
+            $("#txtRecoveryRemarks").val("");
+            $scope.HDArrayIndex = "";
+            $scope.RID = 0;
+
+        }
+
+        $scope.BindRecoveryDetails = function (MNRID) {
+
+
+            var Datavalue = {};
+
+            //Datavalue.CntrID = CntrID;
+            Datavalue.MNRID = MNRID;
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRRecoveryDetailsEdit',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        console.log(result.data);
+                        if (result.data[0].AccountabilityID != "") {
+                            $scope.DynamicGridRecovery.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridRecovery.push({
+                                'RID': result.data[key].RID,
+                                'AccountabilityID': result.data[key].AccountabilityID,
+                                'Accountability': result.data[key].Accountability,
+                                'ItemNoID': result.data[key].ItemNoID,
+                                'ItemNo': result.data[key].ItemNo,
+                                'RecoveryAmount': result.data[key].RecoveryAmount,
+                                'RecoveryRemarks': result.data[key].RecoveryRemarks,
+                            });
+
+                        });
+
+                    }
+                    else {
+
+                        $scope.DynamicGridRecovery.splice(0, 1);
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+
+        $scope.Selectvalues = function (DynamicGridRecovery, index) {
+
+            $scope.HDArrayIndex = index;
+            $scope.RID = $scope.DynamicGridRecovery[index].RID;
+            $('#ddlAcct').val($scope.DynamicGridRecovery[index].AccountabilityID).trigger("change");
+            $('#ddlLineItem').val($scope.DynamicGridRecovery[index].ItemNoID).trigger("change");
+            $scope.RecoveryAmount = $scope.DynamicGridRecovery[index].RecoveryAmount;
+            $scope.RecoveryRemarks = $scope.DynamicGridRecovery[index].RecoveryRemarks;
+        }
+        $scope.back = function () {
+
+            window.location = "/MNRNew/MNRHistoryView";
+        }
+
+
+        $scope.UploadFiles = function (files) {
+            $scope.SelectedFiles = files;
+            if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                if ($scope.SelectedFiles && $scope.SelectedFiles.length) {
+                    Upload.upload({
+                        url: '/MNR/Upload/',
+                        data: {
+                            files: $scope.SelectedFiles
+
+                        }
+                    })
+                        .then(function (response) {
+                            $timeout(function () {
+
+                                $scope.FileName = response.data;
+                                $('#UploadMBL').text("");
+
+
+                            });
+                        }, function (response) {
+                            if (response.status > 0) {
+                                var errorMsg = response.status + ': ' + response.data;
+
+                            }
+                        }, function (evt) {
+                            var element = angular.element(document.querySelector('#dvProgress'));
+                            $scope.Progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                            element.html('<div style="width: ' + $scope.Progress + '%">' + $scope.Progress + '%</div>');
+                        });
+                }
+            }
+
+        }
+
+        $scope.DynamicGrid = [{ AID: "", FileName: "", AttachmentTypeID: "", AttachmentType: "", IsDepot: 0 }];
+        $scope.DynamicGrid.splice(0, 1);
+        $scope.Add = function (DynamicGrid) {
+
+            var validation = "";
+
+
+            var FileName = $('#FileName').val();
+            if (FileName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Upload File</span></br>"
+            }
+            var ddlAttachType = $('#ddlAttachType').val();
+            if (ddlAttachType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Attachment Type </span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+
+
+            var val = {
+
+                'FileName': $scope.FileName,
+                'AttachmentTypeID': $("#ddlAttachType").val(),
+                'AttachmentType': $("#ddlAttachType option:selected").text(),
+                'IsDepot': 0
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGrid.push(val);
+            }
+            $("#ddlAttachType").val("");
+            $scope.txtFileMBL = "";
+            $scope.HDArrayIndex = "";
+            $scope.AID = 0;
+
+        }
+
+        $scope.DeleteAttachments = function (DynamicGrid, index, AID) {
+
+            var Datavalue = {}
+            Datavalue.AID = AID;
+            $scope.DynamicGrid.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/MNRNewApi/MNRAttachmentsDelete/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGrid.splice(index, AID);
+                    ShowPopup(result.data[0].AlertMessage);
+                    //$scope.BindAttachmetDownloadDetails($scope.HDRegId);
+
+                });
+            });
+
+        }
+        $scope.DownloadFile = function (fileName, IsDepot) {
+            var fileNametext = fileName;
+            if (IsDepot == 1) {
+                window.location.href = 'https://depo.oceanus-lines.com/MNRAttachments/' + fileName;
+               
+            }
+
+
+            else {
+                  window.location.href = '@Url.Action("DownloadAttachment", "MNR")?fileName=' + fileName;
+            }
+        };
+
+        $scope.RemoveRecovery = function (DynamicGridRecovery, index, RID) {
+            // alert(AID);
+            var Datavalue = {}
+            Datavalue.RID = RID;
+
+            if (RID == undefined || RID == 0) {
+                $scope.DynamicGridRecovery.splice(index, 1);
+            }
+            else {
+                $http({
+                    method: 'POST',
+                    url: '/api/MNRNewApi/MNRRecoveryDelete/',
+                    data: JSON.stringify(Datavalue),
+                }).then(function (result) {
+                    $timeout(function () {
+                        $scope.DynamicGridRecovery.splice(index, RID);
+                        ShowPopup(result.data[0].AlertMessage);
+                        $scope.BindRecoveryDetails($scope.GridCntrID, $scope.GridMNRID);
+                    });
+
+                });
+            }
+        }
+
+        $scope.SaveHistory = function (DynamicGridRecovery, DynamicGrid) {
+            var validation = "";
+
+            var Datav = "undefined";
+
+            angular.forEach(DynamicGridRecovery, function (value, key) {
+                Datav += DynamicGridRecovery[key].Accountability.ID;
+
+            });
+            if (Datav.toString() == "undefined") {
+                validation += "<span style='color:red;'>*</span> <span>Please Add Recovery Details</span></br>"
+            }
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            var RecoveryTotalAmt = 0;
+
+            //for (var i = 0; i < $scope.DynamicGridRecovery.length; i++) {
+
+            //    RecoveryTotalAmt += parseFloat($scope.DynamicGridRecovery[i].RecoveryAmount).toFixed(2);
+
+            //}
+            var RecoveryTotalAmtv = 0.00;
+            angular.forEach(DynamicGridRecovery, function (value, key) {
+                RecoveryTotalAmt += parseFloat(DynamicGridRecovery[key].RecoveryAmount);
+            });
+            RecoveryTotalAmtv = Math.round(RecoveryTotalAmt * 100) / 100;
+
+            if (RecoveryTotalAmtv != $scope.ApprovedValue) {
+
+                Swal.fire("Recovery Amount Must Match Approved Amount,Please Check.");
+                return;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+
+            BussData.CntrID = $scope.HDCntrID;
+            BussData.MNRID = $scope.HDRegId;
+            BussData.UserID = localStorage.getItem("UserID");
+
+            var ItemsRecovery = []
+            angular.forEach(DynamicGridRecovery, function (value, key) {
+
+                var intRID = DynamicGridRecovery[key].RID;
+                if (typeof DynamicGridRecovery[key].RID == "undefined") {
+                    intRID = 0;
+                }
+                ItemsRecovery.push('Insert:' + intRID, DynamicGridRecovery[key].AccountabilityID, DynamicGridRecovery[key].Accountability, DynamicGridRecovery[key].ItemNoID,
+                    DynamicGridRecovery[key].ItemNo, DynamicGridRecovery[key].RecoveryAmount, 'Remarks:' + DynamicGridRecovery[key].RecoveryRemarks
+                );
+            });
+            BussData.ItemsRecovery = ItemsRecovery.toString();
+
+            var ItemsAttachments = []
+
+
+            angular.forEach(DynamicGrid, function (value, key) {
+
+                ItemsAttachments.push('Insert:' + DynamicGrid[key].FileName, DynamicGrid[key].AttachmentTypeID, DynamicGrid[key].AttachmentType,
+
+                );
+            });
+
+            BussData.ItemsAttachments = ItemsAttachments.toString();
+
+            $http({
+                method: 'POST',
+                url: "/api/MNRNewApi/InsertMNRDetailsHistory",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    ShowPopup(result.data[0].AlertMessage);
+
+                    if (result.data[0].AlertMessageID == "1") {
+                        setTimeout(function () { location.href = "/MNRNew/MNRHistoryView" }, 1500);
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">MNR History</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+                                        <div class="col-md-4 leg cardtitle">Basic Details</div>
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content">
+                                    <div class="tab-pane pt-3 active show" role="tabpanel">
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>MNR No</label>
+                                                            <input type="text" autocomplete="off" disabled id="txtMNRNo" ng-model="txtMNRNo" placeholder="MNR No" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>MNR Status</label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlMNRStatus" id="ddlMNRStatus" ng-options="item.GeneralName for item in MNRStatusList track by item.ID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Location </label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlLocation" id="ddlLocation" ng-options="item.PortName for item in PortList track by item.ID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Depot</label>
+                                                            <select id="ddlDepot" ng-model="ddlDepot" disabled class="form-control my-select" ng-options="item.DepName for item in DepotValue  track by item.ID"></select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Agency</label>
+
+                                                            <select class="form-control my-select" id="ddlAgency" disabled ng-model="ddlAgency" ng-options="item.AgencyName for item in AgencyMaster track by item.ID">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @*<div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label>Vessel</label>
+                                                                <input type="text" autocomplete="off" disabled formControlName="Vessel" id="txtVessel" class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label>Voyage</label>
+                                                                <input type="text" autocomplete="off" disabled formControlName="Voyage" id="txtVoyage" class="form-control" />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>*@
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Consignee</label>
+                                                            <input type="text" autocomplete="off" disabled id="txtConsignee" ng-model="txtConsignee" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Container No</label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID">
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Container Type</label>
+                                                            <select class="form-control my-select" disabled ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>BLNumber</label>
+                                                            <input type="text" autocomplete="off" disabled id="txtBLNumber" ng-model="txtBLNumber" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+
+                                        <div class="col-md-4 leg cardtitle">Empty In & Survey</div>
+
+
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content">
+                                    <div class="tab-pane pt-3 active show" role="tabpanel">
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Empty In
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtEmptyDate" ng-model="txtEmptyDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Survey Completion
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtSurveyDate" ng-model="txtSurveyDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+                                        <div class="col-md-4 leg cardtitle">     Estimation, Approval and Repair </div>
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="tab-content">
+                                    <div class="tab-pane pt-3 active show" role="tabpanel">
+
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Estimation Date
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtEstDate" ng-model="txtEstDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                Approval Date
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtApprDate" ng-model="txtApprDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>
+                                                                MNR Completion Date
+                                                            </label>
+                                                            <input type="date" autocomplete="off" disabled id="txtMCDate" ng-model="txtMCDate" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label class="str">
+                                                                Estimation Amount
+                                                            </label>
+                                                            <input type="text" autocomplete="off" disabled id="txtEstAmt" ng-model="txtEstAmt" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label class="str">
+                                                                Approval Amount
+                                                            </label>
+                                                            <input type="text" autocomplete="off" disabled id="txtApprAmt" ng-model="txtApprAmt" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+                                        <div class="col-md-4 leg cardtitle">  Recovery  Details </div>
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane pt-3 active show" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-8 tbl">
+                                        <div class="material-datatables">
+                                            @*<h5 class="cardtitle" style="text-align: center;font-weight:bold">Recovery Details</h5>*@
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No</th>
+                                                        <th>Accountability </th>
+                                                        <th>Item-Number </th>
+                                                        <th>Amount </th>
+                                                        <th>Remarks </th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr class="gridbody1">
+                                                        <td></td>
+                                                        <td>
+                                                            <select class="form-control my-select" ng-model="ddlAcct" id="ddlAcct" ng-options="item.CostTo for item in MNRCostToList track by item.ID">
+                                                            </select>
+                                                            <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                                            <input type="hidden" id="HDRID" class="form-control" ng-model="HRow.RID" />
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control my-select" ng-model="ddlLineItem" id="ddlLineItem" ng-options="item.LineItemNo for item in MNRItemList track by item.ID">
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control" id="txtRecoveryAmount" ng-model="RecoveryAmount" />
+
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control" id="txtRecoveryRemarks" ng-model="RecoveryRemarks" />
+
+                                                        </td>
+                                                        <td class="td-actions text-right entrygrid">
+                                                            <button type="button" rel="tooltip" ng-disabled="disablebuttons" ng-click="AddRecovery(HRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">add</i>
+                                                            </button>
+
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="gridbody1" ng-repeat="HRow in DynamicGridRecovery">
+                                                        <td>{{$index+1}}</td>
+
+
+                                                        <td>
+                                                            {{HRow.Accountability}}
+
+                                                        </td>
+                                                        <td>
+                                                            {{HRow.ItemNo}}
+
+
+                                                        </td>
+                                                        <td>
+                                                            {{HRow.RecoveryAmount}}
+
+
+                                                        </td>
+                                                        <td>
+                                                            {{HRow.RecoveryRemarks}}
+
+                                                        </td>
+                                                        <td class="td-actions text-right bindgrid">
+                                                            <button type="button" rel="tooltip" ng-disabled="disablebuttons" ng-click="Selectvalues(DynamicGridRecovery,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">edit</i>
+                                                            </button>
+                                                            <button type="button" rel="tooltip" ng-disabled="disablebuttons" ng-click="RemoveRecovery(DynamicGridRecovery,$index,HRow.RID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">delete</i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row headtitle">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <legend style="background-color: #464b92 !important;">
+                                        <div class="col-md-4 leg cardtitle">  Attachments </div>
+                                    </legend>
+
+                                </fieldset>
+                            </div>
+
+                        </div>
+                        <div class="tab-content">
+                            <div class="tab-pane pt-3 active show" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-8 tbl">
+                                        <div class="material-datatables">
+                                            <h5></h5>
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No</th>
+                                                        <th>Attach File</th>
+                                                        <th>Attachment Type</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+
+                                                        <td>{{$index+1}}</td>
+                                                        <td style="width:70%!important">
+                                                            <span class="input-group-addon"><i class="fa fa-upload"></i></span>
+                                                            <input ng-model="FileName" id="FileName" ng-disabled="disablebuttons" type="file" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)"; opacity:0;background-color:transparent;color:transparent;' name="file_source" size="40" ngf-select="UploadFiles($files)" onchange='$("#upload-file-info").html($(this).val());' />
+
+                                                            <span class='label label-info' id="upload-file-info"></span>
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-control des" ng-model="ddlAttachType" id="ddlAttachType" ng-options="item.MNRAttachType for item in MNRAttachTypeComleteList track by item.ID">
+                                                            </select>
+                                                        </td>
+                                                        <td class="td-actions text-right entrygrid">
+
+                                                            <button type="button" rel="tooltip" ng-click="Add(gRow)" ng-disabled="disablebuttons" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">add</i>
+                                                            </button>
+
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                                        <td>{{$index+1}}</td>
+
+
+                                                        <td>
+                                                            <a href="#" ng-click="DownloadFile(gRow.FileName,gRow.IsDepot);" style="text-decoration:underline;">{{gRow.FileName}}</a>
+
+                                                            <input type="hidden" id="HDAttachmentTypeID" class="form-control" ng-model="gRow.AttachmentTypeID" />
+                                                        </td>
+                                                        <td>
+                                                            {{gRow.AttachmentType}}
+
+                                                            <input type="hidden" id="HDID" class="form-control" ng-model="gRow.AID" />
+                                                        </td>
+                                                        <td class="td-actions text-right bindgrid">
+                                                            <button type="button" rel="tooltip" ng-disabled="disablebuttons" ng-click="DeleteAttachments(DynamicGrid,$index,gRow.AID)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                <i class="material-icons">delete</i>
+                                                            </button>
+                                                            <input type="hidden" id="HDAttach" ng-model="HDAttach" />
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" class="btn btn-fill btn-success" ng-disabled="disablebuttons" id="btnSave" ng-click="SaveHistory(DynamicGridRecovery,DynamicGrid);">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

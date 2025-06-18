@@ -1,0 +1,284 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<script type="text/javascript">
+
+
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-selectStatus').select2({
+                placeholder: "Status", allowClear: true, width: '100%'
+            });
+            $('.my-selectOwn').select2({
+                placeholder: "OwnerShip", allowClear: true, width: '100%'
+            });
+
+        });
+        $scope.AddNew = function () {
+            localStorage.setItem("ChgID", "");
+            window.location = "/Finance/ChargeCode"
+        }
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $scope.StatusList = [
+            { 'Name': 'ACTIVE', 'ID': 1 },
+            { 'Name': 'INACTIVE', 'ID': 2 },
+        ];
+
+        $scope.Ownership = null;
+        $scope.ownershipList = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/FinanceApi/BindOwnership/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Ownership = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.ownershipList();
+
+        $scope.ChargeCodeRecords = null;
+        $scope.ChargeCodeRecords = function () {
+            var BussData = {}
+            BussData.ChgCode = $scope.txtChgCode;
+            BussData.ChgDesc = $scope.txtChgDesc;
+            BussData.StatusID = $("#ddlStatus").val();
+            BussData.OwnershipID = $("#ddlChgOwnership").val();
+            $http({
+                method: 'POST',
+                url: "/api/FinanceApi/ChargeCodeview",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $scope.ChgCodeRec = result.data;
+
+                $scope.totalItems = $scope.ChgCodeRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.ChgCodeRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.ChgCodeRecords = function () {
+
+            $scope.ChargeCodeRecords();
+        }
+        $scope.ClearRecords = function () {
+
+            $scope.txtChgCode = "";
+            $scope.txtChgDesc = "";
+            $("#ddlChgOwnership").val(null).trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $scope.ChargeCodeRecords();
+        }
+        $scope.ChargeCodeRecords();
+        $scope.ChgCodeUpdate = function (urlv)
+        {
+           //var url = "/Finance/ChargeCode?ChgID=" + encodeURIComponent(url);
+           // window.location.href = url;
+
+            var ParameterValue = "ChgID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Finance/ChargeCode?" + ciphertext;
+
+            window.location.href = url;
+        }
+           $scope.btnExcel = function () {
+
+               var ChgCode = $scope.txtChgCode;
+                var User = localStorage.getItem("UserName");
+               var ChgDesc = $scope.txtChgDesc;
+               var StatusID = $("#ddlStatus").val();
+               var OwnershipID = $("#ddlChgOwnership").val();
+
+               window.location.href = '@Url.Action("CreateChgCodeExcel", "AccountsMasterExcel")?ChgCode=' + ChgCode + "&ChgDesc=" + ChgDesc + "&StatusID=" + StatusID + "&OwnershipID=" + OwnershipID + "&User=" + User;
+
+        }
+    }
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Charge Master
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 exceldownload" style="text-align:right;">
+                            <a ng-click="btnExcel();">Download <i class="fa fa-file-excel-o"></i></a>
+                        </div>
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Charge Code</th>
+                                    <th>Charge Description</th>
+                                    @*<th>Charge Group</th>
+                                        <th>Basis</th>*@
+                                    <th>SAC Code</th>
+                                    @*<th>Valid From</th>
+                                    <th>Valid Till</th>*@
+                                    @*<th>Charge Ownership</th>*@
+                                    <th>Status</th>
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in ChgCodeRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.ChgCode}}</td>
+                                    <td>{{i.ChgDesc}}</td>
+                                    @*<td>{{i.ChargeGroup}}</td>
+                                        <td>{{i.Basis}}</td>*@
+                                    <td>{{i.SACCode}}</td>
+                                    @*<td>{{i.DtValidFrom}}</td>
+                                    <td>{{i.DtValidTill}}</td>*@
+                                    @*<td>{{i.Ownership}}</td>*@
+                                    <td>{{i.StatusResult}}</td>
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="ChgCodeUpdate(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(ChgCodeRec|filter:chgCode).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtChgCode" ng-model="txtChgCode" class="form-control" placeholder="Charge Code">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtChgDesc" ng-model="txtChgDesc" class="form-control" placeholder="Charge Description">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectOwn" ng-model="ddlChgOwnership" id="ddlChgOwnership" ng-options="item.GeneralName for item in Ownership track by item.OwnershipID" required>
+                                <option value="" disabled selected>OwnerShip</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectStatus" ng-model="ddlStatus" id="ddlStatus" ng-options="item.Name for item in StatusList track by item.ID" required>
+                                <option value="" disabled selected>Status</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12 padlr0" style="text-align:right;">
+                        <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                        <button type="submit" ng-click="ChgCodeRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

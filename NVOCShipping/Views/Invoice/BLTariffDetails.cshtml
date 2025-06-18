@@ -1,0 +1,912 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+
+
+       
+
+        $scope.CollectionModeAllValues = null;
+        $scope.fillCollectionModeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "9"; //GeneralMaster Table seqNo 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CollectionModeAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCollectionModeAllValues();
+
+        $scope.ChageOwnerAllValues = null;
+        $scope.fillChageOwnerAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "11"; //GeneralMaster Table seqNo 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChageOwnerAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChageOwnerAllValues();
+
+        $scope.ExpGridValueBind = [{
+            RID: "", ChargeCodeID: "", ChargeCode: "", infoChID: "", infoCh: "",
+            Basic: "", BasicID: "", CntrTypeID: "", CntrTypes: "", CommodityTypeID: "", CommodityTypes: "",
+            CurrencyID: "", Currency: "", Amt: "", CollectionModeID: "", ChargeOwnershipID: "", ChargeOwnership: ""
+        }];
+        $scope.ImpGridValueBind = [{
+            RID: "", ChargeCodeID: "", ChargeCode: "", infoChID: "", infoCh: "",
+            Basic: "", BasicID: "", CntrTypeID: "", CntrTypes: "", CommodityTypeID:"", CommodityTypes: "",
+            CurrencyID: "", Currency: "", Amt: "", CollectionModeID: "", ChargeOwnershipID: "", ChargeOwnership: ""
+        }];
+
+
+
+
+        $(document).ready(function () {
+           
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["BLRegID"] != null) {
+
+                $scope.RegId = queryString["BLRegID"].toString();
+                $scope.BLTraffDtlsMaster(queryString["BLRegID"].toString());
+                $scope.GetTariffRateBLChargeExport(queryString["BLRegID"].toString());
+                $scope.GetTariffRateBLChargeImport(queryString["BLRegID"].toString())
+            }
+
+
+        });
+
+
+        $scope.BLTraffDtlsMaster = function (BLID) {
+
+            var Datavalue = {};
+            Datavalue.BLID = BLID;
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffDetails',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+                  
+                    $scope.BookingNo = result.data[0].BookingNo;
+                    $scope.Status = result.data[0].Status;
+                    $scope.POL = result.data[0].POL;
+                    $scope.POD = result.data[0].POD;
+                    $scope.AgentName = result.data[0].AgentName;
+
+                   
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $scope.GetTariffRateExport = function () {
+
+            var DataBuss = {};
+            DataBuss.BLID = $scope.RegId;
+            DataBuss.Types = 1;
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffRRRate',
+                data: JSON.stringify(DataBuss),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                  
+                    if (result.data.length > 0) {
+
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.ExpGridValueBind.splice(0, 1);
+                        }
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.ExpGridValueBind.push({
+                                'RID': result.data[key].RID,
+                                'ChargeCode': result.data[key].ChargeCode,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'infoChID': result.data[key].infoChID,
+                                'infoCh': result.data[key].infoCh,
+                                'BasicID': result.data[key].BasicID,
+                                'Basic': result.data[key].Basic,
+                                'CntrTypeID': result.data[key].CntrTypeID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'CommodityTypeID': result.data[key].CommodityTypeID,
+                                'CommodityTypes': result.data[key].CommodityTypes,
+                                'Currency': result.data[key].Currency,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'Amt': result.data[key].Amt,
+                                'CollectionModeID': { ID: result.data[key].CollectionModeID },
+                                'ChargeOwnershipID': result.data[key].ChargeOwnershipID,
+                                'ChargeOwnership': result.data[key].ChargeOwnership
+
+                            });
+
+                        });
+                    }
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.GetTariffRateImport = function () {
+
+            var DataBuss = {};
+            DataBuss.BLID = $scope.RegId;
+            DataBuss.Types = 2;
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffRRRate',
+                data: JSON.stringify(DataBuss),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    console.log(result.data);
+                    if (result.data.length > 0) {
+
+                        
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.ImpGridValueBind.splice(0, 1);
+                        }
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.ImpGridValueBind.push({
+                                'RID': result.data[key].RID,
+                                'ChargeCode': result.data[key].ChargeCode,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'infoChID': result.data[key].infoChID,
+                                'infoCh': result.data[key].infoCh,
+                                'BasicID': result.data[key].BasicID,
+                                'Basic': result.data[key].Basic,
+                                'CntrTypeID': result.data[key].CntrTypeID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'CommodityTypeID': result.data[key].CommodityTypeID,
+                                'CommodityTypes': result.data[key].CommodityTypes,
+                                'Currency': result.data[key].Currency,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'Amt': result.data[key].Amt,
+                                'CollectionModeID': { ID: result.data[key].CollectionModeID },
+                                'ChargeOwnershipID': result.data[key].ChargeOwnershipID,
+                                'ChargeOwnership':result.data[key].ChargeOwnership
+
+                            });
+
+                        });
+                    }
+
+
+
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $scope.UpdateBLCharges = function (ExpDate, ImpDate) {
+
+            var BussData = {}
+            var Items = []
+            var ExpItems = []
+            if ($scope.RegId == "")
+                BussData.BLID = 0;
+            else
+                BussData.BLID = $scope.RegId
+
+            console.log(ExpDate);
+            angular.forEach(ImpDate, function (value, key)
+            {
+                var ID = 0;
+
+                if (typeof ImpDate[key].RID != "undefined")
+                    ID = ImpDate[key].RID;
+
+                Items.push('Insert:' + ID,
+                    ImpDate[key].ChargeCodeID,
+                    ImpDate[key].ChargeCode,
+                    ImpDate[key].infoChID,
+                    ImpDate[key].infoCh,
+                    ImpDate[key].Basic,
+                    ImpDate[key].BasicID,
+                    ImpDate[key].CntrTypeID,
+                    ImpDate[key].CntrTypes,
+                    ImpDate[key].CommodityTypeID,
+                    ImpDate[key].CommodityTypes,
+                    ImpDate[key].CurrencyID,
+                    ImpDate[key].Currency,
+                    ImpDate[key].Amt,
+                    ImpDate[key].CollectionModeID.ID,
+                    ImpDate[key].ChargeOwnershipID,
+                    ImpDate[key].ChargeOwnership
+
+                );
+            });
+            BussData.Items = Items.toString();
+
+            angular.forEach(ExpDate, function (value, key)
+            {
+                var ID = 0;
+                
+                if (typeof ExpDate[key].RID != "undefined")
+                    ID = ExpDate[key].RID;
+
+                ExpItems.push('Insert:' + ID,
+                    ExpDate[key].ChargeCodeID,
+                    ExpDate[key].ChargeCode,
+                    ExpDate[key].infoChID,
+                    ExpDate[key].infoCh,
+                    ExpDate[key].Basic,
+                    ExpDate[key].BasicID,
+                    ExpDate[key].CntrTypeID,
+                    ExpDate[key].CntrTypes,
+                    ExpDate[key].CommodityTypeID,
+                    ExpDate[key].CommodityTypes,
+                    ExpDate[key].CurrencyID,
+                    ExpDate[key].Currency,
+                    ExpDate[key].Amt,
+                    ExpDate[key].CollectionModeID.ID,
+                    ExpDate[key].ChargeOwnershipID,
+                    ExpDate[key].ChargeOwnership
+
+                );
+            });
+            BussData.ExpItems = ExpItems.toString();
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data[0].BLID != "0") {
+                      
+                        ShowPopup("BL Traff Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.LoadingPage = function (BLId) {
+
+
+            var url = "/Invoice/BLTariffDetails?BLRegID=" + encodeURIComponent(BLId);
+            window.location.href = url;
+
+        }
+
+
+        $scope.GetTariffRateBLChargeExport = function () {
+
+            var DataBuss = {};
+            DataBuss.BLID = $scope.RegId;
+            DataBuss.Types = 1;
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffBLCharge',
+                data: JSON.stringify(DataBuss),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        console.log(result.data);
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.ExpGridValueBind.splice(0, 1);
+                        }
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.ExpGridValueBind.push({
+                                'RID': result.data[key].ID,
+                                'ChargeCode': result.data[key].ChargeCode,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'infoChID': result.data[key].infoChID,
+                                'infoCh': result.data[key].infoCh,
+                                'BasicID': result.data[key].BasicID,
+                                'Basic': result.data[key].Basic,
+                                'CntrTypeID': result.data[key].CntrTypeID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'CommodityTypeID': result.data[key].CommodityTypeID,
+                                'CommodityTypes': result.data[key].CommodityTypes,
+                                'Currency': result.data[key].Currency,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'Amt': result.data[key].Amt,
+                                'CollectionModeID': { ID: result.data[key].CollectionModeID },
+                                'ChargeOwnershipID': result.data[key].ChargeOwnershipID,
+                                'ChargeOwnership': result.data[key].ChargeOwnership
+
+                            });
+
+                        });
+                    }
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $scope.GetTariffRateBLChargeImport = function () {
+
+            var DataBuss = {};
+            DataBuss.BLID = $scope.RegId;
+            DataBuss.Types = 2;
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/BLTariffBLCharge',
+                data: JSON.stringify(DataBuss),
+
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.ImpGridValueBind.splice(0, 1);
+                        }
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.ImpGridValueBind.push({
+                                'RID': result.data[key].ID,
+                                'ChargeCode': result.data[key].ChargeCode,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'infoChID': result.data[key].infoChID,
+                                'infoCh': result.data[key].infoCh,
+                                'BasicID': result.data[key].BasicID,
+                                'Basic': result.data[key].Basic,
+                                'CntrTypeID': result.data[key].CntrTypeID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'CommodityTypeID': result.data[key].CommodityTypeID,
+                                'CommodityTypes': result.data[key].CommodityTypes,
+                                'Currency': result.data[key].Currency,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'Amt': result.data[key].Amt,
+                                'CollectionModeID': { ID: result.data[key].CollectionModeID },
+                                'ChargeOwnershipID': result.data[key].ChargeOwnershipID,
+                                'ChargeOwnership': result.data[key].ChargeOwnership
+
+                            });
+
+                        });
+                    }
+
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Invoice/BLTariffView" type="submit" ng-click="back();" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </a>
+                @*<a href="/Invoice/BLTariffDetails" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+                </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">BL Tariff Details</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+
+                        <div class="row">
+                            <div class="col-md-12" style="border:1px solid #e91e63; padding-top:12px;">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="row">
+
+                                            <div class="col-md-12" style="border-bottom:1px dashed #ccc; margin-bottom:13px;">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-5 padlr0"><h5 style="border: 1px solid #e91e63;color: #e91e63;font-weight: bold;padding: 5px;text-align:center;font-size:14px;">BL NUMBER : <span ng-bind="BookingNo"></span></h5></div>
+                                                                <div class="col-md-2">&nbsp;</div>
+                                                                <div class="col-md-5 padlr0"><h5 style="border: 1px solid #e91e63;color: #e91e63;font-weight: bold;padding: 5px;text-align:center;font-size:14px;">STATUS : <span ng-bind="Status"></span></h5></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 padlr0">
+                                                    <div class="col-md-12 padlr0">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <h5 class="cardtitle" style="padding-left:15px;">Export Rate Details</h5>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <span style="padding-left:15px;"ng-bind="POL"></span>  <button class="btn btn-rose" style="margin-left:30px;" ng-click="GetTariffRateExport()">Export Rate View </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-4" style="text-align:right;">
+                                                                    <span ng-bind="POD"></span><br />
+                                                                    <span> Export Local Charges INR - <span ng-bind="ExpRate"></span></span><br />
+                                                                    <span style="font-weight:bold;"> Export Freight Charges USD <span ng-bind="ExpRate"></span></span><br />
+                                                                    <span> Local Agent: <span ng-bind="AgentName"></span></span>
+
+                                                                </div>
+
+                                                                <div class="col-md-1 padlr0" style="border-left: 5px solid #b3b0b0;color: #168db9;font-weight: bold;font-size: 18px;">
+                                                                    <div class="col-md-12 padr0" style="text-align:center;">
+                                                                        <span>Print</span>
+                                                                    </div>
+                                                                    <div class="col-md-12 padr0" style="text-align:center;">
+                                                                        <i class="material-icons">print</i>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="material-datatables" style="overflow-y:scroll;overflow-x:hidden;">
+
+                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S.No</th>
+                                                                <th>Charges</th>
+                                                                <th>Inc.of.Frt</th>
+                                                                <th>Basis</th>
+                                                                <th>Container Type</th>
+                                                                <th>Commodity</th>
+                                                                <th>Currency</th>
+                                                                <th>Amount</th>
+                                                                <th>Collection Mode</th>
+                                                                <th>Charge Ownership</th>
+                                                                <th>Invoice No</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <tr ng-repeat="gRow in ExpGridValueBind">
+                                                                <td>{{$index+1}}</td>
+
+                                                                <td>
+                                                                    {{gRow.ChargeCode}}
+                                                                    <input type="hidden" id="HDChargeCode" ng-model="gRow.ChargeCodeID" />
+
+
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.infoCh}}
+                                                                    <input type="hidden" id="HDinfoCh" ng-model="gRow.infoChID" />
+
+
+                                                                </td>
+                                                                <td>
+                                                                    {{gRow.Basic}}
+                                                                    <input type="hidden" id="HDBasic" ng-model="gRow.BasicID" />
+
+                                                                </td>
+                                                                <td>
+                                                                    {{gRow.CntrTypes}}
+                                                                    <input type="hidden" id="HDCntrType" ng-model="gRow.BasicID" />
+
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.CommodityTypes}}
+                                                                    <input type="hidden" id="HDCntrType" ng-model="gRow.CommodityTypeID" />
+
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.Currency}}
+                                                                    <input type="hidden" id="HDCntrType" ng-model="gRow.CurrencyID" />
+
+                                                                </td>
+
+                                                                <td>{{gRow.Amt}}</td>
+
+                                                                <td>
+                                                                    <select class="form-control" id="ddlCollectionMode" ng-model="gRow.CollectionModeID" ng-options="item.GeneralName for item in CollectionModeAllValues track by item.ID">
+                                                                    </select>
+
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.ChargeOwnership}}
+                                                                    <input type="hidden" id="HDChargeOwnershipID" ng-model="gRow.ChargeOwnershipID" />
+
+                                                                </td>
+                                                                <td><input type="text" id="txtInvNo" class="form-control" ng-model="txtInvNo" /></td>
+
+                                                                <td style="display:none;"><input type="hidden" id="HDRID" class="form-control" ng-model="gRow.RID" /></td>
+
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="col-md-12" style="border:1px solid #ccc; padding:7px;">
+                                            <div class="col-md-12 padlr0" style="border-bottom:1px solid #b3b0b0;">
+                                                <h5 style="margin-bottom:0;padding-bottom: 7px;font-size: 15px;color:#168db9;font-weight: bold;">Prints</h5>
+                                            </div>
+                                            <div class="col-md-12" style="background-color:#cccccc47;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">ESIN2105001NS</h5>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align:right;">
+                                                        <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">print</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" style="background-color:#fff;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">ESIN2105001NS</h5>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align:right;">
+                                                        <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">print</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" style="background-color:#cccccc47;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">ESIN2105001NS</h5>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align:right;">
+                                                        <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">print</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="row">
+
+                                            <div class="col-md-12" style="border-bottom:1px dashed #ccc; margin-bottom:13px;">
+
+                                                <div class="col-md-12 padlr0">
+                                                    <div class="col-md-12 padlr0">
+                                                        <div class="form-group">
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <div class="row">
+                                                                        <div class="col-md-12">
+                                                                            <h5 class="cardtitle" style="padding-left:15px;">Import Rate Details</h5>
+                                                                        </div>
+                                                                        <div class="col-md-12">
+                                                                            <span style="padding-left:15px;" ng-bind="POD"></span>  <button class="btn btn-primary" style="margin-left:30px;" ng-click="GetTariffRateImport()">Import Rate View </button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-4" style="text-align:right;">
+                                                                    <span ng-bind="POL"> </span><br />
+                                                                    <span> Export Local Charges INR - <span ng-bind="ExpRate"></span> </span><br />
+                                                                    <span style="font-weight:bold;"> Export Freight Charges USD <span ng-bind="ExpRate"></span> </span><br />
+                                                                    <span> Local Agent: <span ng-bind="AgentName"></span> </span>
+
+                                                                </div>
+
+                                                                <div class="col-md-1 padlr0" style="border-left: 5px solid #b3b0b0;color: #168db9;font-weight: bold;font-size: 18px;">
+                                                                    <div class="col-md-12 padr0" style="text-align:center;">
+                                                                        <span>Print</span>
+                                                                    </div>
+                                                                    <div class="col-md-12 padr0" style="text-align:center;">
+                                                                        <i class="material-icons">print</i>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="material-datatables" style="overflow-y:scroll;overflow-x:hidden;">
+
+                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S.No</th>
+                                                                <th>Charges</th>
+                                                                <th>Inc.of.Frt</th>
+                                                                <th>Basis</th>
+                                                                <th>Container Type</th>
+                                                                <th>Commodity</th>
+                                                                <th>Currency</th>
+                                                                <th>Amount</th>
+                                                                <th>Collection Mode</th>
+                                                                <th>Charge Ownership</th>
+                                                                <th>Invoice No</th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <tr ng-repeat="gRow in ImpGridValueBind">
+                                                                <td>{{$index+1}}</td>
+
+                                                                <td>
+                                                                    {{gRow.ChargeCode}}
+                                                                    <input type="hidden" id="HDChargeCode" ng-model="gRow.ChargeCodeID" />
+                                                                   
+
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.infoCh}}
+                                                                    <input type="hidden" id="HDinfoCh" ng-model="gRow.infoChID" />
+                                                                   
+
+                                                                </td>
+                                                                <td>
+                                                                    {{gRow.Basic}}
+                                                                    <input type="hidden" id="HDBasic" ng-model="gRow.BasicID" />
+                                                                   
+                                                                </td>
+                                                                <td>
+                                                                    {{gRow.CntrTypes}}
+                                                                    <input type="hidden" id="HDCntrType" ng-model="gRow.BasicID" />
+                                                                  
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.CommodityTypes}}
+                                                                    <input type="hidden" id="HDCntrType" ng-model="gRow.CommodityTypeID" />
+                                                                  
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.Currency}}
+                                                                    <input type="hidden" id="HDCntrType" ng-model="gRow.CurrencyID" />
+                                                                   
+                                                                </td>
+
+                                                                <td>{{gRow.Amt}}</td>
+
+                                                                <td>
+                                                                    <select class="form-control" id="ddlCollectionMode" ng-model="gRow.CollectionModeID" ng-options="item.GeneralName for item in CollectionModeAllValues track by item.ID">
+                                                                    </select>
+                                                                   
+                                                                </td>
+
+                                                                <td>
+                                                                    {{gRow.ChargeOwnership}}
+                                                                    <input type="hidden" id="HDChargeOwnershipID" ng-model="gRow.ChargeOwnershipID" />
+
+                                                                </td>
+                                                                <td><input type="text" id="txtInvNo" class="form-control" ng-model="txtInvNo" /></td>
+
+                                                                <td style="display:none;"><input type="hidden" id="HDRID" class="form-control" ng-model="gRow.RID" /></td>
+
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="col-md-12" style="border:1px solid #ccc; padding:7px;">
+                                            <div class="col-md-12 padlr0" style="border-bottom:1px solid #b3b0b0;">
+                                                <h5 style="margin-bottom:0;padding-bottom: 7px;font-size: 15px;color:#168db9;font-weight: bold;">Prints</h5>
+                                            </div>
+                                            <div class="col-md-12" style="background-color:#cccccc47;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">ESIN2105001NS</h5>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align:right;">
+                                                        <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">print</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" style="background-color:#fff;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">ESIN2105001NS</h5>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align:right;">
+                                                        <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">print</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12" style="background-color:#cccccc47;">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <h5 style="font-size:13px; margin-top:15px; margin-bottom:0;line-height:0;color:#168db9; font-weight:bold;">ESIN2105001NS</h5>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align:right;">
+                                                        <i class="material-icons" style="font-size:18px; margin-top:4px;color:#168db9;">print</i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="row">
+
+
+                                            <div class="col-md-9">
+                                                <div class="row">
+
+                                                    <div class="col-md-12" style="border-bottom:1px dashed #ccc; margin-bottom:13px;">
+                                                                <button type="submit" ng-click="UpdateBLCharges(ExpGridValueBind,ImpGridValueBind);" class="btn btn-fill btn-success">
+                                                                <i class="material-icons">edit</i>
+                                                                 UPDATE
+                                                                </button>
+                                                                <input type="hidden" id="RegId" name="RegId" />                                     
+                                                                <button type="submit" ng-click="GenerateInvoice();" class="btn btn-fill btn-danger">
+                                                                    <i class="material-icons">add</i>
+                                                                    GENERATE PROFRMA
+                                                                </button>                                                          
+                                                                <button type="submit" ng-click="GenerateFinalInvoice();" class="btn btn-fill btn-warning">
+                                                                    <i class="material-icons">add</i>
+                                                                    GENERATE FINAL INV
+                                                                </button>
+                                                    </div>
+                                                    </div>
+                                                </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+            </div>
+        </div>
+
+    </div>
+</div>

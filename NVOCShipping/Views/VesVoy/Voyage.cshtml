@@ -1,0 +1,252 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+         $scope.Recordsave = function () {
+            var validation = "";
+            var ddlVessel = $('#ddlVessel').val();
+            if (ddlVessel == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Vessel</span></br>"
+
+            }
+              var txtVoyage = $('#txtVoyage').val();
+            if (txtVoyage.length == 0) {
+
+               validation += "<span style='color:red;'>*</span> <span>Please Enter Voyage</span></br>"
+             }
+
+              var txtRotationNo = $('#txtRotationNo').val();
+            if (txtRotationNo.length == 0) {
+
+               validation += "<span style='color:red;'>*</span> <span>Please Enter Rotation No</span></br>"
+             }
+
+             var ChkStatus = $('#ChkStatus').val();
+             if (ChkStatus.length == 0) {
+
+               validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                 return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            
+            var id = localStorage.getItem("VoyageID");
+
+             alert(id);
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = localStorage.getItem("VoyageID");
+
+           
+            BussData.VesID = $('#ddlVessel').val();
+             BussData.Voyage = $scope.txtVoyage;
+             BussData.RotationNo = $scope.txtRotationNo;
+             if ($scope.ChkStatus == 1) {
+               
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+          
+            $http({
+                method: 'POST',
+                url: "/api/Home/Voyage",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+
+                $scope.Save = result.data;
+                $('#ddlVessel').val(0);
+                $('#txtVoyage').val('');
+                $('#txtRotationNo').val('');
+                $('#ChkStatus').val(0);
+              
+               ShowPopup("Voyage Master Saved Successfully");
+                return false;
+
+            });
+        }
+
+         $scope.BindVoyage = function () {
+
+            var Datavalue = {};
+            Datavalue.ID = localStorage.getItem("VoyageID");
+             $http({
+                 method: 'POST',
+                 url: '/api/Home/Voyageviewparticular/',
+                 data: JSON.stringify(Datavalue),
+             }).then(function (result)
+             {
+                 $timeout(function ()
+                 {
+
+                     if (Datavalue.ID != "") {
+
+                         $scope.ddlVessel = {ID: result.data[0].VesID };
+                         $scope.txtVoyage = result.data[0].Voyage;
+                         $scope.txtRotationNo = result.data[0].RotationNo;
+                         $scope.ChkStatus = result.data[0].Status;
+                      
+                     }
+                     else {
+                     $scope.ddlVessel = 0;
+                     $scope.txtVoyage = "";
+                     $scope.txtRotationNo = "";
+                     $scope.ChkStatus = 0;
+                      }
+                 });
+             });
+            $scope.back = function () {
+
+            window.location = "/VesVoy/VoyageView";
+            }
+
+         }
+        $scope.BindVoyage();
+
+        //Vessel DropDown//
+        $scope.Vessel = null;
+        $scope.fillVessel = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Home/VesselDropDown/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Vessel = result.data;
+
+                });
+            });
+        };
+        $scope.fillVessel();
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Voyage Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Vessel</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select id="ddlVessel" ng-model="ddlVessel" class="form-control my-select" ng-options="item.VesselName for item in Vessel track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Voyage</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtVoyage" ng-model="txtVoyage" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Rotation Number</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtRotationNo" ng-model="txtRotationNo" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7 input-field">
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                    <span class="toggle"></span>
+
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                            <input type="hidden" id="HdId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

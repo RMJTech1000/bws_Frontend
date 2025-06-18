@@ -1,0 +1,1185 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+    
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $scope.TariffAllValues = null;
+        $scope.fillTariffAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "32"; //GeneralMaster Table seqNo 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TariffAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTariffAllValues();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+        $scope.ChargeCodeAllvalues = null;
+        $scope.fillChargecodeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ChargeCode/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeCodeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChargecodeValues();
+
+        $scope.ChageOwnerAllValues = null;
+        $scope.fillChageOwnerAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "11"; //GeneralMaster Table seqNo 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChageOwnerAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChageOwnerAllValues();
+
+         $scope.AutoRunTypeAllValues = null;
+        $scope.fillAutoRunTypeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "33"; //GeneralMaster Table seqNo 
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AutoRunTypeAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAutoRunTypeAllValues();
+
+
+        $scope.CurrencyValue = null;
+        $scope.fillCurrencyValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCurrencyValues();
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.ShipmentTypeAllvalues = null;
+        $scope.fillShipmentTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "1"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillShipmentTypeValues();
+
+
+        $scope.CustomerMasterAllvalues = null;
+        $scope.fillCustomerMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/InvCustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerMasterAllvalues = result.data;
+
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCustomerMasterValues();
+
+     
+
+        $scope.TerminalValues = null;
+        $scope.fillTerminalValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/TerminalMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TerminalValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTerminalValues();
+
+           $scope.DepotMasterValues = null;
+        $scope.fillDepotValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotMasterValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+
+
+        $scope.DynamicGrid = [{ CID: "", SlabFrom: "", SlabTo: "", CurrencyID: "", Currency: "", Amount: "" }];
+        $scope.DynamicGrid.splice(0, 1);
+
+        $scope.Add = function (DynamicGrid) {
+            var CIDValue;
+            CIDValue = ($scope.CID == "") ? 0 : $scope.CID;
+          
+            var val = {
+
+                'CID': CIDValue,
+                'SlabFrom': $scope.SlabFrom,
+                'SlabTo': $scope.SlabTo,
+                'CurrencyID': $("#ddlCurrency").val(),
+                'Currency': $("#ddlCurrency option:selected").text(),
+                'Amount': $scope.Amount
+
+                
+            };
+           
+          
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0)
+            {               
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else
+            {
+                $scope.DynamicGrid.push(val);
+            }
+
+            $scope.SlabFrom = "";
+            $scope.SlabTo = "";
+            $('#ddlCurrency').val(""); 
+            $scope.Amount = "";           
+            $scope.HDArrayIndex = "";
+            $scope.CID = 0;
+        }
+        //$scope.Remove = function (DynamicGrid, index,LocID) {
+          
+        //    alert($scope.HdCusID);
+        //    alert(LocID);
+            
+        //    $scope.LocDelete(LocID);
+        //    $scope.BindLocRecords($scope.HdCusID);
+        //    $scope.DynamicGrid.splice(index, 1);
+
+        //}
+
+        $scope.Selectvalues = function (DynamicGrid, index) {
+            $scope.HDArrayIndex = index;
+            $scope.CID = $scope.DynamicGrid[index].CID;
+            $scope.SlabFrom = $scope.DynamicGrid[index].SlabFrom;
+            $scope.SlabTo = $scope.DynamicGrid[index].SlabTo;
+            $scope.Currency = { ID: $scope.DynamicGrid[index].CurrencyID };
+            $scope.Amount = $scope.DynamicGrid[index].Amount;
+         
+        }
+
+      $scope.RentSave = function (data) {
+          var validation = "";
+
+
+            var ddlTariffType = $('#ddlTariffType').val();
+            if (ddlTariffType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Tariff Type</span></br>"
+            }
+            var ddlSizeType = $('#ddlSizeType').val();
+            if (ddlSizeType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container Type</span></br>"
+          }
+          var ddlChargeType = $('#ddlChargeType').val();
+            if (ddlChargeType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Type</span></br>"
+          }
+          var ddlCharges = $('#ddlCharges').val();
+            if (ddlCharges == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charges</span></br>"
+          }
+           var ddlChargeOwner = $('#ddlChargeOwner').val();
+            if (ddlChargeOwner == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Owner</span></br>"
+          }
+           var ddlShipmentType = $('#ddlShipmentType').val();
+            if (ddlShipmentType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Shipment Type</span></br>"
+          }
+           var ddlPort = $('#ddlPort').val();
+            if (ddlPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Port</span></br>"
+          }
+          var ddlCustomer = $('#ddlCustomer').val();
+            if (ddlCustomer == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Customer</span></br>"
+          }
+          var ddlTerminal = $('#ddlTerminal').val();
+            if (ddlTerminal == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Terminal</span></br>"
+          }
+           var ddlDepot = $('#ddlDepot').val();
+            if (ddlDepot == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Depot</span></br>"
+            }
+            var txtDtValidFrom = $('#txtDtValidFrom').val();
+            if (txtDtValidFrom.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid From Date</span></br>"
+            }
+            var txtDtValidTill = $('#txtDtValidTill').val();
+            if (txtDtValidTill.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid Till Date</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+       
+            var BussData = {}
+            var Items =[]
+
+            if ($scope.HdRentID == "")
+                BussData.ID = 0;
+            else
+          BussData.ID = $scope.HdRentID;
+          BussData.TariffTypeID = $('#ddlTariffType').val();
+          BussData.ContainerType = $('#ddlSizeType').val();
+          BussData.ChargeTypeID = $('#ddlChargeType').val();
+          BussData.ChargesID = $('#ddlCharges').val();
+          BussData.ChargeOwnerID = $('#ddlChargeOwner').val();
+          BussData.ShipmentTypeID = $('#ddlShipmentType').val();
+          BussData.PortID = $('#ddlPort').val();
+          BussData.CustomerID = $('#ddlCustomer').val();
+          BussData.TerminalID = $('#ddlTerminal').val();
+          BussData.DepotID = $('#ddlDepot').val();
+          BussData.StartingMove = $('#ddlStartingMove').val();
+          BussData.EndingMove = $('#ddlEndingMove').val();
+          BussData.AutoRunTypeID = $('#ddlAutoRunType').val();
+          BussData.ValidFrom = $('#txtDtValidFrom').val();
+          BussData.ValidTill = $('#txtDtValidTill').val();
+           if ($scope.ChkStatus == 1) {
+
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+          
+        
+
+            angular.forEach(data, function (value, key)
+            {
+               var intCID = data[key].CID;
+                if (typeof data[key].CID == "undefined") {
+                    intCID = 0;
+                }
+
+               
+
+                Items.push('Insert:' + intCID, data[key].SlabFrom, data[key].SlabTo, data[key].CurrencyID, data[key].Currency, data[key].Amount);
+                    
+            });
+            BussData.Itemsv1 = Items.toString();
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/ContainerRent",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.HdRentID = result.data[0].ID;
+                   
+                    if (BussData.ID != "")
+                    {                       
+                        ShowPopup("Customer Master Updated");
+                        
+                    }
+                    else
+                    {
+                        ShowPopup("Customer Master Saved Successfully");
+                    }
+                });
+            });
+
+        }
+         $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+              if (queryString["ContRent"] != null)
+              {
+                $scope.HdRentID = queryString["ContRent"].toString();
+                $scope.BindRent(queryString["ContRent"].toString());
+                $scope.BindRentTariffRecords(queryString["ContRent"].toString());
+            }
+         });   
+        $scope.BindRent = function (ContRentID) {
+
+                var Datavalue = {};
+                var id = ContRentID;
+                if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                 Datavalue.ID = ContRentID;
+          
+
+                $http({
+                    method: 'POST',
+                    url: '/api/ContainerApi/ContainerRentParticular/',
+                    data: JSON.stringify(Datavalue),
+                }).then(function (result) {
+                    $timeout(function () {
+
+                        if (Datavalue.ID != "") {
+                            $scope.ddlTariffType = { ID: result.data[0].TariffTypeID };
+                            $scope.ddlSizeType = { TypeID: result.data[0].ContainerType };
+                            $scope.ddlChargeType = { ID: result.data[0].ChargeTypeID };
+                            $scope.ddlCharges = { ID: result.data[0].ChargesID };
+                            $scope.ddlChargeOwner = { ID: result.data[0].ChargeOwnerID };
+                            $scope.ddlShipmentType = { ID: result.data[0].ShipmentTypeID };
+                            $scope.ddlPort = { ID: result.data[0].PortID };
+                            $scope.ddlCustomer = { ID: result.data[0].CustomerID };
+                            $scope.ddlTerminal = { ID: result.data[0].TerminalID };
+                            $scope.ddlDepot = { ID: result.data[0].DepotID };
+                            $scope.ddlStartingMove = { ID: result.data[0].StartingMove };
+                            $scope.ddlEndingMove = { ID: result.data[0].EndingMove };
+                            $scope.ddlAutoRunType = { ID: result.data[0].AutoRunTypeID };
+                            $scope.txtDtValidFrom = result.data[0].ValidFrom;
+                            $scope.txtDtValidTill = result.data[0].ValidTill;
+                            $scope.ChkStatus = result.data[0].Status;
+
+                        }
+                        else {
+                          
+                        }
+                     
+                    });
+                    }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+                });
+               
+
+            }
+
+         $scope.BindRentTariffRecords = function (ContRentID) {
+
+            var BussData = {}
+         
+            BussData.RentID = ContRentID;
+          
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/ContainerRentTariffDtls",
+                data: JSON.stringify(BussData),
+            }).then(function (result)
+            {
+               
+            $scope.DynamicGrid = [{ CID: "", SlabFrom: "", SlabTo: "", CurrencyID: "", Currency: "", Amount: "" }];
+                
+                $timeout(function () {
+
+                    if (result.data[0].CurrencyID != "") {
+                        $scope.DynamicGrid.splice(0, 1);
+                    }
+
+                    angular.forEach(result.data, function (value, key) {
+                        
+                        $scope.DynamicGrid.push({
+                            'CID': result.data[key].CID,
+                             'SlabFrom': result.data[key].SlabFrom,
+                            'SlabTo': result.data[key].SlabTo,
+                            'CurrencyID': result.data[key].CurrencyID,
+                            'Currency': result.data[key].Currency,
+                            'Amount': result.data[key].Amount,
+                        });
+
+                    });
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <a href="/Container/ContainerRentContractView" type="submit"  class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i>
+
+                </a>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+
+                        <div class="card-text">
+                            <h4 class="card-title">Container Rental Contract</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Tariff Type</label>
+                                            <select class="form-control my-select" ng-model="ddlTariffType" id="ddlTariffType" options="{ allowClear: true }" ng-options="item.GeneralName for item in TariffAllValues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Container Type</label>
+                                            <select class="form-control my-select" ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.TypeID" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Type</label>
+                                            <select class="form-control my-select" ng-model="ddlChargeType" id="ddlChargeType" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charges</label>
+                                            <select class="form-control my-select" ng-model="ddlCharges" id="ddlCharges" ng-options="item.ChargeCode for item in ChargeCodeAllvalues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Owner</label>
+                                            <select class="form-control my-select" ng-model="ddlChargeOwner" id="ddlChargeOwner" ng-options="item.GeneralName for item in ChageOwnerAllValues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipment Type</label>
+                                            <select class="form-control my-select" ng-model="ddlShipmentType" id="ddlShipmentType" options="{ allowClear: true }" ng-options="item.GeneralName for item in ShipmentTypeAllvalues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port</label>
+                                            <select class="form-control my-select" ng-model="ddlPort" id="ddlPort" ng-options="item.PortName for item in PortAllvalues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Customer</label>
+                                            <select class="form-control my-select" ng-model="ddlCustomer" id="ddlCustomer" ng-options="item.CustomerName for item in CustomerMasterAllvalues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Terminal</label>
+                                            <select class="form-control my-select" ng-model="ddlTerminal" id="ddlTerminal" ng-options="item.TerminalName for item in TerminalValues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Depot</label>
+                                            <select class="form-control my-select" ng-model="ddlDepot" id="ddlDepot" ng-options="item.DepName for item in DepotMasterValues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Starting Move <span style="padding-left: 93px;font-size: 17px;"><a href="#" style="color:#053af9;" data-toggle="modal" data-target="#Starting"><i class="fa fa-plus"></i> Add</a></span></label>
+                                            <select class="form-control my-select" ng-model="ddlStartingMove" id="ddlStartingMove" ng-options="item.PickupCriteria for item in PickupCriteriaList track by item.PickupCriteriaID" required>
+                                            </select>
+                                            <div class="modal" id="Starting">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content" style="width:280px; margin:0 auto;">
+
+                                                        <!-- Modal Header -->
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">Start Move</h4>
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        </div>
+
+                                                        <!-- Modal body -->
+                                                        <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>Start Move</label>
+                                                                                <select class="form-control my-select" ng-model="ddlStartMove" id="ddlStartMove" required>
+                                                                                </select>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-12" style="text-align:right;">
+                                                                    <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;"><i class="fa fa-plus"></i> Add</a>
+                                                                    <a href="#" class="btn btn-danger" style="padding: 7px 25px;margin-top:-2px;"><i class="fa fa-trash"></i> Delete</a>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <!-- Modal footer -->
+                                                        <div class="modal-footer" style="display:initial;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+
+                                                                            <div class="col-md-12">
+                                                                                <div class="material-datatables">
+
+                                                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>S.No</th>
+                                                                                                <th>Start Move</th>
+                                                                                        </thead>
+
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td></td>
+                                                                                                <td></td>
+                                                                                            </tr>
+
+                                                                                        </tbody>
+                                                                                    </table>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Ending Move <span style="padding-left:93px;font-size: 17px;"><a href="#" style="color:#053af9;" data-toggle="modal" data-target="#Ending"><i class="fa fa-plus"></i> Add</a></span></label>
+                                            <select class="form-control my-select" ng-model="ddlEndingMove" id="ddlEndingMove" ng-options="item.PickupCriteria for item in PickupCriteriaList track by item.PickupCriteriaID" required>
+                                            </select>
+                                            <div class="modal" id="Ending">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content" style="width:280px; margin:0 auto;">
+
+                                                        <!-- Modal Header -->
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">End Move</h4>
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        </div>
+
+                                                        <!-- Modal body -->
+                                                        <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+                                                                            <div class="col-md-12">
+                                                                                <label>End Move</label>
+                                                                                <select class="form-control my-select" ng-model="ddlStartMove" id="ddlStartMove" required>
+                                                                                </select>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="col-md-12" style="text-align:right;">
+                                                                    <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;"><i class="fa fa-plus"></i> Add</a>
+                                                                    <a href="#" class="btn btn-danger" style="padding: 7px 25px;margin-top:-2px;"><i class="fa fa-trash"></i> Delete</a>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <!-- Modal footer -->
+                                                        <div class="modal-footer" style="display:initial;">
+                                                            <div class="row">
+                                                                <div class="col-md-12">
+                                                                    <div class="form-group">
+                                                                        <div class="row">
+
+                                                                            <div class="col-md-12">
+                                                                                <div class="material-datatables">
+
+                                                                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                                                        <thead>
+                                                                                            <tr>
+                                                                                                <th>S.No</th>
+                                                                                                <th>End Move</th>
+                                                                                        </thead>
+
+                                                                                        <tbody>
+                                                                                            <tr>
+                                                                                                <td></td>
+                                                                                                <td></td>
+                                                                                            </tr>
+
+                                                                                        </tbody>
+                                                                                    </table>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Auto Run Type</label>
+                                            <select class="form-control my-select" ng-model="ddlAutoRunType" id="ddlAutoRunType" ng-options="item.GeneralName for item in AutoRunTypeAllValues track by item.ID"  required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid From</label>
+                                            <input type="text" id="txtDtValidFrom" autocomplete="off" ng-model="txtDtValidFrom" class="form-control datepicker">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid Till </label>
+
+                                            <input type="text" id="txtDtValidTill" autocomplete="off" ng-model="txtDtValidTill" class="form-control datepicker">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <div class="togglebutton">
+                                                <label>
+                                                    <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                    <span class="toggle"></span>
+
+                                                </label>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <h5 class="cardtitle">Tariff Details</h5>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Slab From </label>
+                                            <input type="hidden" id="HDIDv" class="form-control" ng-model="CID" />
+                                            <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                            <input type="text" id="txtSlabFrom" autocomplete="off" ng-model="SlabFrom" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Slab To</label>
+                                            <input type="text" id="txtSlabTo" autocomplete="off" ng-model="SlabTo" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Currency</label>
+                                            <select class="form-control my-select" ng-model="Currency" id="ddlCurrency" ng-options="item.Currency for item in CurrencyValue track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Amount</label>
+                                            <input type="text" id="txtAmount" ng-model="Amount" class="form-control" autocomplete="off" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12 txtright1">
+                                        <button type="submit" ng-click="Add(gRow);" class="btn btn-fill btn-success">
+                                            <i class="material-icons">add</i>
+                                            Add
+                                        </button>
+                                        @*<input type="hidden" id="HdDtlsID" ng-model="HdDtlsID" />*@
+
+
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                   
+
+
+                        <div class="row">
+            <div class="col-md-12">
+                <div class="material-datatables">
+
+                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+
+                                <th>Slab From</th>
+                                <th>Slab To</th>
+                                <th>Currency</th>
+                                <th>Amount</th>
+                                <th class="disabled-sorting text-right actwid">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+
+                            <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                <td>{{$index+1}}</td>
+                                <td class="txtright">
+                                    {{gRow.SlabFrom}}
+
+                                </td>
+                                <td>
+                                    {{gRow.SlabTo}}
+
+
+                                </td>
+                                <td>
+                                    {{gRow.Currency}}
+
+                                    <input type="hidden" id="HDCurrency" class="form-control" ng-model="gRow.CurrencyID" />
+                                </td>
+
+                                <td class="txtright">
+                                    {{gRow.Amount}}
+
+                                </td>
+
+
+                                <td class="td-actions text-right bindgrid">
+
+                                    <button type="button" rel="tooltip" ng-click="Selectvalues(DynamicGrid,$index)" class="btn btn-success btn-round" data-original-title="" title="">
+                                        <i class="material-icons">edit</i>
+                                    </button>
+                                    <input type="hidden" id="HDID" class="form-control" ng-model="gRow.CID" />
+                                </td>
+
+                            </tr>
+
+
+                        </tbody>
+                        </table>
+
+                </div>
+            </div>
+        </div>
+                        <div class="row">
+                            <div class="ml-auto">
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="RentSave(DynamicGrid);">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+                                <button type="submit" class="btn btn-fill btn-warning">
+                                    <i class="material-icons">calculate</i>
+                                    Calculate
+                                </button>
+                                <input type="hidden" id="HdRentID" ng-model="HdRentID" />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+

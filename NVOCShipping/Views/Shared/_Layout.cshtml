@@ -1,0 +1,1068 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] Blue Wave Shipping</title>
+
+    <link rel="stylesheet" href="~/assets/css/FontAwesome.min.css">
+    <link href="~/assets/css/material-dashboard.min6c54.css" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="~/assets/css/Materialicon.css" />
+    <link href="~/assets/css/responsive.css" rel="stylesheet" />
+    <link href="~/assets/css/custom.css" rel="stylesheet" />
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+   <script src="~/Scripts/angular.js"></script>
+    @*<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/angular.js/1.8.2/angular.js"></script>*@
+    <script src="~/Scripts/angular-momentjs.js"></script>
+
+
+
+
+
+
+    <script src="~/assets/js/core/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.2.13/ng-file-upload.min.js"></script>
+    <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+
+
+    <style>
+        .fade {
+            background-color: #4d4b4bd1 !important;
+        }
+
+        .modal-dialog .modal-body {
+            padding: 0px 24px 16px;
+        }
+
+        .modal-dialog .modal-header {
+            padding: 15px 24px 0 !important;
+            background-color: transparent !important;
+        }
+
+            .modal-dialog .modal-header .close {
+                position: relative;
+                background-color: transparent !important;
+                color: #000 !important;
+                padding-right: 5px !important;
+                top: 0 !important;
+                height: auto !important;
+            }
+
+        .close {
+            opacity: 1;
+            text-shadow: none;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            font-weight: bold;
+        }
+
+        .form-control {
+            font-weight: bold;
+        }
+
+        .row .addbtn .btn.btn-round.btntop {
+            width: 100px;
+            height: 26px;
+            border-radius: 50px;
+            padding: 3px;
+            color: #fff;
+        }
+
+        .amtrgt {
+            text-align: right;
+            padding-right: 4px;
+        }
+
+        .col-md-3 .card .card-body .form-group .col-md-12 .btn {
+            float: right;
+        }
+
+        @@media(max-width:1280px) {
+            .rightbox .form-group.location {
+                margin-left: 167px !important;
+            }
+
+            .topheader {
+                width: 84% !important;
+            }
+        }
+
+        a.logout {
+            font-size: 13px;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .bg-gradient-info {
+            /* background: -webkit-gradient(linear, left top, right top, from(#90caf9), color-stop(99%, #047edf)) !important;*/
+            background: linear-gradient(to right, #90caf9, #047edf 99%) !important;
+            border-radius: 10px;
+            height: 93px;
+        }
+
+        .bg-gradient-danger {
+            /*background: -webkit-gradient(linear, left top, right top, from(#ffbf96), to(#fe7096)) !important;*/
+            background: linear-gradient(to right, #ffbf96, #fe7096) !important;
+            border-radius: 10px;
+            height: 93px;
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(to right, #84d9d2, #07cdae) !important;
+            border-radius: 10px;
+            height: 93px;
+        }
+
+        .bg-gradient-warning {
+            background: linear-gradient(to right, #d9d684, #cddc18) !important;
+            border-radius: 10px;
+            height: 93px;
+        }
+
+        .card-img-holder .material-icons {
+            font-size: 44px;
+        }
+
+        .card-img-holder h4 {
+            font-size: 14px;
+            font-weight: bold !important;
+        }
+
+        .card-img-holder .card .card-body h2 {
+            font-size: 30px !important;
+            font-weight: bold !important;
+        }
+
+        .card.card-img-holder .card-img-absolute {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+        }
+
+        .card .card-body h4, h6 {
+            color: #fff !important;
+            font-size: 14px;
+        }
+
+        .bg-gradient-info .card .card-body {
+            padding: 9px 19px !important;
+        }
+
+        .bg-gradient-info.card, .bg-gradient-success.card, .bg-gradient-danger.card, .bg-gradient-warning.card {
+            margin-bottom: 0;
+        }
+        /* .card .card-body h2 {
+            color: #fff !important;
+            font-size: 25px;
+            margin-top: 0px;
+        }*/
+        .card .card-body {
+            padding: 9px 19px !important;
+        }
+
+        html {
+            font-family: 'Oswald', sans-serif !important;
+            font-weight: 400;
+        }
+
+        body {
+            /* font-family: 'Oswald', sans-serif !important;*/
+            font-weight: 400;
+        }
+
+        .sidebar[data-color=rose] li.active > a {
+            background-color: #216fb7;
+            color: #FFF !important;
+        }
+
+        .sidebar .sidebar-wrapper {
+            width: 206px !important;
+        }
+
+        .sidebar-wrapper {
+            background-color: #ffffff !important;
+        }
+
+        .sidebar-menu, .main-sidebar .user-panel, .sidebar-menu > li.header {
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .sidebar-menu {
+            padding: 0 !important;
+        }
+
+        ul.sidebar-menu {
+            margin-left: -30px;
+            list-style-type: none;
+        }
+
+        .sidebar-menu > li {
+            position: relative;
+            margin: 0;
+            padding: 0px 0;
+        }
+
+            .sidebar-menu > li > a > .fa, .sidebar-menu > li > a > .glyphicon, .sidebar-menu > li > a > .ion {
+                width: 20px;
+            }
+
+        .sidebar-menu li > a {
+            position: relative;
+            display: block;
+            color: #000 !important;
+            font-size: 14px;
+            padding: 10px 5px 4px 40px !important;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a, .sidebar-menu > li.menu-open > a {
+            /*color: #fff;*/
+            background: none;
+        }
+
+        .treeview-menu {
+            padding-left: 9px !important;
+        }
+
+        .treeview-menu {
+            display: none;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            padding-left: 5px;
+            background-color: #216fb7 !important;
+            overflow-y: scroll;
+            height: 250px;
+        }
+
+            .treeview-menu > li {
+                /*margin: -10px 15px;*/
+                text-transform: capitalize;
+                font-weight: 500;
+                border-bottom: 1px solid #ccc;
+            }
+
+                .treeview-menu > li > a {
+                    color: #fff !important;
+                    padding: 0px 5px 4px 40px !important;
+                    display: block;
+                    font-size: 13px;
+                    font-family: 'Oswald', sans-serif;
+                }
+
+                    .treeview-menu > li > a:hover {
+                        color: #fff !important;
+                    }
+
+                    .treeview-menu > li > a > .fa, .treeview-menu > li > a > .glyphicon, .treeview-menu > li > a > .ion {
+                        width: 20px;
+                    }
+
+        .skin-blue .sidebar-menu > li > .treeview-menu {
+            margin: 0 1px;
+            background: #fafbfb;
+        }
+
+        .skin-blue .sidebar-menu .treeview-menu > li > a {
+            color: #080808;
+        }
+        .treeview-menu > li > a:hover
+        {
+            color:#fff!important;
+        }
+        .sidebar-menu li > a > .pull-right-container {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            margin-top: -7px;
+        }
+
+        .treeview-menu .treeview-menu {
+            padding-left: 20px;
+        }
+
+        .sidebar-menu .menu-open > a > .fa-angle-left, .sidebar-menu .menu-open > a > .pull-right-container > .fa-angle-left {
+            -webkit-transform: rotate( -90deg );
+            -ms-transform: rotate(-90deg);
+            -o-transform: rotate(-90deg);
+            transform: rotate( -90deg );
+        }
+
+        .fa-angle-left:before {
+            content: "\f104";
+        }
+
+        .sidebar-menu li > a > .fa-angle-left, .sidebar-menu li > a > .pull-right-container > .fa-angle-left {
+            width: auto;
+            height: auto;
+            padding: 0;
+            margin-right: 10px;
+            -webkit-transition: transform .5s ease;
+            -o-transition: transform .5s ease;
+            transition: transform .5s ease;
+        }
+
+        #overlay {
+            background: #ccc;
+            color: #666666;
+            position: fixed;
+            height: 100%;
+            width: 100%;
+            z-index: 5000;
+            top: 0;
+            left: 0;
+            float: left;
+            text-align: center;
+            padding-top: 25%;
+            opacity: .80;
+        }
+
+        button {
+            margin: 40px;
+            padding: 5px 20px;
+            cursor: pointer;
+        }
+
+        .loader {
+            margin: 0 auto;
+            width: 200px;
+            height: 150px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .spinner {
+            margin: 0 auto;
+            height: 40px;
+            width: 40px;
+            animation: rotate 0.8s infinite linear;
+            border: 5px solid firebrick;
+            border-right-color: transparent;
+            border-radius: 50%;
+        }
+
+        @@keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        label {
+            color: #333 !important;
+        }
+
+        .form-check, label {
+            color: #333 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .bmd-form-group .checkbox label, .bmd-form-group .radio label, .bmd-form-group label {
+            color: #333 !important;
+            font-size: 14px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .card [class*=card-header-] .card-icon, .card [class*=card-header-] .card-text {
+            padding: 7px 67px;
+        }
+
+            .card [class*=card-header-] .card-text .card-title {
+                font-size: 16px;
+            }
+
+        .card.bg-rose, .card .card-header-primary .card-icon, .card .card-header-primary .card-text, .card .card-header-primary:not(.card-header-icon):not(.card-header-text), .card.card-rotate.bg-rose .back, .card.card-rotate.bg-rose .front {
+            background: linear-gradient(60deg,#e91e63,#e91e63);
+        }
+
+        .card {
+            margin-top: 0;
+        }
+
+        .main-panel > .navbar {
+            border-bottom: 1px solid #d2d2d2;
+        }
+
+        .form-control {
+            border: 1px solid #ccc;
+            height: 30px;
+            background: no-repeat bottom,0% calc(0% - 0px);
+            background-size: 0 0,0% 0%;
+        }
+
+        .sidebar .logo {
+            padding: 15px 15px;
+        }
+
+        .sidebar .sidebar-background:after {
+            background: #216fb7;
+        }
+
+        .sidebar .nav li.active > [data-toggle=collapse], .sidebar .nav li .dropdown-menu a:focus, .sidebar .nav li .dropdown-menu a:hover, .sidebar .nav li:hover > a {
+            color: #ffffff;
+        }
+
+        .sidebar .nav li .dropdown-menu a, .sidebar .nav li a {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .sidebar .logo .simple-text {
+            color: #fff;
+        }
+
+        .enquiry_frm {
+            margin-top: 15px;
+        }
+
+        .enqNow {
+            position: fixed;
+            height: auto;
+            width: 230px;
+            padding: 0px;
+            top: 110px;
+            right: -230px;
+            background: #FFF;
+            box-shadow: 0 2px 4px 0 #b4b4b4;
+            z-index: 1000;
+            color: #565656;
+        }
+
+            .enqNow h4 {
+                margin: 0;
+                color: #b82d2c;
+            }
+
+            .enqNow p {
+                font-size: 14px;
+                line-height: 20px;
+            }
+
+            .enqNow .open {
+                position: absolute;
+                display: block;
+                top: 20px;
+                left: -27px;
+                width: 45px;
+                height: 161px;
+                background: url(../../assets/img/notification2.png);
+                background-repeat: no-repeat;
+                cursor: pointer;
+            }
+
+            .enqNow .close {
+                position: absolute;
+                display: block;
+                top: 5px;
+                right: 10px;
+                width: 22px;
+                height: 22px;
+                background: url(../../assets/img/enqClose.png);
+                background-repeat: no-repeat;
+                cursor: pointer;
+            }
+
+            .enqNow input[type="text"], .enqNow select, .enqNow textarea {
+                height: 23px;
+                padding-left: 5px;
+                background: #FFF;
+                border: 1px solid #e5e5e5;
+                margin-bottom: 5px;
+                color: #565656;
+                font-size: 14px;
+                width: 170px;
+            }
+
+            .enqNow select {
+                width: 100%;
+                height: 32px;
+            }
+
+            .enqNow textarea {
+                height: 70px;
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 14px;
+                padding-top: 5px;
+                resize: none;
+            }
+
+            .enqNow input[type="submit"] {
+                box-shadow: none;
+                width: 73px;
+                height: 32px;
+                background: #b82d2c;
+                color: #FFF;
+                font-size: 12px;
+                border: none;
+                margin-top: 5px;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+
+        marquee ul li {
+            list-style-type: none;
+        }
+
+            marquee ul li a {
+                list-style-type: none;
+                font-size: 13px;
+                color: #011b25;
+                font-weight: bold;
+            }
+
+        .panel-warning {
+            border-color: #faebcc;
+        }
+
+            .panel-warning > .panel-heading {
+                font-size: 14px;
+                border-radius: 5px;
+                background-color: #e91e63;
+                border-color: #e91e63;
+                color: #fff;
+                padding: 4px 15px;
+            }
+
+        li.agentdiv {
+            /*margin-right:163px;*/
+            width: 230px;
+        }
+
+        li.locdiv {
+            /*margin-right:200px;*/
+            width: 209px;
+        }
+
+        li.findiv {
+            margin-right: 200px;
+            width: 209px;
+        }
+
+        li.locdiv select.form-control {
+            height: 24px !important;
+            padding: 0px 12px;
+            width: 180px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-radius: 5px;
+            border: 1px solid #a9a9a9;
+            box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+            font-size: 13px;
+        }
+
+        li.agentdiv a {
+            color: #fff !important;
+            cursor: initial;
+            /*padding-right: 100px;*/
+            font-size: 13px;
+            font-weight: 400;
+            text-transform: uppercase;
+        }
+
+        li.userdiv a {
+            color: #fff !important;
+            text-transform: uppercase;
+            cursor: initial;
+            padding-right: 30px;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        select.form-control.findrop {
+            height: 24px !important;
+            padding: 0px 12px;
+            width: 140px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-radius: 5px;
+            border: 1px solid #a9a9a9;
+            box-shadow: inset 0 1px 2px rgb(0 0 0 / 8%);
+            font-size: 13px;
+            background-color: #fff !important;
+        }
+
+        .loadcontainer {
+            border-radius: 15px;
+            width: 140px;
+            background-color: #fff;
+            padding: 20px;
+            margin: -60px auto;
+            box-shadow: 0 0px 0px 3px #c1bbbb61;
+        }
+
+            .loadcontainer p {
+                font-size: 13px;
+                margin-top: 11px;
+                margin-bottom: 0;
+                color: #615f5f;
+                font-weight: 800;
+            }
+    </style>
+
+    <style>
+        .button {
+            border-radius: 4px;
+            background-color: #4caf50;
+            border: none;
+            color: #FFF !important;
+            text-align: center;
+            font-size: 13px;
+            padding: 5px 6px;
+            width: 138px;
+            transition: all 0.5s;
+            cursor: pointer;
+            /*margin: 5px;*/
+        }
+
+            .button span {
+                cursor: pointer;
+                display: inline-block;
+                position: relative;
+                transition: 0.5s;
+            }
+
+                .button span:after {
+                    content: '\00bb';
+                    position: absolute;
+                    opacity: 0;
+                    top: 0;
+                    right: -20px;
+                    transition: 0.5s;
+                }
+
+            .button:hover span {
+                padding-right: 25px;
+            }
+
+                .button:hover span:after {
+                    opacity: 1;
+                    right: 0;
+                }
+    </style>
+    <script>
+        function Location() {
+
+            window.location = "/Home/Location"
+        }
+        function Country() {
+
+            window.location = "/Home/Country"
+        }
+    </script>
+    <script type="text/javascript">
+        var LayoutApp = angular.module('MyApp', ['ui.bootstrap', 'ngFileUpload']);
+        LayoutApp.controller('MyControllerLayout', function ($scope, $http, $timeout) {
+
+
+            $scope.withoutLogin = function () {
+                if (localStorage.getItem("AgencyID") == "" || localStorage.getItem("AgencyID") == null) {
+                    localStorage.clear();
+                    window.location = "/Home/Index";
+                    return JavaScript("location.reload(true)");
+                    return;
+                }
+                if (localStorage.getItem("UserID") == "" || localStorage.getItem("UserID") == null) {
+                    localStorage.clear();
+                    window.location = "/Home/Index";
+                    return JavaScript("location.reload(true)");
+                    return;
+                }
+                if (localStorage.getItem("CountryID") == "" || localStorage.getItem("CountryID") == null) {
+                    localStorage.clear();
+                    return JavaScript("location.reload(true)");
+                    return;
+                }
+            }
+            $scope.withoutLogin()
+
+
+            $scope.FinancialYear = null;
+            $scope.fillFinancialYear = function () {
+                $http({
+                    method: 'POST',
+                    url: '/api/Home/FinancialYearList/',
+                    data: {}
+                }).then(function (result) {
+                    $timeout(function () {
+                        $scope.FinancialYear = result.data;
+                        //$scope.ddlFinYear = result.data[0].FinancialYear;
+                    });
+                }, function (result) {
+                    if (result.status == 500) {
+                        ShowPopup("Sorry no internet connectivity Application Error.");
+                    }
+                    else if (result.status == 404) {
+                        ShowPopup("Sorry no internet connectivity page not found.");
+                    }
+                    if (result.status > 0) {
+                        var errorMsg = result.status + ': ' + result.data;
+                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                    }
+                }).catch(function (result) {
+                    ShowPopup('There has been an error: ' + result);
+                });
+            };
+            $scope.fillFinancialYear();
+
+            $scope.BindFinancialYear = function () {
+
+                var Datavalue = {}
+
+                $http({
+                    method: 'POST',
+                    url: '/api/Home/BindCurrentYear/',
+                    data: {},
+                }).then(function (result) {
+                    $timeout(function () {
+
+                        if (Datavalue.YearID != "") {
+
+                            $scope.ddlFinYear = { YearID: result.data[0].YearID };
+
+                        }
+                        else {
+
+                            $scope.ddlFinYear = 0;
+                        }
+                    });
+                });
+
+            }
+            $scope.BindFinancialYear();
+
+
+            $scope.SignOut = function () {
+
+                localStorage.clear();
+                window.location = "/Home/Index";
+
+            }
+
+            $scope.lblUser = localStorage.getItem("UserName");
+            $scope.lblAgency = localStorage.getItem("Agency");
+
+            $scope.MainMenusAccess = function () {
+                var MainMenus = "";
+                var BussData = {}
+                BussData.ID = 0;
+                BussData.UserID = localStorage.getItem("UserID");
+                BussData.MenuType = localStorage.getItem("MenuBussTypes");
+                $http({
+                    method: 'POST',
+                    url: "/api/Home/mainMenus",
+                    data: JSON.stringify(BussData),
+                }).then(function (result) {
+                    angular.forEach(result.data, function (value, key) {
+
+                        MainMenus = result.data[key].Url;
+                        if (BussData.MenuType == 1) {
+                            $scope.UserName = "Agent Name";
+                        }
+                        else if (BussData.MenuType == 2) {
+                            $scope.UserName = "Vendor Name";
+                        }
+                    });
+
+                    $("#dynamicMenus").append(MainMenus);
+                });
+
+            }
+            $scope.MainMenusAccess();
+
+            $scope.RoleAccessNotification = null;
+            $scope.AllRoleAccessNotification = function () {
+                var BussData = {}
+                BussData.ID = 0;
+                BussData.UserID = localStorage.getItem("UserID");
+                $http({
+                    method: 'POST',
+                    url: "/api/UserApi/UserRoleNotification",
+                    data: JSON.stringify(BussData),
+                }).then(function (result) {
+                    $scope.RoleAccessNotification = result.data;
+                });
+
+            }
+
+            $scope.AllRoleAccessNotification();
+
+
+
+
+
+        });
+
+
+        $(document).ready(function ($) {
+
+
+            $('.enqNow .open').click(function () {
+                $('.enqNow').animate({ 'right': '0px' }, 800);
+            });
+            $('.enqNow .close').click(function () {
+                $('.enqNow').animate({ 'right': '-231px' }, 800);
+            });
+
+        });
+
+
+        //$(document).ready(function () {
+        //        $('#overlay').fadeIn().delay(5000).fadeOut();
+        //});
+    </script>
+</head>
+<body ng-app="MyApp" ng-controller="MyControllerLayout">
+    <!--<div id="overlay" style="display:none;">
+        <div class="loader">
+            <img src="~/assets/img/load.gif" style="width:70px;" />
+        </div>-->
+       
+            @*<div class="spinner"></div>
+            <br />
+            Loading...*@
+        <!--</div>-->
+    <div class="enqNow" style="right: -231px;">
+        <span class="open"></span>
+        <div class="contact_us_hold col-sm-12">
+            <h4 class="fnt_18 clr_fff"> </h4>
+            <div class="pro_details_ind">
+                <div class="row">
+                    <div class="col-md-12 padlr0">
+                        <div class="panel panel-warning">
+                            <div class="panel-heading"> <i class="fa fa-bell"></i> Notifications </div>
+                            <div class="panel-body" style="padding-bottom:20px; min-height:490px;background-color:#0585b521;">
+                                <div class="row">
+                                    <div class="col-xs-12 padlr0">
+                                        <marquee direction="up" style="margin-left:0px; float:left;" scrollamount="3" onmouseover="this.stop()" onmouseout="this.start() " height="450px">
+                                            <ul ng-repeat="gRow in RoleAccessNotification">
+                                                <li>
+                                                    <a ng-href="{{gRow.PageName}}"><i class="fa fa-angle-double-right"></i>{{gRow.Notification}}</a>
+                                                </li>
+
+                                            </ul>
+                                        </marquee>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <span class="close" style="opacity:1.0;"></span>
+    </div>
+    <div class="wrapper ">
+        <div class="sidebar" data-color="rose">
+
+            <div class="logo">
+                <a href="#" class="simple-text logo-normal">
+                    <img src="~/assets/img/dashlogo.png" />
+                </a>
+            </div>
+            <div class="sidebar-wrapper">
+
+                <ul class="sidebar-menu tree" data-widget="tree" id="dynamicMenus">
+                    
+                </ul>
+
+            </div>
+            <div class="sidebar-background"></div>
+        </div>
+
+        <div class="main-panel">
+            <div class="container-fluid topheader" style="position:fixed;z-index: 10000;top:10px; width:86%;">
+                <div class="row">
+                    <div class="col-md-6" style="font-size:13px;color:#fff;">
+                        <div class="row" style="margin-top:6px;">
+                            <div class="col-md-2 padr0"><span id="UserName" ng-bind="UserName"></span> :</div>
+                            <div class="col-md-10 padl0"><span id="lblAgency" ng-bind="lblAgency"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 rightbox">
+                        <div class="row">
+                            <div class="col-md-9" style="font-size:13px;color:#fff;text-align:right;">
+                                <div class="form-group location" style="margin-bottom: 0 !important; padding-bottom: 0 !important; margin-left: 283px; position:absolute;">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            Location  :
+                                        </div>
+                                        <div class="col-md-6 padl0">
+                                            <select id="ddlFinYear" class="form-control findrop"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3" style="font-size:13px;color:#fff;text-align:right;">
+                                <div class="form-group" style="margin-bottom:0!important; margin:0!important; padding-bottom:0!important;">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <ul class="navbar-nav">
+                                                <li class="nav-item dropdown">
+                                                    <a class="nav-link logout" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+                                                        <span id="lblUser" ng-bind="lblUser"></span>
+                                                        <i class="material-icons">person</i>
+
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                                                        <a class="dropdown-item" href="#">Profile</a>
+                                                        <a class="dropdown-item" href="#" id="btnSignOut" ng-click="SignOut();">Sign Out</a>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="container" style="position:fixed;z-index: 10000;top:10px;">
+                <div class="row">
+                    <div class="col-md-4" style="font-size:13px;color:#fff;">
+                        <div class="row" style="margin-top:6px;">
+                            <div class="col-md-3 padr0"><span id="UserName" ng-bind="UserName"></span> :</div>
+                            <div class="col-md-9 padl0"><span id="lblAgency" ng-bind="lblAgency"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 padl0" style="font-size:13px;color:#fff; margin-left:-35px!important;">
+                        <div class="form-group" style="margin-bottom:0!important; margin:0!important; padding-bottom:0!important;">
+                            <div class="row" style="margin-top:6px;">
+                                <div class="col-md-4">
+                                    Finance Year  :
+                                </div>
+                                <div class="col-md-8 padl0">
+                                    <select class="form-control findrop" ng-model="ddlFinYear" id="ddlFinYear" ng-options="item.FinancialYear for item in FinancialYear track by item.YearID" required>
+                                        <option value="" selected hidden />
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="font-size:13px;color:#fff; margin-left:-42px;">
+                        <div class="form-group" style="margin-bottom:0!important; margin:0!important; padding-bottom:0!important;">
+                            <div class="row" style="margin-top:6px;">
+                                <div class="col-md-4">
+                                    Location  :
+                                </div>
+                                <div class="col-md-8 padl0">
+                                    <select id="ddlFinYear" class="form-control findrop"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="font-size:13px;color:#fff; margin-left:70px;text-align:right;">
+                        <div class="form-group" style="margin-bottom:0!important; margin:0!important; padding-bottom:0!important;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link logout" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <i class="material-icons">person</i>
+                                                <span id="lblUser" ng-bind="lblUser"></span>
+
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                                                <a class="dropdown-item" href="#">Profile</a>
+                                                <a class="dropdown-item" href="#" id="btnSignOut" ng-click="SignOut();">Sign Out</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+
+
+
+            </div>
+            <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top" style="position:fixed;margin-left:206px;">
+
+                <div class="container-fluid">
+
+
+                    <div class="collapse navbar-collapse justify-content-end">
+
+                        @*<ul class="navbar-nav" style="margin-right:207px;">
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons">person</i>
+                                <span id="lblUser" ng-bind="lblUser"></span>
+
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="#"><i class="material-icons">power_settings_new</i> Sign Out</a>
+                            </div>
+                        </li>
+                    </ul>*@
+                    </div>
+                </div>
+            </nav>
+            <div class="content">
+                <div class="container-fluid body-content">
+                    @RenderBody()
+                    <footer class="footer">
+                        <div class="container-fluid">
+                            <div class="copyright float-center">
+                                &copy;
+                                All Rights Reserved.Blue Wave Shipping
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        </div>
+
+    <script src="~/assets/menu/fastclick.js"></script>
+    <script src="~/assets/menu/jquery.slimscroll.min.js"></script>
+    <script src="~/assets/menu/adminlte.min.js"></script>
+    <script src="~/assets/js/core/popper.min.js"></script>
+    <script src="~/assets/js/core/bootstrap-material-design.min.js"></script>
+    <script src="~/assets/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="~/assets/js/plugins/moment.min.js"></script>
+    <script src="~/assets/js/plugins/sweetalert2.js"></script>
+    <script src="~/assets/js/plugins/jquery.validate.min.js"></script>
+    <script src="~/assets/js/plugins/jquery.bootstrap-wizard.js"></script>
+    <script src="~/assets/js/plugins/bootstrap-selectpicker.js"></script>
+    <script src="~/assets/js/plugins/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/assets/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="~/assets/js/plugins/bootstrap-tagsinput.js"></script>
+    <script src="~/assets/js/plugins/jasny-bootstrap.min.js"></script>
+    <script src="~/assets/js/plugins/fullcalendar.min.js"></script>
+    <script src="~/assets/js/plugins/jquery-jvectormap.js"></script>
+    <script src="~/assets/js/plugins/nouislider.min.js"></script>
+
+    <script src="~/assets/js/plugins/arrive.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Yno10-YTnLjjn_Vtk0V8cdcY5lC4plU"></script>
+    <script async defer src="../../../buttons.github.io/buttons.js"></script>
+    <script src="~/assets/js/plugins/chartist.min.js"></script>
+    <script src="~/assets/js/plugins/bootstrap-notify.js"></script>
+    <script src="~/assets/js/material-dashboard.min6c54.js?v=2.2.2" type="text/javascript"></script>
+
+
+
+</body>
+</html>

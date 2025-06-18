@@ -1,0 +1,2241 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').show();
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+
+        //$scope.DepotAllvalues = null;
+        //$scope.fillDepotValues = function () {
+        //    $http({
+        //        method: 'POST',
+        //        url: '/api/CommonAccessApi/DepotMaster/',
+        //        data: {}
+        //    }).then(function (result) {
+        //        $timeout(function () {
+        //            $scope.DepotAllvalues = result.data;
+
+        //        });
+        //    }, function (result) {
+        //        if (result.status == 500) {
+        //            ShowPopup("Sorry no internet connectivity Application Error.");
+        //        }
+        //        else if (result.status == 404) {
+        //            ShowPopup("Sorry no internet connectivity page not found.");
+        //        }
+        //        if (result.status > 0) {
+        //            var errorMsg = result.status + ': ' + result.data;
+        //            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+        //        }
+        //    }).catch(function (result) {
+        //        ShowPopup('There has been an error: ' + result);
+        //    });
+        //};
+        //$scope.fillDepotValues();
+
+
+
+        $scope.TransitModevalues = null;
+        $scope.fillTransitModeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/TransitModeValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TransitModevalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTransitModeValues();
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["ImpReg"] != null) {
+
+                $scope.RegId = queryString["ImpReg"].toString();
+                $scope.HDBkgID = queryString["BkgID"].toString();
+                //$scope.FilImpCntrExistingDetails(queryString["ImpReg"].toString());
+                $scope.ContainerDetails(queryString["BkgID"].toString());
+                $scope.fileBookingdtls(queryString["BkgID"].toString());
+                $scope.fileBookingCntrTypes(queryString["BkgID"].toString());
+
+            }
+        });
+        $scope.fileBookingdtls = function (BkgID) {
+
+            var BussData = {};
+            BussData.BkgID = BkgID;
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/Bookingdtls/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.BookingNo = result.data[0].BookingNo;
+                    $scope.VesselVoyage = result.data[0].VesVoy;
+                    $scope.BkgParty = result.data[0].BkgParty;
+                    $scope.HDCustomerID = result.data[0].CustomerID;
+                    $scope.HDVoyID = result.data[0].VesVoyID;
+                   
+                    if (result.data[0].FPODID == 0) {
+                        $scope.btnDischargeFVCFSShow = true;
+                        $scope.btnDischargeFVICDShow = false;
+                       
+                    }
+                    else {
+                        $scope.btnDischargeFVCFSShow = false;
+                        $scope.btnDischargeFVICDShow = true;
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.BookingCntrTypesValues = null;
+        $scope.fileBookingCntrTypes = function (BkgID) {
+
+            var BussData = {};
+            BussData.BkgID = BkgID;
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/BookingCntrTypes/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.BookingCntrTypesValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        
+        $scope.getPaging = function (tab) {
+
+            //if (typeof $scope.RegId == "undefined" || typeof $scope.RegId == "") {
+            //    ShowPopup("please fill RATE REQUEST first1");
+            //    return;
+            //}
+
+            var myp = $scope.RegId;
+            var BkgID = $scope.HDBkgID;
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Import/ShipmentDetails?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Import/ContainerDetails?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Import/ImpTariffview?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Import/CAN?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Import/DeliveryOrder?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+
+            else if (tab == 7) {
+                if (myp != "0") {
+                    var url = "/Import/DetDem?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+
+
+        $scope.ContainerDetails = function (BkgID) {
+
+            var BussData = {};
+            BussData.BkgID = BkgID;
+            $http({
+                method: 'POST',
+                url: '/api/ImportApi/ImpPickcntrBookingMaster/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.FillExstingCntrBookingValues = result.data;
+                    $('#overlay').hide();
+
+                });
+            }, function (result)
+            {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+        $scope.UpdateDischargeFV = function (gDate) {
+
+           
+            var validation = "";
+
+            var ddlLocationFV = $('#ddlLocationFV').val();
+            if (ddlLocationFV == "?" || ddlLocationFV == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+            var txtFVDate = $('#txtFVDate').val();
+            if (txtFVDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select FV Date </span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFVDate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1)
+                {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtFVDate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+                    console.log(gDate);
+                    $scope.CntrLastMovemntInsertFV(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.CntrLastMovemntInsertFV = function (gDate) {
+
+          
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFVDate').val();
+            BussData.LocationID = $('#ddlLocationFV').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "FV";
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, 0);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrLastMovmentMaster/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge FV Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.btnDischargeFV = function () {
+            var validation = "";
+            var CntrMovmentFV = "True";
+            var CntrMovmentTZ = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key)
+            {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1")
+                {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].FVDate != "")
+                    {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].FBDate == "") {
+                        CntrMovmentFV = "False";
+
+                    }
+                    else if ($scope.FillExstingCntrBookingValues[key].FBDate != "") {
+
+                        if ($scope.FillExstingCntrBookingValues[key].TZDate == "" || $scope.FillExstingCntrBookingValues[key].TZFBDate == "") {
+                            CntrMovmentFV = "Ture"
+                        }
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy FV Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentFV == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+            //if (CntrMovmentTZ == "False")
+            //    validation += "<span style='color:red;'>*</span> <span>Please update T/S Move</span></br>"
+
+            if (validation != "")
+            {
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#DischargeFV').modal('show');
+        }
+
+
+
+        $scope.btnPortOutFU = function () {
+
+            var validation = "";
+            var CntrMovmentFV = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key) {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1") {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].FUDate != "") {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].FVDate == "") {
+                        CntrMovmentFV = "False";
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy FU Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentFV == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#PortOutFU').modal('show');
+        }
+
+        $scope.UpdateFU = function (gDate)
+        {
+
+     
+            var validation = "";
+
+            var ddlLocationFU = $('#ddlLocationFU').val();
+            if (ddlLocationFU == "?" || ddlLocationFU == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+            var txtFUDate = $('#txtFUDate').val();
+            if (txtFUDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select FU Date </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+           
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFUDate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtFUDate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+                    
+                    $scope.CntrLastMovemntInsertFU(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.CntrLastMovemntInsertFU = function (gDate) {
+
+           
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFUDate').val();
+            BussData.LocationID = $('#ddlLocationFU').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "FU";
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, 0);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrLastMovmentMaster/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge FU Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+
+        $scope.btnPortOutMA = function () {
+
+            var validation = "";
+            var CntrMovmentFU = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key) {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1") {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].MADate != "") {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].FUDate == "") {
+                        CntrMovmentFU = "False";
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy MA Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentFU == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#DepotInMA').modal('show');
+            
+        }
+
+        $scope.UpdateMA = function (gDate) {
+            var validation = "";
+
+            var ddlLocationMA = $('#ddlLocationMA').val();
+            if (ddlLocationMA == "?" || ddlLocationMA == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+            var ddlDepot = $('#ddlDepo').val();
+            if (ddlDepot == "?" || ddlDepot == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Depot</span></br>"
+            }
+
+            var txtMADate = $('#txtMADate').val();
+            if (txtMADate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select MA Date </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtMADate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtMADate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+
+                    $scope.CntrLastMovemntInsertMA(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.CntrLastMovemntInsertMA = function (gDate) {
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtMADate').val();
+            BussData.LocationID = $('#ddlLocationMA').val();
+            BussData.DepotID = $('#ddlDepo').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "MA";
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, gDate[key].CurrentDepotID);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrLastMovmentMADL/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge MA Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.btnDischargeFI = function () {
+
+            var validation = "";
+            var CntrMovmentFI = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key) {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1") {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].FIDate != "") {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].FVDate == "") {
+                        CntrMovmentFI = "False";
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy FI Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentFI == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#TransitFI').modal('show');
+
+        }
+
+        $scope.UpdateTransitFI = function (gDate) {
+            var validation = "";
+
+            var ddlLocationFI = $('#ddlLocationFI').val();
+            if (ddlLocationFI == "?" || ddlLocationFI == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+            var ddlTransitFI = $('#ddlTransitFI').val();
+            if (ddlTransitFI == "?" || ddlTransitFI == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select TransitMode</span></br>"
+            }
+
+            var txtFIDate = $('#txtFIDate').val();
+            if (txtFIDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select FI Date </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFIDate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtFIDate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+
+                    $scope.CntrLastMovemntInsertFI(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+           
+
+        }
+
+
+        $scope.CntrLastMovemntInsertFI = function (gDate) {
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFIDate').val();
+            BussData.LocationID = $('#ddlLocationFI').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "FI";
+            BussData.TransitMode = $('#ddlTransitFI').val();
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, 0);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrLastMovmentMaster/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge FI Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $scope.btnDischargeFVICD = function () {
+
+            var validation = "";
+            var CntrMovmentFI = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key) {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1") {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].FVICDDate != "") {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].FIDate == "") {
+                        CntrMovmentFI = "False";
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy FVICD Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentFI == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#TransitFI').modal('show');
+
+        }
+
+        $scope.UpdateFVICD = function (gDate) {
+            var validation = "";
+
+            var ddlLocationFVICD = $('#ddlLocationFVICD').val();
+            if (ddlLocationFVICD == "?" || ddlLocationFVICD == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+
+            var txtFVICDDate = $('#txtFVICDDate').val();
+            if (txtFVICDDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please FVICD Date </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFVICDDate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtFVICDDate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+
+                    $scope.CntrLastMovemntInsertFVICD(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+            
+
+        }
+
+        $scope.CntrLastMovemntInsertFVICD = function (gDate) {
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFVICDDate').val();
+            BussData.LocationID = $('#ddlLocationFVICD').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "FVICD";
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, 0);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrLastMovmentMaster/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge FVICD Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+
+        $scope.btnDischargeFVCFS = function () {
+
+            var validation = "";
+            var CntrMovmentFI = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+            console.log($scope.FillExstingCntrBookingValues);
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key) {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1")
+                {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].FVCFSDate != "")
+                    {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].ImpFIDate == "") {
+                        CntrMovmentFI = "False";
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy FVCFS Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentFI == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#DepotInFVCFS').modal('show');
+
+        }
+
+
+        $scope.UpdateFVCFS = function (gDate) {
+            var validation = "";
+
+            var ddlLocationFVCFS = $('#ddlLocationFVCFS').val();
+            if (ddlLocationFVCFS == "?" || ddlLocationFVCFS == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+            var ddlDepoFVCFS = $('#ddlDepoFVCFS').val();
+            if (ddlDepoFVCFS == "?" || ddlDepoFVCFS == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Depot</span></br>"
+            }
+
+            var txtFVCFSDate = $('#txtFVCFSDate').val();
+            if (txtFVCFSDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select FVCFS Date </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFVCFSDate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtFVCFSDate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+
+                    $scope.CntrLastMovemntInsertFVCFS(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.CntrLastMovemntInsertFVCFS = function (gDate) {
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtFVCFSDate').val();
+            BussData.LocationID = $('#ddlLocationFVCFS').val();
+            BussData.DepotID = $('#ddlDepoFVCFS').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "FVCFS";
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, gDate[key].CurrentDepotID);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrFVCFSMovement/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge FVCFS Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+
+        $scope.btnDischargeDV = function () {
+           
+            var validation = "";
+            var CntrMovmentDV = "True";
+            var ExistringMovment = "True";
+            var FlagValues = "True";
+
+
+            angular.forEach($scope.FillExstingCntrBookingValues, function (value, key) {
+                if ($scope.FillExstingCntrBookingValues[key].IsTrue == "1") {
+                    FlagValues = "False";
+                    if ($scope.FillExstingCntrBookingValues[key].DVDate != "") {
+                        ExistringMovment = "False";
+                    }
+                    if ($scope.FillExstingCntrBookingValues[key].FVCFSDate == "")
+                    {
+                        CntrMovmentDV = "False";
+                    }
+                }
+            });
+
+            if (FlagValues == "True")
+                validation += "<span style='color:red;'>*</span> <span>Container not flagged</span></br>"
+
+            if (ExistringMovment == "False")
+                validation += "<span style='color:red;'>*</span> <span> Alredy FVCFS Movement done please contact admin</span></br>"
+
+
+            if (CntrMovmentDV == "False")
+                validation += "<span style='color:red;'>*</span> <span>Please update POL Move</span></br>"
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#DepotInDV').modal('show');
+
+        }
+
+        $scope.UpdateDV = function (gDate) {
+            var validation = "";
+
+            var ddlLocationDV = $('#ddlLocationDV').val();
+            if (ddlLocationDV == "?" || ddlLocationDV == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br>"
+            }
+
+            var ddlDepoDV = $('#ddlDepoDV').val();
+            if (ddlDepoDV == "?" || ddlDepoDV == null) {
+                validation += "<span style='color:red;'>*</span> <span>Please select Depot</span></br>"
+            }
+
+            var txtDVDate = $('#txtDVDate').val();
+            if (txtDVDate.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please select DV Date </span></br>"
+            }
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VesVoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtDVDate').val();
+
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push(gDate[key].ID);
+                }
+            });
+            BussData.CntrID = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/ImportCheckDtMovmentLast/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    var DtMovement = result.data[0].DtMovement;
+                    var Local1 = moment.utc(DtMovement).local().format('MMM DD YYYY h:mm A');
+                    var local = moment.utc($('#txtDVDate').val()).local().format('MMM DD YYYY h:mm A');
+
+                    if (Date.parse(Local1) >= Date.parse(local)) {
+                        ShowPopup("<span style='color:red;'>*</span> <span>Date of Movement should be greater than previous movement Date</span></br>");
+                        return;
+                    }
+
+                    $scope.CntrLastMovemntInsertDV(gDate);
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        $scope.CntrLastMovemntInsertDV = function (gDate) {
+
+
+            var BussData = {};
+            var Items = [];
+            BussData.BkgID = $scope.HDBkgID;
+            BussData.VoyID = $scope.HDVoyID;
+            BussData.PickupDate = $('#txtDVDate').val();
+            BussData.LocationID = $('#ddlLocationDV').val();
+            BussData.DepotID = $('#ddlDepoDV').val();
+            BussData.AgentName = "";
+            BussData.AgentID = localStorage.getItem("AgencyID");
+            BussData.CustomerID = $scope.HDCustomerID;
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.VoyageID = $scope.HDVoyID;
+            BussData.StatusCode = "DV";
+            angular.forEach(gDate, function (value, key) {
+                if (gDate[key].IsTrue == 1) {
+                    Items.push('Insert:' + gDate[key].ID, gDate[key].LocationID, gDate[key].CurrentDepotID);
+                }
+            });
+            BussData.Items = Items.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/CntrPickupApi/InsertCntrDVMovement/',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+
+                    ShowPopup("Container Discharge DV Status Successfully");
+                    $scope.ContainerDetails($scope.HDBkgID);
+                    $('#Portin').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+
+
+        $scope.DepoMastOnchange = function (NextPortID) {
+
+            var Datavalue = {};
+            Datavalue.ID = NextPortID;
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/ListDepotByPort/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $scope.DepotAllvalues = result.data;
+                    }
+                    else {
+
+                        $scope.DepotAllvalues = null;
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        //$("#ddlLocationFV").change(function () {
+        //    $scope.DepoMastOnchange($("#ddlLocationFV").val());
+        //});
+
+        //$("#ddlLocationFI").change(function () {
+        //    $scope.DepoMastOnchange($("#ddlLocationFI").val());
+        //});
+
+        $("#ddlLocationFVICD").change(function () {
+            $scope.DepoMastOnchange($("#ddlLocationFVICD").val());
+        });
+
+        //$("#ddlLocationFU").change(function () {
+        //    $scope.DepoMastOnchange($("#ddlLocationFU").val());
+        //});
+
+        $("#ddlLocationMA").change(function () {
+            $scope.DepoMastOnchange($("#ddlLocationMA").val());
+        });
+
+        $("#ddlLocationFVCFS").change(function () {
+            $scope.DepoMastOnchange($("#ddlLocationFVCFS").val());
+        });
+
+        $("#ddlLocationDV").change(function () {
+            $scope.DepoMastOnchange($("#ddlLocationDV").val());
+        });
+
+
+
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .downbtn .btn {
+        padding: 6px 12px;
+    }
+
+    .modal-dialog .modal-header .modal-title {
+        margin-top: -13px !important;
+        color: #fff !important;
+        font-size: 18px;
+    }
+
+    .modal-dialog .modal-header {
+        background-color: #1e4383 !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/Import/ImportView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            @*<a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                <i class="material-icons">edit</i>
+            </a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Container Details
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" ng-click="getPaging(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Shipment Details</a>
+                                <a class="nav-item nav-link active" ng-click="getPaging(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                <a class="nav-item nav-link" id="nav-contact-tab" ng-click="getPaging(4);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">CAN</a>
+                                <a class="nav-item nav-link" id="nav-contact-CAN" ng-click="getPaging(5);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Delivery Order/Empty Returns</a>
+                                <a class="nav-item nav-link" id="nav-profile-tab" ng-click="getPaging(3);" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Destination Chargges</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(7);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">DET/DEM Calculation</a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group" style="margin-top:0;">
+                                <div class="row">
+                                    <div class="col-md-3" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Booking/BL No</label>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <span ng-bind="BookingNo"></span>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-md-5" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Booking Party</label>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <span ng-bind="BkgParty"></span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Vessel/Voyage</label>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <span ng-bind="VesselVoyage"></span>
+                                                <input type="hidden" id="HDVoyID" ng-model="HDVoyID" />
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                    @*<div class="col-md-3" style="border: 1px solid #ccc; background-color:#eeeeee59; border-top: 5px solid #ebc354; ">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Container Size Type/Volume</label>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <table>
+                                                    <tr ng-repeat="gRow in BookingCntrTypesValues">
+                                                        <td>{{gRow.Size}}</td>
+                                                        <td> * </td>
+                                                        <td>{{gRow.Qty}}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+
+                                    </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 downbtn">
+                            <a href="#" class="btn btn-primary" id="btnDischargeFV" ng-click="btnDischargeFV();">Discharge(FV)</a>
+                            @*<a href="#" class="btn btn-info" id="btnDischargeFI" ng-click="btnDischargeFI();">Transit(FI)</a>
+
+                            <a href="#" class="btn btn-default" ng-show="btnDischargeFVCFSShow" id="btnDischargeFVCFS" ng-click="btnDischargeFVCFS();">FVCFS</a>
+                            <a href="#" class="btn btn-rose" id="btnDischargeDV" ng-click="btnDischargeDV();">Dock Destuff(DV)</a>*@
+
+                            @*<a href="#" class="btn btn-success" ng-show="btnDischargeFVICDShow" id="btnDischargeFVICD" ng-click="btnDischargeFVICD();">FV ICD</a>*@
+                            <a href="#" class="btn btn-warning" id="btnPortOutFU" ng-click="btnPortOutFU();">Port-Out(FU)</a>
+                            <a href="#" class="btn btn-danger" id="btnPortOutMA" ng-click="btnPortOutMA();">Depot-In(MA)</a>
+                        </div>
+
+                    </div>
+                    <div class="row pickupdiv" style="margin-top:20px;">
+                        <div class="col-md-12" style="width:1665px;overflow-x:scroll">
+                            <div class="material-datatables" style="overflow:scroll;height:200px; width:1665px;">
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Container #</th>
+                                            <th>Size Type</th>
+                                            <th>Pick Up Date(MS)</th>
+                                            @*<th>ICD Stuff (FC)</th>
+                                            <th>Exp Transit(FI)</th>*@
+                                            <th>Port-In(FL)</th>
+                                            <th>Vessel Dep(FB)</th>
+                                            <th>T/S Arrival(TZ)</th>
+                                            <th>T/S Dep(TZFB)</th>
+                                            <th>Vessel Arrival(FV)</th>
+                                            @*<th>Port Out(FU)</th>*@
+                                            @*<th>Imp Transit(FI)</th>
+                                            <th>Imp Discharge To CFS(FVCFS)</th>*@
+                                            <th>Imp Dock De-Stuff(DV)</th>
+                                            <th>ICD Place(FVICD)</th>
+                                            <th>Port Out(FU)</th>
+                                            <th>Depo-In(MA)</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in FillExstingCntrBookingValues">
+                                            <td>
+                                                <input type="checkbox" ng-true-value="1" ng-checked="gRow.IsTrue == 1" ng-false-value="0" id="InvCheck" ng-model="gRow.IsTrue" />
+
+                                            </td>
+                                            <td>{{gRow.CntrNo}}</td>
+                                            <td>{{gRow.Size}}</td>
+                                            <td>{{gRow.MSDate}}</td>
+                                            @*<td>{{gRow.FCDate}}</td>
+                                            <td>{{gRow.ExpFIDate}}</td>*@
+                                            <td>{{gRow.FLDate}}</td>
+                                            <td>{{gRow.FBDate}}</td>
+
+                                            <td>{{gRow.TZDate}}</td>
+                                            <td>{{gRow.TZFBDate}}</td>
+                                            <td>{{gRow.FVDate}}</td>
+                                            @*<td>{{gRow.ImpFIDate}}</td>
+
+                                            <td>{{gRow.FVCFSDate}}</td>*@
+
+                                            <td>{{gRow.DVDate}}</td>
+
+                                            <td>{{gRow.FVICDDate}}</td>
+                                            <td>{{gRow.FUDate}}</td>
+                                            <td>{{gRow.MADate}}</td>
+                                            @*<td>{{gRow.MRDate}}</td>*@
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="modal" id="DischargeFV">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">Discharge(FV)</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">Discharge(FV) Date</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <select id="ddlLocationFV" ng-model="ddlLocationFV" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                            <option value="0" disabled selected>--select--</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <input type="datetime-local" id="txtFVDate" style="width:100%;" class="form-control" ng-model="txtFVDate" />
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateDischargeFV(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="modal" id="TransitFI">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">Transit(FI)</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">Locations-In FI</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <select id="ddlLocationFI" ng-model="ddlLocationFI" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                            <option value="0" disabled selected>--select--</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">Transit Mode FI</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <select id="ddlTransitFI" ng-model="ddlTransitFI" class="form-control my-select" placeholder="Transit" ng-options="item.GeneralName for item in TransitModevalues track by item.ID">
+                                                            <option value="0" disabled selected>--select--</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">Date-In FI</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <input type="datetime-local" id="txtFIDate" style="width:100%;" class="form-control" ng-model="txtFIDate" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                                         
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateTransitFI(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                    <div class="modal" id="FVICD">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">FV ICD</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">FV ICD Date</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <select id="ddlLocationFVICD" ng-model="ddlLocationFVICD" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                            <option value="0" disabled selected>--select--</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        <input type="datetime-local" id="txtFVICDDate" style="width:100%;" class="form-control" ng-model="txtRailoutIODate" />
+                                                    </div>
+
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateFVICD(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="modal" id="PortOutFU">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">Port Out (FU)</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">Port Out Location (FU)</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+
+                                                    <div class="col-md-12">
+                                                        <select id="ddlLocationFU" ng-model="ddlLocationFU" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                            <option value="0" disabled selected>--select--</option>
+                                                        </select>
+                                                    </div>
+                                                  
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-5"><h5 style="margin-top:10px;">Port Out Date (FU)</h5></div>
+                                        <div class="col-md-7">
+                                            <div class="form-group">
+                                                <div class="row">
+
+                                                   
+                                                    <div class="col-md-12">
+                                                        <input type="datetime-local" id="txtFUDate" style="width:100%;" class="form-control" ng-model="txtFUDate" />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateFU(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="modal" id="DepotInMA">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">Depot-In(MA)</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Depot-In(MA)</h5></div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12">
+                                                                <select id="ddlLocationMA" ng-model="ddlLocationMA" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                                    <option value="0" disabled selected>--select--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Depot</h5></div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12">
+                                                                <select id="ddlDepo" ng-model="ddlDepo" class="form-control my-select" ng-options="item.PickUpDepot for item in DepotAllvalues track by item.ID">
+                                                                    <option value="0" disabled selected>--select--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Date</h5></div>
+                                                <div class="col-md-7">
+                                                    <input type="datetime-local" id="txtMADate" style="width:100%;" class="form-control" ng-model="txtMADate" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateMA(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+                    <div class="modal" id="DepotInFVCFS">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">Depot-In(FVCFS)</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Locations-InFVCFS</h5></div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12">
+                                                                <select id="ddlLocationFVCFS" ng-model="ddlLocationFVCFS" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                                    <option value="0" disabled selected>--select--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Depot</h5></div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12">
+                                                                <select id="ddlDepoFVCFS" ng-model="ddlDepoFVCFS" class="form-control my-select" ng-options="item.PickUpDepot for item in DepotAllvalues track by item.ID">
+                                                                    <option value="0" disabled selected>--select--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Date</h5></div>
+                                                <div class="col-md-7">
+                                                    <input type="datetime-local" id="txtFVCFSDate" style="width:100%;" class="form-control" ng-model="txtFVCFSDate" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateFVCFS(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+                    <div class="modal" id="DepotInDV">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="margin:0 auto; width:400px;">
+
+                                <!-- Modal Header -->
+                                <div class="modal-header">
+                                    <h4 class="modal-title" style="font-size:18px;">Depot-In(DV)</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <!-- Modal body -->
+                                <div class="modal-body" style="padding-bottom:0;border-bottom: 1px solid #ccc;margin-bottom:6px;">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Locations-In DV</h5></div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12">
+                                                                <select id="ddlLocationDV" ng-model="ddlLocationDV" class="form-control my-select" placeholder="Location" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                                                    <option value="0" disabled selected>--select--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Depot</h5></div>
+                                                <div class="col-md-7">
+                                                    <div class="form-group">
+                                                        <div class="row">
+
+                                                            <div class="col-md-12">
+                                                                <select id="ddlDepoDV" ng-model="ddlDepoDV" class="form-control my-select" ng-options="item.PickUpDepot for item in DepotAllvalues track by item.ID">
+                                                                    <option value="0" disabled selected>--select--</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="row">
+                                                <div class="col-md-5"><h5 style="margin-top:10px;">Date</h5></div>
+                                                <div class="col-md-7">
+                                                    <input type="datetime-local" id="txtDVDate" style="width:100%;" class="form-control" ng-model="txtDVDate" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:30px;">
+                                        <div class="col-md-12" style="text-align:right;">
+                                            <a href="#" class="btn btn-success" style="padding: 7px 25px;margin-top:-2px;" ng-click="UpdateDV(FillExstingCntrBookingValues);">Save</a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <input type="hidden" id="RegId" ng-model="RegId" />
+                <input type="hidden" id="HDBkgID" ng-model="HDBkgID" />
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,755 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+       // $scope.IsBreakUpVal = true;
+        $scope.ChargeTypes = [
+            { 'Name': 'REVENUE', 'ID': 1 },
+            { 'Name': 'COST', 'ID': 2 },
+            { 'Name': 'BOTH', 'ID': 3 }
+        ];
+        $scope.StatusList = [
+            { 'Name': 'ACTIVE', 'ID': 1 },
+            { 'Name': 'INACTIVE', 'ID': 2 },
+        ];
+
+        $scope.SelectedFiles = null;
+        $scope.ChgGroup = null;
+        $scope.chgGrouping = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/FinanceApi/BindChargeGroup/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChgGroup = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.chgGrouping();
+
+        $scope.BasisType = null;
+        $scope.basisTypeList = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/FinanceApi/BindBasis/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BasisType = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.basisTypeList();
+
+        $scope.Ownership = null;
+        $scope.ownershipList = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/FinanceApi/BindOwnership/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Ownership = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.ownershipList();
+
+        $scope.ExistChargeTypesBind = function (chargetype) {
+
+            if ( chargetype != "1") {
+                $scope.IsBreakUpVal = true;
+              
+            }
+            else {
+                $scope.IsBreakUpVal = false;
+            }
+
+        };
+
+        //$("#ddlChargeTypes").change(function () {
+
+
+        //    if ($("#ddlChargeTypes").val() != "1")
+        //    {
+        //        $scope.IsBreakUpVal = true;
+                
+        //    }
+        //    else {
+                
+        //        $scope.IsBreakUpVal = false;
+        //    }
+        //});
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["ChgID"] != null) {
+                $scope.HDRegId = queryString["ChgID"].toString();
+                $scope.BindChargeCode(queryString["ChgID"].toString());
+
+            }
+        });
+        $scope.BindChargeCode = function (ChgID) {
+
+            var Datavalue = {}
+            var id = ChgID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = ChgID;
+
+            $http({
+                method: 'POST',
+                url: '/api/FinanceApi/ChargeCodeEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.txtChgCode = result.data[0].ChgCode;
+                        $scope.txtChgDesc = result.data[0].ChgDesc;
+                        $scope.txtSaccode = result.data[0].SACCode;
+                        // $scope.txtDtValidFrom = result.data[0].DtValidFrom;
+                        //$scope.txtDtValidTill = result.data[0].DtValidTill;
+                        $scope.ddlChgGroup = { ChargeGroupID: result.data[0].ChargeGroupID };
+                        $scope.ddlBasis = { BasisID: result.data[0].BasisID };
+                        $scope.ddlChgOwnership = { OwnershipID: result.data[0].OwnershipID };
+                        $scope.IsNVOCC = result.data[0].IsNVOCC;
+                        $scope.IsForwarding = result.data[0].IsForwarding;
+                        $scope.IsDeposit = result.data[0].IsDeposit;
+                        $scope.IsBreakUp = result.data[0].IsBreakUp;
+                        $scope.ddlChargeTypes = { ID: result.data[0].IsRevenue };
+                        $scope.ddlStatus = { ID: result.data[0].Status };
+                        //$scope.ExistChargeTypesBind(result.data[0].IsRevenue);
+                        $scope.IsSlab = result.data[0].IsSlab;
+                        
+
+                    }
+                    else {
+                        $scope.txtChgCode = "";
+                        $scope.txtChgDesc = "";
+                        $scope.txtSaccode = "";
+                        $scope.txtDtValidFrom = "";
+                        $scope.txtDtValidTill = "";
+                        $scope.ddlChgGroup = "";
+                        $scope.ddlChgOwnership = "";
+                        $scope.ddlStatus = "";
+                        $scope.ddlChargeTypes = "";
+                        $scope.ddlBasis = "";
+
+                    }
+                });
+            });
+
+        }
+        // $scope.BindChargeCode();
+
+        $scope.SaveChgCodes = function () {
+
+            var validation = "";
+            var txtChgCode = $('#txtChgCode').val();
+            if (txtChgCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Charge Code</span></br>"
+
+            }
+            var txtChgDesc = $('#txtChgDesc').val();
+            if (txtChgDesc.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Charge Description</span></br>"
+
+            }
+            var txtSaccode = $('#txtSaccode').val();
+            if (txtSaccode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter SAC Code</span></br>"
+
+            }
+
+            var ddlChgOwnership = $('#ddlChgOwnership').val();
+            if (ddlChgOwnership == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Ownership </span></br>"
+            }
+
+            var ddlBasis = $('#ddlBasis').val();
+            if (ddlBasis == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Basis </span></br>"
+            }
+
+            var ddlChgGroup = $('#ddlChgGroup').val();
+            if (ddlChgGroup == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Group </span></br>"
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+
+            $scope.ExistingChargecodeValid = function () {
+                var BussData = {}
+                var id = $scope.HDRegId;
+
+                if (id == "" || id == null)
+                    BussData.ID = 0;
+                else
+                    BussData.ID = $scope.HDRegId;
+                var Data = {};
+
+                Data.ChgCode = $scope.txtChgCode;
+                Data.ChgDesc = $scope.txtChgDesc;
+                Data.OwnershipID = $("#ddlChgOwnership").val();
+                $http({
+                    method: 'POST',
+                    url: '/api/FinanceApi/ExistingChargeCodesValid/',
+                    data: JSON.stringify(Data),
+                })
+                    .then(function (response) {
+                        $timeout(function () {
+
+                            $scope.Result = response.data;
+                            if (BussData.ID == "0" && $scope.Result.length >= "1") {
+                                ShowPopup("Charge Code Already Exists this Combination..Please Contact Administration");
+                                return false;
+                            }
+                            else {
+
+                                BussData.ChgCode = $scope.txtChgCode;
+                                BussData.ChgDesc = $scope.txtChgDesc;
+                                BussData.ChargeGroupID = $("#ddlChgGroup").val();
+                                BussData.IsRevenue = $("#ddlChargeTypes").val();
+                                BussData.BasisID = $("#ddlBasis").val();
+                                BussData.SACCode = $scope.txtSaccode;
+                                //BussData.DtValidFrom = $("#txtDtValidFrom").val();
+                                //BussData.DtValidTill = $("#txtDtValidTill").val();
+                                BussData.OwnershipID = $("#ddlChgOwnership").val();
+                                BussData.Status = $("#ddlStatus").val();
+
+
+                                if ($scope.IsNVOCC == 1) {
+
+                                    BussData.IsNVOCC = 1;
+                                }
+                                else {
+                                    BussData.IsNVOCC = 0;
+                                }
+                                BussData.IsNVOCC = $scope.IsNVOCC;
+
+                                if ($scope.IsForwarding == 1) {
+
+                                    BussData.IsForwarding = 1;
+                                }
+                                else {
+                                    BussData.IsForwarding = 0;
+                                }
+
+                                
+                                BussData.IsForwarding = $scope.IsForwarding;
+
+                                if ($scope.IsSlab == 1) {
+
+                                    BussData.IsSlab = 1;
+                                }
+                                else {
+                                    BussData.IsSlab = 0;
+                                }
+
+                                BussData.IsSlab = $scope.IsSlab;
+
+                                if ($scope.IsDeposit == 1) {
+
+                                    BussData.IsDeposit = 1;
+                                }
+                                else {
+                                    BussData.IsDeposit = 0;
+                                }
+                                BussData.IsDeposit = $scope.IsDeposit;
+
+                                if ($("#ddlChargeTypes").val() != "1") {
+                                    if ($scope.IsBreakUp == 1) {
+
+                                        BussData.IsBreakUp = 1;
+                                    }
+                                    else {
+                                        BussData.IsBreakUp = 0;
+                                    }
+                                    BussData.IsBreakUp = $scope.IsBreakUp;
+
+                                }
+                                else {
+                                    BussData.IsBreakUp = 0;
+                                }
+
+                                $http({
+                                    method: 'POST',
+                                    url: "/api/FinanceApi/InsertChargeCodes",
+                                    data: JSON.stringify(BussData),
+
+                                }).then(function (result) {
+                                    $timeout(function () {
+                                        //BussData.ID = result.data[0].ID;
+                                        //alert(result.data[0].ID);
+                                        if (BussData.ID != "") {
+                                            ShowPopup("Charge Master Updated");
+                                        }
+                                        else {
+
+                                            ShowPopup("Charge Master Saved Successfully");
+                                        }
+                                        var url = "/Finance/ChargeCodeView";
+                                        window.location.href = url;
+                                        setTimeOut(function () {
+                                            window.location = "/";
+                                        }, 10000);
+
+                                    });
+                                }, function (result) {
+                                    if (result.status == 500) {
+                                        ShowPopup("Sorry no internet connectivity Application Error.");
+                                    }
+                                    else if (result.status == 404) {
+                                        ShowPopup("Sorry no internet connectivity page not found.");
+                                    }
+
+
+                                    if (result.status > 0) {
+                                        var errorMsg = result.status + ': ' + result.data;
+                                        // $(".modal").hide();
+                                        ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                                    }
+                                }).catch(function (result) {
+                                    // This is set in the event of an error.
+                                    console.log(result);
+                                    ShowPopup('There has been an error: ' + result);
+                                });
+
+                            }
+                            //}
+
+
+                        });
+                    }, function (response) {
+                        if (response.status > 0) {
+                            var errorMsg = response.status + ': ' + response.data;
+                            ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                        }
+                    });
+            }
+            $scope.ExistingChargecodeValid();
+
+        }
+
+        $scope.back = function () {
+
+            window.location = "/Finance/ChargeCodeView";
+        }
+    });
+
+
+
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<style>
+    .col-md-5.lbl2 {
+        width: 100px !important;
+    }
+
+    .lblfont {
+        width: 100px !important;
+    }
+
+    .card-wizard {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+    }
+
+    .form-group {
+        padding-bottom: 5px !important;
+    }
+
+    .ml-auto, .mx-auto {
+        margin-top: 20px;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Charge Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row" style="border: 1px solid #ccc; padding-bottom: 10px;">
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Code</label>
+                                            <input type="text" autocomplete="off" id="txtChgCode" ng-model="txtChgCode" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Description</label>
+                                            <input type="text" autocomplete="off" id="txtChgDesc" ng-model="txtChgDesc" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Grouping</label>
+
+                                            <select class="form-control my-select" ng-model="ddlChgGroup" id="ddlChgGroup" ng-options="item.GeneralName for item in ChgGroup track by item.ChargeGroupID" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label> </label>
+                                            <label>Charge Types</label>
+                                            <select class="form-control my-select" ng-model="ddlChargeTypes" id="ddlChargeTypes" ng-options="item.Name for item in ChargeTypes track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Basis</label>
+                                            <select class="form-control my-select" ng-model="ddlBasis" id="ddlBasis" ng-options="item.GeneralName for item in BasisType track by item.BasisID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>SAC Code</label>
+                                            <input type="text" autocomplete="off" id="txtSaccode" ng-model="txtSaccode" class="form-control">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Valid From </label>
+
+                                                <input type="text" id="txtDtValidFrom" autocomplete="off" ng-model="txtDtValidFrom" class="form-control datepicker">
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Valid Till</label>
+                                                <input type="text" id="txtDtValidTill" autocomplete="off" ng-model="txtDtValidTill" class="form-control datepicker">
+
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>*@
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge OwnerShip</label>
+
+                                            <select class="form-control my-select" ng-model="ddlChgOwnership" id="ddlChgOwnership" ng-options="item.GeneralName for item in Ownership track by item.OwnershipID" required></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+
+                                            <select class="form-control my-select" ng-model="ddlStatus" id="ddlStatus" ng-options="item.Name for item in StatusList track by item.ID" required></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="border:1px solid #ccc;">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>NVOCC</label>
+                                                    <div>
+                                                        <label>
+                                                            <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="IsNVOCC == 1" id="IsNVOCC" ng-model="IsNVOCC" value="IsNVOCC">
+                                                            <span class="toggle"></span>
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Forwarding</label>
+                                                    <div>
+                                                        <label>
+                                                            <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="IsForwarding == 1" id="IsForwarding" ng-model="IsForwarding" value="IsForwarding">
+                                                            <span class="toggle"></span>
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label>Deposit</label>
+                                                    <div>
+                                                        <label>
+                                                            <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="IsDeposit == 1" id="IsDeposit" ng-model="IsDeposit" value="IsDeposit">
+                                                            <span class="toggle"></span>
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label> Slab Flagging</label>
+                                                    <div>
+                                                        <label>
+                                                            <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="IsSlab == 1" id="IsSlab" ng-model="IsSlab" value="IsSlab">
+                                                            <span class="toggle"></span>
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2" ng-hide="IsBreakUpVal">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <label> BreakUp</label>
+                                                    <div>
+                                                        <label>
+                                                            <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="IsBreakUp == 1" id="IsBreakUp" ng-model="IsBreakUp" value="IsBreakUp">
+                                                            <span class="toggle"></span>
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="border:1px solid #ccc;padding-top:10px;padding-bottom:10px;">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="SaveChgCodes();">
+
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+                                <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        // Initialise the wizard
+        demo.initMaterialWizard();
+        setTimeout(function () {
+            $('.card.card-wizard').addClass('active');
+        }, 600);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+

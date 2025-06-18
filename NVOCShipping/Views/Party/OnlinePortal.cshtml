@@ -1,0 +1,691 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.HDArrayIndex = "";
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+        $scope.RoleListValues = [
+            { 'Name': 'Customer', 'ID': 1 },
+            { 'Name': 'Vendor-Depo', 'ID': 2 }
+        ];
+  
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 0 }
+        ];
+
+        $("#ddlRole").change(function ()
+
+        {
+            if ($("#ddlRole").val() == "1")
+            {
+              
+                $scope.IsVisible = true;
+            }
+            else {
+               
+                $scope.IsVisible = false;
+            }
+            //$scope.PartyList = null;
+               var Datavalue = {};
+
+            Datavalue.ID = $("#ddlRole").val();
+            $http({
+                method: 'POST',
+                url: '/api/PartyApi/BindPartyWiseByRole/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    //$scope.PartyList = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.BindExistingRole = function (RoleID) {
+            if (RoleID == 1)
+            {
+                $scope.IsVisible = true;
+            }
+            else {
+                $scope.IsVisible = false;
+            }
+            $scope.PartyList = null;
+            var Datavalue = {};
+
+            Datavalue.ID = RoleID
+            $http({
+                method: 'POST',
+                url: '/api/PartyApi/BindPartyWiseByRole/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PartyList = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        
+        };
+
+        $scope.PartyListShipper = null;
+        $scope.FillPartyValuesSh = function () {
+
+            var Datavalue = {};
+            Datavalue.ID = "1";
+            $http({
+
+                method: 'POST',
+                url: '/api/PartyApi/BindPartyWiseByRole/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PartyListShipper = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillPartyValuesSh();
+
+        $scope.DepotList = null;
+        $scope.FillDepotValues = function () {
+            $http({
+
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.FillDepotValues();
+
+        $scope.BusinessTypesvalues = null;
+        $scope.fillBusinessTypesvalues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BusinessTypes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.BusinessTypesvalues = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.fillBusinessTypesvalues();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["OPID"] != null) {
+
+                $scope.HdRegId = queryString["OPID"].toString();
+                $scope.BindOnlinePortal(queryString["OPID"].toString());
+                $scope.BindOnlinePortalrDtls(queryString["OPID"].toString());
+            }
+
+
+        });
+
+
+        $scope.BindOnlinePortal = function (OPID) {
+            var Datavalue = {};
+            Datavalue.ID = OPID;
+            $http({
+                method: 'POST',
+                url: "/api/PartyApi/OnlinePortalEdit",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (Datavalue.ID != "" || Datavalue.ID != null) {
+                        $scope.txtUserID = result.data[0].UserName;
+                        $scope.txtPassword = result.data[0].Password;
+                        $scope.ddlRole = { ID: result.data[0].RoleID };
+                        $scope.ddlParty = { ID: result.data[0].PartyID };
+                        $scope.ddlDepot = { ID: result.data[0].DepotID };
+                        $scope.ddlStatus = { ID: result.data[0].Status };
+                        $scope.BindExistingRole(result.data[0].RoleID);
+                    }
+                    else {
+                        $scope.txtUserID = "";
+                        $scope.txtPassword = "";
+                        $scope.ddlRole = 0;
+                        $scope.ddlParty = 0;
+                        $scope.ddlDepot = 0;
+                        $scope.ddlStatus = 0;
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        }
+
+        $scope.BindOnlinePortalrDtls = function (OPID) {
+            var Datavalue = {};
+            Datavalue.ID = OPID;
+
+            $http({
+                method: 'POST',
+                url: "/api/PartyApi/OnlinePortalDtlsEdit",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $scope.DynamicGrid = [{ PID: "", PartyTypeID: "", PartyType: "", PartyID: "", Party: ""  }];
+
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        if (result.data[0].PartyTypeID != "") {
+                            $scope.DynamicGrid.splice(0, 1);
+                        }
+
+                    angular.forEach(result.data, function (value, key) {
+
+                        $scope.DynamicGrid.push({
+                            'PID': result.data[key].PID,
+                            'PartyTypeID': result.data[key].PartyTypeID,
+                            'PartyType': result.data[key].PartyType,
+                            'PartyID': result.data[key].PartyID,
+                            'Party': result.data[key].Party
+
+                        });
+
+                    });
+                }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+
+        $scope.DynamicGrid = [{ PID: "", PartyTypeID: "", PartyType: "", PartyID: "", Party: "" }];
+
+        $scope.DynamicGrid.splice(0, 1);
+
+
+        $scope.Add = function (DynamicGrid) {
+
+            var PIDValue;
+
+            PIDValue = ($scope.PID == "") ? 0 : $scope.PID;
+
+            var val = {
+                'PID': PIDValue,
+                'PartyTypeID': $("#ddlPartyType").val(),
+                'PartyType': $("#ddlPartyType option:selected").text(),
+                'PartyID': $("#ddlPartySh").val(),
+                'Party': $("#ddlPartySh option:selected").text(),
+            };
+            if ($scope.HDArrayIndex != null && $scope.HDArrayIndex.length != 0) {
+
+                $scope.DynamicGrid[$scope.HDArrayIndex] = val;
+            } else {
+
+                $scope.DynamicGrid.push(val);
+            }
+
+            $("#ddlPartyType").val("");
+             $("#ddlPartySh").val(0);
+            $scope.HDArrayIndex = "";
+            $scope.PID = 0;
+
+        }
+        $scope.Remove = function (DynamicGrid, index) {
+            $scope.DynamicGrid.splice(index, 1);
+        }
+
+        $scope.Recordsave = function (data) {
+
+
+            var validation = "";
+            var txtUserID = $('#txtUserID').val();
+            if (txtUserID.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter User Name</span></br>"
+            }
+            var txtPassword = $('#txtPassword').val();
+            if (txtPassword.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Password </span></br>"
+            }
+          
+            var ddlRole = $('#ddlRole').val();
+            if (ddlRole == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Role</span></br>"
+            }
+
+            var ddlParty = $('#ddlParty').val();
+            if (ddlParty == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Party</span></br>"
+            }
+
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status </span></br>"
+            }
+          
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            if ($("#ddlRole").val() == "1") {
+                var Datav = "undefined";
+                angular.forEach(data, function (value, key) {
+
+                    Datav += data[key].PartyTypeID;
+
+                });
+
+                if (Datav.toString() == "undefined") {
+                    validation += "<span style='color:red;'>*</span> <span>Please Add Party Shipper Details </span></br>"
+                }
+                if (validation != "") {
+                    ShowPopup(validation);
+                    return false;
+                }
+            }
+            
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+
+            var BussData = {}
+
+            var id = $scope.HdRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdRegId;
+
+            BussData.UserName = $scope.txtUserID;
+            BussData.Password = $scope.txtPassword;
+            BussData.RoleID = $('#ddlRole').val();
+            BussData.PartyID = $('#ddlParty').val();
+            BussData.DepotID = $('#ddlDepot').val();
+            BussData.Status = $('#ddlStatus').val();
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+
+            if ($("#ddlRole").val() == "1") {
+                var Items = []
+
+
+                angular.forEach(data, function (value, key) {
+                    var intPID = data[key].PID;
+                    if (typeof data[key].PID == "undefined") {
+                        intPID = 0;
+                    }
+
+                    Items.push('Insert:' + intPID, data[key].PartyTypeID, data[key].PartyType, data[key].PartyID, data[key].Party
+                    );
+                });
+
+                BussData.Itemsv = Items.toString();
+                console.log(Items);
+            }
+
+
+            $http({
+                method: 'POST',
+                url: "/api/PartyApi/InsertOnlinePortal",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Online Portal Updated Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Online Portal Saved Successfully");
+                    }
+                    //var url = "/Party/OnlinePortalView";
+                    //window.location.href = url;
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+        $scope.back = function () {
+            window.location = "/Party/OnlinePortalView";
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </button>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Online Portal Creation</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>User ID *</label>
+                                            <input type="text" autocomplete="off" id="txtUserID" ng-model="txtUserID" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Password *</label>
+                                            <input type="text" autocomplete="off" id="txtPassword" ng-model="txtPassword" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Role *</label>
+                                            <select id="ddlRole" ng-model="ddlRole" class="form-control my-select" ng-options="item.Name for item in RoleListValues track by item.ID"></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Party *</label>
+                                            <select id="ddlParty" ng-model="ddlParty" class="form-control my-select" ng-options="item.PartyName for item in PartyList track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Depot</label>
+                                            <select class="form-control my-select" ng-model="ddlDepot" id="ddlDepot" ng-options="item.DepName for item in DepotList track by item.ID" required></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status *</label>
+                                            <select class="form-control my-select" id="ddlStatus" ng-model="ddlStatus" ng-options="item.name for item in StatusValues track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" ng-show="IsVisible">
+                            <div class="col-md-12">
+
+                                <h5 class="cardtitle">Party Shipper Details</h5>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Party Type</label>
+                                            <input type="hidden" id="HDIDv" class="form-control" ng-model="PID" />
+                                            <input type="hidden" id="HDArrayIndex" class="form-control" ng-model="HDArrayIndex" />
+                                            <select id="ddlPartyType" ng-model="gRow.PartyType" class="form-control" options="{ allowClear: true }" ng-options="item.BusinessTypes for item in BusinessTypesvalues track by item.ID"></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Party Name</label>
+
+                                            <select id="ddlPartySh" ng-model="ddlPartySh" class="form-control my-select" options="{ allowClear: true }" ng-options="item.PartyName for item in PartyListShipper track by item.ID"></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="row">
+                                    <div class="col-md-12" style="margin-top:30px;">
+                                        <button type="submit" ng-click="Add(gRow)" class="btn btn-fill btn-warning searchbtn">
+                                            <i class="material-icons"></i>
+                                            ADD
+                                        </button>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:40%">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Party Type</th>
+                                                <th>Party Name</th>
+                                                <th class="disabled-sorting text-right actwid">Action</th>
+                                            </tr>
+                                        </thead>
+
+
+                                        <tbody>
+
+                                            <tr class="gridbody1" ng-repeat="gRow in DynamicGrid">
+                                                <td>{{$index+1}}</td>
+
+                                                <td>
+                                                    {{gRow.PartyType}}
+
+                                                    <input type="hidden" id="HDPartyTypeID" class="form-control" ng-model="gRow.PartyTypeID" />
+                                                </td>
+                                                <td>
+                                                    {{gRow.Party}}
+
+                                                    <input type="hidden" id="HDPartyID" class="form-control" ng-model="gRow.PartyID" />
+                                                </td>
+
+                                                <td class="td-actions text-right bindgrid">
+                                                    <button type="button" rel="tooltip" ng-click="Remove(DynamicGrid,$index)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+
+
+                                                    <input type="hidden" id="HPID" class="form-control" ng-model="gRow.PID" />
+                                                </td>
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+
+                                    @*<div id="notFoundDiv" ng-show="(CustomerRec|filter:CountryCode).length==0" style="color: red; font-weight: bold">No Records Found</div>*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="Recordsave(DynamicGrid);" class="btn btn-fill btn-success">Submit</button>
+                                <input type="hidden" id="HdRegId" ng-model="HdRegId" />
+
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

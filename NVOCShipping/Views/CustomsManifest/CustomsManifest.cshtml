@@ -1,0 +1,414 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+        $scope.geolocationAllvalues = null;
+        $scope.fillgeolocationValues = function ()
+        {
+            var BussData = {}
+            BussData.ID = 0;
+            $http({
+                method: 'POST',
+                url: '/api/IGM/GeoLocationManifest/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.geolocationAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillgeolocationValues();
+
+
+        $scope.ShipmentTypeAllvalues = null;
+        $scope.fillShipmentTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "1"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillShipmentTypeValues();
+
+        $scope.ManifestTypeAllvalues = null;
+        $scope.fillManifestTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "47"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ManifestTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillManifestTypeValues();
+        $scope.VesselNameAllvalues = null;
+        $scope.SlotOperatorAllvalues = null;
+        $("#ddlShipmentType").change(function () {
+
+            var Datavalue = {};
+            Datavalue.shipmentid = $("#ddlShipmentType").val();
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/Customer_EDI_VesVoy/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VesselNameAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        $("#ddlVesVoy").change(function ()
+        {
+            $scope.SlotOperatorAllvalues = null;
+            var Datavalue = {};
+            Datavalue.VesVoyID = $("#ddlVesVoy").val();
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/VoyageBookingSlotOperator/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    $scope.SlotOperatorAllvalues = result.data;
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+        $scope.OnGenerateReport = function () {
+
+            var validation = "";
+
+            var ddlLocation = $('#ddlLocation').val();
+            if (ddlLocation == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please select Location</span></br></n>"
+            }
+            
+            var ddlShipmentType = $('#ddlShipmentType').val();
+            if (ddlShipmentType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please select Shipment Type</span></br></n>"
+            }
+
+          
+
+            var ddlManifestType = $('#ddlManifestType').val();
+            if (ddlManifestType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please select Manifest Type</span></br></n>"
+            }
+
+           
+            var ddlVesVoy = $('#ddlVesVoy').val();
+            if (ddlVesVoy == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please select Vessel voyage Type</span></br></n>"
+            }
+
+            //var ddlslot = $('#ddlslot').val();
+            //if (ddlslot == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please select Slot Operator</span></br></n>"
+            //}
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').show();
+
+
+            var VeslID = $("#ddlVesVoy").val();
+            var ManifestID = $("#ddlManifestType").val();
+            var TerminalID = "99";
+            if (ManifestID == undefined) {
+                validation += "<span style='color:red;'>*</span> <span>Generate Booking after Print</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+
+            var id = $scope.RegId;
+            window.open('@Url.Action("IGMCreatefile", "IGMFile")?vesid=' + VeslID + '&manifestid=' + ManifestID + '&TerminalID=' + TerminalID);
+
+
+        }
+
+        $scope.OnCheckApi = function () {
+
+            alert('1');
+            var Datavalue = {};
+            Datavalue.Textvalues = "BWSMAA24020023PKG";
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                url: 'https://oceanus-lines.com/api/OnLIne/OnlineCntrTraking/',
+                url: 'https://blue-wave.app/api/OnLIne/OnlineCntrTraking/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+        });
+        function ShowPopup(message) {
+            swal(message);
+        };
+
+</script>
+<style>
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+
+    .table > tbody > tr > td {
+        white-space: nowrap !important;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        @*<div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i>
+
+                </button>
+                <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </button>
+            </div>
+        </div>*@
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Customs Manifest</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Location</label>
+                                            <select id="ddlLocation" class="form-control my-select" ng-model="ddlLocation" options="{ allowClear: true }" ng-options="item.GeoLocation for item in geolocationAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Shipment Type</label>
+                                            <select class="form-control my-select" id="ddlShipmentType" ng-model="ddlShipmentType" options="{ allowClear: true }" ng-options="item.GeneralName for item in ShipmentTypeAllvalues track by item.ID">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Manifest Type</label>
+                                            <select id="ddlManifestType" class="form-control my-select" ng-model="ddlManifestType" options="{ allowClear: true }" ng-options="item.GeneralName for item in ManifestTypeAllvalues track by item.ID"></select>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vessel & Voyage</label>
+                                            <select id="ddlVesVoy" ng-model="ddlVesVoy" class="form-control my-select" ng-options="item.VesVoy for item in VesselNameAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Terminal</label>
+                                            <select id="ddlTerminal" ng-model="ddlTerminal" class="form-control my-select" ng-options="item.TerminalName for item in TerminalAllvalues track by item.ID"></select>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Slot Operator</label>
+                                            <select id="ddlslot" ng-model="ddlslot" class="form-control my-select" ng-options="item.VesOperator for item in SlotOperatorAllvalues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="text-align:right;">
+                                @*<button type="submit" class="btn btn-fill btn-success" ng-click="OnCheckApi();">Check</button>*@
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="OnGenerateReport();">GENERATE</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // Initialise the wizard
+        demo.initMaterialWizard();
+        setTimeout(function () {
+            $('.card.card-wizard').addClass('active');
+        }, 600);
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+
+

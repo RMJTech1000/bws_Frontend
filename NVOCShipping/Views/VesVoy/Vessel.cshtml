@@ -1,0 +1,331 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $scope.Recordsave = function () {
+            var validation = "";
+        
+             var txtVesselName = $('#txtVesselName').val();
+            if (txtVesselName.length == 0) {
+
+               validation += "<span style='color:red;'>*</span> <span>Please Enter Vessel Name</span></br>"
+            }
+         
+            var txtVslCallsign = $('#txtVslCallsign').val();
+            if (txtVslCallsign.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Vessel Call Sign</span></br>"
+            }
+            var txtFlag = $('#txtFlag').val();
+            if (txtFlag.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Flag</span></br>"
+            }
+            //var txtVesselOwner = $('#txtVesselOwner').val();
+            //if (txtVesselOwner.length == 0) {
+
+            //    validation += "<span style='color:red;'>*</span> <span>Please Enter Vessel Owner</span></br>"
+            //}
+            if (validation != "") {
+
+                ShowPopup(validation);
+                 return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+
+            BussData.VesselName = $scope.txtVesselName;
+            BussData.VesselCallSign = $scope.txtVslCallsign;
+            BussData.IMONumber = $scope.txtImoNumber;
+            BussData.MMSI = $scope.txtMmsi;
+            BussData.Flag = $scope.txtFlag;
+            BussData.VesselID = $scope.txtVesselID;
+            BussData.VesselOwner = $scope.txtVesselOwner;
+            if ($scope.ChkStatus == 1) {
+
+                BussData.Status = 1;
+            }
+            else {
+                BussData.Status = 0;
+            }
+            BussData.Status = $scope.ChkStatus;
+            $http({
+                method: 'POST',
+                url: "/api/Home/Vessel",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (BussData.ID != "") {
+                        $('#overlay').hide;
+                        ShowPopup("Vessel Updated Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Vessel Saved Successfully");
+                    }
+
+                    setTimeout(function () { location.href = "/VesVoy/VesselView" }, 1500);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["VesselID"] != null) {
+                $scope.HDRegId = queryString["VesselID"].toString();
+                $scope.BindVessel(queryString["VesselID"].toString());
+
+            }
+        });
+        $scope.BindVessel = function (VesselID) {
+
+            var Datavalue = {}
+            var id = VesselID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = VesselID;
+             $http({
+                 method: 'POST',
+                 url: '/api/Home/Vesselviewparticular/',
+                 data: JSON.stringify(Datavalue),
+             }).then(function (result)
+             {
+                 $timeout(function ()
+                 {
+
+                     if (Datavalue.ID != "") {
+
+                         //$scope.txtVesselCode = result.data[0].VesselCode;
+                         $scope.txtVesselName = result.data[0].VesselName;
+                         $scope.txtVslCallsign = result.data[0].VesselCallSign;
+                         $scope.txtImoNumber = result.data[0].IMONumber;
+                         $scope.txtMmsi = result.data[0].MMSI;
+                         $scope.txtFlag = result.data[0].Flag;
+                         $scope.txtVesselID = result.data[0].VesselID;
+                         $scope.txtVesselOwner = result.data[0].VesselOwner;
+                         $scope.ChkStatus = result.data[0].Status;
+
+                     }
+                     else {
+                         $scope.txtVslCallsign = "";
+                         $scope.txtVesselName = "";
+                         $scope.txtImoNumber = "";
+                         $scope.txtMmsi = "";
+                         $scope.txtFlag = "";
+                         $scope.txtVesselID = "";
+                         $scope.txtVesselOwner = "";
+                         $scope.ChkStatus = "";
+                      }
+                 });
+             });
+         
+
+         }
+      //  $scope.BindVessel();
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+    </script>
+    <div ng-app="MyApp" ng-controller="MyController">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 backbtn" style="text-align:right;">
+                    <a href="/VesVoy/VesselView" class="btn btn-fill btnback btn-success btn-round btntop">
+                        <i class="material-icons">reply</i> Back
+
+                    </a>
+                    @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card ">
+                        <div class="card-header card-header-primary card-header-text">
+                            <div class="card-text">
+                                <h4 class="card-title">Vessel Master</h4>
+                            </div>
+                        </div>
+                        <div class="card-body ">
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Vessel Name</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtVesselName" ng-model="txtVesselName" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Vessel Call Sign</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtVslCallsign" ng-model="txtVslCallsign" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>IMO Number</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtImoNumber" ng-model="txtImoNumber" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>MMSI </label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtMmsi" ng-model="txtMmsi" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Flag</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtFlag" ng-model="txtFlag" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Vessel ID</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtVesselID" ng-model="txtVesselID" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Vessel Owner</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7">
+                                                <input type="text" autocomplete="off" id="txtVesselOwner" ng-model="txtVesselOwner" class="form-control">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Status</label>
+                                            </div>
+                                            <div class="col-md-1">:</div>
+                                            <div class="col-md-7 input-field">
+                                                <div class="togglebutton">
+                                                    <label>
+                                                        <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-checked="ChkStatus == 1" id="ChkStatus" ng-model="ChkStatus" value="ChkStatus">
+                                                        <span class="toggle"></span>
+
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer ">
+                            <div class="col-md-12" style="text-align:right;">
+                                <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-success">Submit</button>
+                                <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+

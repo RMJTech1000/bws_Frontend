@@ -1,0 +1,315 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function ()
+        {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+
+        $scope.UserDetails = null;
+        $scope.fillUserDetails = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Userapi/UserDetails/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.UserDetails = result.data;
+
+                });
+            });
+        };
+        $scope.fillUserDetails();
+
+
+        $scope.NotificationMaster = null;
+        $scope.fillNotificationMaster = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/Userapi/NotificationMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.NotificationMaster = result.data;
+
+                });
+            });
+        };
+        $scope.fillNotificationMaster();
+
+
+        $scope.RecordSave = function (data) {
+            var ddlAgencies = $('#ddlUserDetails').val();
+            if (ddlAgencies == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select User Name</span></br>"
+            }
+            var BussData = {}
+            var Items = []
+            BussData.UserID = $('#ddlUserDetails').val();
+            console.log(data);
+            angular.forEach(data, function (value, key)
+            {
+                if (data[key].IsTrue == "1") {
+                    Items.push('Insert:' + data[key].ID);
+                }
+            });
+
+            BussData.Items = Items.toString();
+            $http({
+                method: 'POST',
+                url: "/api/UserApi/InsertNotification",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+
+                        ShowPopup("Notification Saved Successfully");
+                    }
+                    
+                });
+            });
+
+        }
+
+        $("#ddlUserDetails").change(function () {
+
+            var Data = {};
+            Data.UserID = $("#ddlUserDetails").val();
+
+            $http({
+                method: 'POST',
+                url: '/api/Userapi/NotificationMasterUser/',
+                data: JSON.stringify(Data)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.NotificationMaster = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        });
+
+
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["UserID"] != null) {
+
+                $scope.ddlUserDetails= { ID: queryString["UserID"].toString() };
+                $scope.ExistingValues(queryString["UserID"].toString());
+            }
+        });
+
+        $scope.ExistingValues = function (UserID)
+        {
+            //alert(UserID);
+            var Data = {};
+            Data.UserID = UserID;
+            $http({
+                method: 'POST',
+                url: '/api/Userapi/NotificationMasterUser/',
+                data: JSON.stringify(Data)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.NotificationMaster = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<style>
+    .bmd-form-group [class*=" bmd-label"], .bmd-form-group [class^=bmd-label] {
+        position: initial;
+    }
+
+    .nav-tabs .nav-item .nav-link.active {
+        background-color: hsl(336deg 76% 50%);
+        transition: background-color .3s .2s;
+    }
+
+    .nav-tabs .nav-item .nav-link {
+        margin: 3px 6px;
+        background-color: #20498e;
+        padding: 5px 0;
+    }
+
+    .nav-tabs .nav-item {
+        width: 46%;
+    }
+
+    .chargedtls label {
+        font-size: 13px !important;
+    }
+
+    .nav-tabs {
+        padding: 8px 0px;
+        border-bottom: none !important;
+    }
+    /* .chargedtls
+        {
+            border:1px solid #ccc;
+        }*/
+    .card .pickupdiv .table tr td {
+        font-size: 12px;
+        border: 1px solid #ccc;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        /* font-weight: 600;*/
+        background-color: #f0f8ff78;
+        color: #333;
+    }
+
+    .card .pickupdiv .table tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #21277a;
+    }
+
+    .btncharge {
+        padding: 8px 18px;
+        margin: -4px 1px;
+    }
+
+    .form-control[disabled], .form-group .form-control[disabled], fieldset[disabled] .form-control, fieldset[disabled] .form-group .form-control {
+        background-color: #eee;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align:right;">
+                <a href="/Masters/NotificationMasterView" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="fa fa-reply" style="font-size:13px;padding-top:20px;"></i>
+
+                </a>
+                <a href="/Masters/NotificationMaster" class="btn btn-fill btn-warning btn-round btntop">
+                    <i class="fa fa-pencil" style="font-size:13px;padding-top:20px;"></i>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Notification Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-10" style="border: 1px solid #cccc;">
+                                        <div class="row">
+                                            <div class="col-md-6" style="border-right: 1px solid #ccc;">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        <label>Notification Page</label>
+                                                    </div>
+                                                    <div ng-repeat="gRow in NotificationMaster" class="chkvalues">
+                                                        <label class="chkbox" for="chkBusinessType_{{gRow.ID}}">
+                                                            <input type="checkbox" id="chkBusinessType_{{BT.ID}}" value="{{gRow.ID}}" ng-true-value="1" ng-false-value="0" ng-model="gRow.IsTrue">
+                                                            {{gRow.Notification}}
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <label>User Details</label>
+                                                        <select id="ddlUserDetails" ng-model="ddlUserDetails" class="form-control my-select" ng-options="item.UserName for item in UserDetails track by item.ID"></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 txtright">
+                                <button type="submit" ng-click="RecordSave(NotificationMaster);" class="btn btn-fill btn-success">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

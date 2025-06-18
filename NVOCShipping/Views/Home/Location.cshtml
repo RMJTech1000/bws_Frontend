@@ -1,0 +1,365 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+@*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">*@
+<style>
+    ul.autocomplete-content.dropdown-content {
+        background-color: #eee;
+        box-shadow: 0px 0px 5px #ccc;
+        top: 30px !important;
+        left: 15px !important;
+        position: absolute !important;
+        z-index: 100;
+    }
+
+        ul.autocomplete-content.dropdown-content li {
+            list-style-type: none;
+            margin-left: -40px;
+            padding-left: 10px;
+            padding-top: 8px;
+            font-size: 14px;
+            color: #040f96 !important;
+            border-bottom: 1px solid #ccc;
+        }
+
+            ul.autocomplete-content.dropdown-content li:hover {
+                background-color: #f4f4f4;
+            }
+
+    .section-search input {
+        padding: 5px !important;
+        font-size: 18px !important;
+        width: 90% !important;
+        border: #f4f4f4 3px solid !important;
+        background-color: #808080 !important;
+        float: right;
+    }
+
+    .section-search i {
+        display: block;
+    }
+
+    .section-search input.autocomplete {
+        color: #040f96;
+    }
+
+    .input-field .prefix.active {
+        color: #040f96 !important;
+    }
+
+    .dropdown-content li > a, .dropdown-content li > span {
+        color: #040f96 !important;
+    }
+
+    .autocomplete-content li .highlight {
+        color: #040f96 !important;
+    }
+
+    .bootstrap-select .btn.dropdown-toggle.select-with-transition {
+        background-image: none;
+        border: 1px solid #ccc !important;
+        margin-top: 0;
+        height: 32px;
+    }
+
+    .bootstrap-select .dropdown-toggle .filter-option {
+        padding-top: 9px;
+        padding-left: 4px;
+        padding-right: 0px;
+    }
+    /*.dropdown-toggle:after
+    {
+        margin-left: 8.255em!important;
+    }*/
+
+    .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+        max-width: 100%;
+    }
+    /*.form-control.txtarea
+    {
+        width:765px;
+    }*/
+    .bmd-form-group .form-control, .bmd-form-group input::placeholder, .bmd-form-group label {
+        padding-left: 6px;
+    }
+</style>
+
+
+<div class="container-fluid">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="card ">
+                <div class="card-header card-header-primary card-header-text">
+                    <div class="card-text">
+                        <h4 class="card-title">MRG Rate</h4>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>MRG Rate#</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7">
+                                        <label>1500</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>From Date</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control datepicker">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>To Date</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7">
+                                        <input type="text" class="form-control datepicker">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Port Of Origin</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <input type="text" class="autocomplete form-control" id="autocomplete-input" placeholder="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Port Of Loading</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <input type="text" class="autocomplete1 form-control" id="autocomplete-input" placeholder="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Port Of Discharge</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <input type="text" class="autocomplete form-control" id="autocomplete-input" placeholder="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Final POD</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <input type="text" class="autocomplete1 form-control" id="autocomplete-input" placeholder="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Container Type</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <input type="text" class="autocomplete form-control" id="autocomplete-input" placeholder="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Commodity</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <input type="text" class="autocomplete1 form-control" id="autocomplete-input" placeholder="Search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Freight Rate</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <input type="text" class="form-control" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <select class="selectpicker" data-style="select-with-transition" multiple title="--Select--" data-size="7">
+                                                    <option disabled> Multiple Options</option>
+                                                    <option value="2">Paris </option>
+                                                    <option value="3">Bucharest</option>
+                                                    <option value="4">Rome</option>
+                                                    <option value="5">New York</option>
+                                                    <option value="6">Miami </option>
+                                                    <option value="7">Piatra Neamt</option>
+                                                    <option value="8">Paris </option>
+                                                    <option value="9">Bucharest</option>
+                                                    <option value="10">Rome</option>
+                                                    <option value="11">New York</option>
+                                                    <option value="12">Miami </option>
+                                                    <option value="13">Piatra Neamt</option>
+                                                    <option value="14">Paris </option>
+                                                    <option value="15">Bucharest</option>
+                                                    <option value="16">Rome</option>
+                                                    <option value="17">New York</option>
+                                                    <option value="18">Miami </option>
+                                                    <option value="19">Piatra Neamt</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Service Type</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <select class="selectpicker" data-style="select-with-transition" multiple title="--Select--" data-size="7">
+                                            <option disabled> Multiple Options</option>
+                                            <option value="2">Paris </option>
+                                            <option value="3">Bucharest</option>
+                                            <option value="4">Rome</option>
+                                            <option value="5">New York</option>
+                                            <option value="6">Miami </option>
+                                            <option value="7">Piatra Neamt</option>
+                                            <option value="8">Paris </option>
+                                            <option value="9">Bucharest</option>
+                                            <option value="10">Rome</option>
+                                            <option value="11">New York</option>
+                                            <option value="12">Miami </option>
+                                            <option value="13">Piatra Neamt</option>
+                                            <option value="14">Paris </option>
+                                            <option value="15">Bucharest</option>
+                                            <option value="16">Rome</option>
+                                            <option value="17">New York</option>
+                                            <option value="18">Miami </option>
+                                            <option value="19">Piatra Neamt</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Remarks</label>
+                                    </div>
+                                    <div class="col-md-1">:</div>
+                                    <div class="col-md-7 input-field">
+                                        <textarea class="form-control txtarea" rows="5"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="card-footer ">
+                    <div class="col-md-12" style="text-align:right;">
+                        <button type="submit" class="btn btn-fill btn-rose" onclick="demo.showSwal('title-and-text')">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        $('.preloader-background').delay(1700).fadeOut('slow');
+
+        $('.preloader-wrapper')
+            .delay(1700)
+            .fadeOut();
+    });
+</script>
+<script>
+    const ac = document.querySelector('.autocomplete');
+    M.Autocomplete.init(ac, {
+        data: {
+            "Mumbai": null,
+            "Chennai": null,
+            "Delhi": null,
+            "Coimbator": null,
+            "Tuticorin": null,
+        }
+    });
+    const ac1 = document.querySelector('.autocomplete1');
+    M.Autocomplete.init(ac1, {
+        data: {
+            "Mundra": null,
+            "Malaysia": null,
+            "Singapore": null,
+            "Tuticorin": null,
+            "Coimbator": null,
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        md.initFormExtendedDatetimepickers();
+        if ($('.slider').length != 0) {
+            md.initSliders();
+        }
+    });
+</script>
+
+

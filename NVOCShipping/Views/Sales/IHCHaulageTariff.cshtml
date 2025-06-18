@@ -1,0 +1,1200 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.HDArrayIndex = "";
+
+        $scope.StatusBindValues = [
+
+            { 'name': 'Active', 'ID': 1 },
+            { 'name': 'InActive ', 'ID': 2 }
+        ];
+        $scope.THCYesNoValues = [
+
+            { 'name': 'Yes', 'ID': 1 },
+            { 'name': 'No ', 'ID': 2 }
+        ];
+
+        $scope.CommodityAllvalues = null;
+        $scope.fillCommodityValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "2"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CommodityAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCommodityValues();
+
+        $scope.CntrSizeTypes = null;
+        $scope.fillCntrSizeTypes = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/CntrTypeSize/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.fillCntrSizeTypes();
+
+        $scope.ChargeCodeAllvalues = null;
+        $scope.fillChargecodeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ChargeCode/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeCodeAllvalues = result.data;
+                    $scope.ddlCharges = { ID: 24 };
+                    document.getElementById("ddlCharges").disabled = true;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChargecodeValues();
+
+        $scope.ChageOwnerAllValues = null;
+        $scope.fillChageOwnerAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "11"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChageOwnerAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChageOwnerAllValues();
+
+
+        $scope.ChargeTypeAllValues = null;
+        $scope.fillChargeTypeAllValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "34"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeTypeAllValues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChargeTypeAllValues();
+
+        $scope.CurrencyValue = null;
+        $scope.fillCurrencyValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCurrencyValues();
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.ShipmentTypeAllvalues = null;
+        $scope.fillShipmentTypeValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "1"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ShipmentTypeAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillShipmentTypeValues();
+
+
+        $scope.CntrTypesvalues = null;
+        $scope.fillCntrTypeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CntrTypeValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypesvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCntrTypeValues();
+
+        $scope.LocCity = null;
+        $scope.fillLocCity = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/cityBind/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.LocCity = result.data;
+
+                });
+            });
+        };
+        $scope.fillLocCity();
+
+
+        $scope.ChargeDescription = null;
+        $scope.fillChargeDescription = function () {
+            $scope.states = [];
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/MUCChargeCodeTypes/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ChargeDescription = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillChargeDescription();
+
+
+        $scope.FillPaymentTypes = null;
+
+        $scope.fillPaymentTypesValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "51"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.FillPaymentTypes = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillPaymentTypesValues();
+
+
+        $scope.DynamicGrid = [{ TID: "", SlabFrom: "", SlabTo: "", CurrencyID: "", Amount: "" }];
+        //$scope.DynamicGrid.splice(0, 1);
+
+        $scope.Add = function (gRow, index) {
+          
+            if (gRow.CurrencyID == "") {
+                swal("Please Select Currency");
+                return;
+            }
+
+            var SlbV = parseFloat(gRow.SlabTo) + 1;
+
+
+            $scope.DynamicGrid.push({
+                'TID': "",
+                'SlabFrom': SlbV,
+                'SlabTo': "",
+                'CurrencyID': "",
+                'Amount': ""
+
+            });
+
+        }
+
+        $scope.RemoveIHCDtls = function (DynamicGrid, index, TID, gRow) {
+            var BussData = {}
+            BussData.TID = TID;
+          
+            var ff = $scope.DynamicGrid[index - 1].SlabTo;
+            $scope.DynamicGrid[index + 1].SlabFrom = parseInt(ff) + 1;
+            console.log($scope.DynamicGrid);
+            $scope.DynamicGrid.splice(index, 1);
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/IHCHaulageTariffDtlsDelete/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DynamicGrid.splice(index, TID);
+                    $scope.BindIHCTariffSlabDetails($scope.HdIHCID);
+                });
+            });
+        }
+
+
+
+        $scope.IHCTariffalidation = function (data) {
+            var BussData = {}
+            var Items = []
+
+            if ($scope.HdIHCID == "")
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdIHCID;
+         
+            BussData.ICDName = $("#ddlCity option:selected").text(),
+                BussData.ICDLocID = $('#ddlCity').val();
+            BussData.PortID = $('#ddlPort').val();
+            BussData.ChargeTypeID = $('#ddlChargeType').val();
+            BussData.ChargesID = $('#ddlCharges').val();
+            BussData.CommodityTypeID = $('#ddlCommodityType').val();
+            BussData.ContainerTypeID = $('#ddlContainerType').val();
+            BussData.THCIncluded = $('#ddlTHCIncl').val();
+            BussData.Status = $('#ddlStatus').val();
+            BussData.ValidFrom = $('#txtDtValidFrom').val();
+            BussData.ValidTill = $('#txtDtValidTill').val();
+            BussData.UserID = localStorage.getItem("UserID");
+
+            angular.forEach(data, function (value, key) {
+                var intTID = data[key].TID;
+                if (typeof data[key].TID == "undefined") {
+                    intTID = 0;
+                }
+
+                Items.push('Insert:' + intTID, data[key].SlabFrom, data[key].SlabTo, data[key].CurrencyID.ID, data[key].Amount);
+
+            });
+
+
+            BussData.Itemsv1 = Items.toString();
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/IHCHaulageTariffValidation/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Result = result.data;
+                    if (BussData.ID == "0" && $scope.Result.length >= "1") {
+                        ShowPopup("Tariff Combination Already Exists");
+                        return false;
+                    }
+                    else {
+                       
+                        $http({
+                            method: 'POST',
+                            url: "/api/SalesApi/InsertIHCTariffMaster",
+                            data: JSON.stringify(BussData),
+
+                        }).then(function (result) {
+                            $timeout(function () {
+                                $scope.HdIHCID = result.data[0].ID;
+
+                                if (result.data.length > 0) {
+                                    $('#overlay').hide();
+                                    $scope.BindIHCTariffSlabDetails($scope.HdIHCID);
+                                    ShowPopup("IHC Haulage Master Saved Successfully");
+                                    var url = "/Sales/IHCHaulageTariffView";
+                                    window.setTimeout(window.location.href = url, 1000000);
+                                }
+                                else {
+                                    $('#overlay').hide();
+                                    ShowPopup("Error,Not Saved");
+                                }
+                            });
+                        });
+                    }
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+     
+        $scope.HaulageSave = function (data) {
+
+            var validation = "";
+
+
+            var ddlCity = $('#ddlCity').val();
+            if (ddlCity == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select ICD Name</span></br>"
+            }
+            var ddlPort = $('#ddlPort').val();
+            if (ddlPort == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Port</span></br>"
+            }
+            var ddlChargeType = $('#ddlChargeType').val();
+            if (ddlChargeType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Charge Type</span></br>"
+            }
+            var ddlCommodityType = $('#ddlCommodityType').val();
+            if (ddlCommodityType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Commodity Type</span></br>"
+            }
+            var ddlContainerType = $('#ddlContainerType').val();
+            if (ddlContainerType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container Type</span></br>"
+            }
+            var ddlTHCIncl = $('#ddlTHCIncl').val();
+            if (ddlTHCIncl == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select THC Included</span></br>"
+            }
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+            
+            var txtDtValidFrom = $('#txtDtValidFrom').val();
+            if (txtDtValidFrom.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid From Date</span></br>"
+            }
+            var txtDtValidTill = $('#txtDtValidTill').val();
+            if (txtDtValidTill.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Valid Till Date</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+
+              ///--Save---///
+            $scope.IHCTariffalidation(data);
+            
+        }
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["IHCTariffID"] != null) {
+                $scope.HdIHCID = queryString["IHCTariffID"].toString();
+                $scope.BindIHCTariff(queryString["IHCTariffID"].toString());
+                $scope.BindIHCTariffSlabDetails(queryString["IHCTariffID"].toString());
+            }
+        });
+
+     
+        $scope.BindIHCTariff = function (IHCTariffID) {
+         
+            var Datavalue = {};
+                Datavalue.ID = IHCTariffID;
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/IHCHaulageTariffVEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+                        $scope.ddlCity = { ID: result.data[0].ICDLocID };
+                       // $scope.txtICDName = result.data[0].ICDName;
+                        $scope.ddlPort = { ID: result.data[0].PortID };
+                        $scope.ddlChargeType = { ID: result.data[0].ChargeTypeID };
+                        $scope.ddlCharges = { ID: result.data[0].ChargesID };
+                        $scope.ddlContainerType = { ID: result.data[0].ContainerTypeID };
+                        $scope.ddlCommodityType = { ID: result.data[0].CommodityTypeID };
+                        $scope.ddlTHCIncl = { ID: result.data[0].THCIncluded };
+                        $scope.ddlStatus = { ID: result.data[0].Status };
+                        document.getElementById("txtDtValidFrom").value = result.data[0].ValidFrom;
+                        document.getElementById("txtDtValidTill").value = result.data[0].ValidTill;
+
+                       
+                        if (result.data[0].ChargeTypeID == "102")
+                            $scope.HidBreakup = false;
+                        else
+                            $scope.HidBreakup = true;
+
+                    }
+                    else {
+
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+
+        }
+
+        $scope.BindIHCTariffSlabDetails = function (IHCTariffID) {
+
+            var BussData = {}
+
+            BussData.IHCTariffID = IHCTariffID;
+
+
+            $http({
+                method: 'POST',
+                url: "/api/SalesApi/IHCHaulageTariffDtlsEdit",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $timeout(function () {
+
+
+                    if (result.data.length > 0) {
+                        if (result.data[0].CurrencyID != "") {
+                            $scope.DynamicGrid.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGrid.push({
+                                'TID': result.data[key].TID,
+                                'SlabFrom': result.data[key].SlabFrom,
+                                'SlabTo': result.data[key].SlabTo,
+                                'CurrencyID': { ID: result.data[key].CurrencyID },
+                                'Amount': result.data[key].Amount
+
+                            });
+
+                        });
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+
+        }
+        $scope.ClickCopyTraiff = function () {
+
+            $scope.HdIHCID = 0;
+            ShowPopup('Copy Tariff successfully');
+           
+        }
+        $scope.BindTotalMSCCharges = function (data) {
+           
+            var TotalAmt = 0
+            angular.forEach(data, function (value, key) {
+                TotalAmt += parseFloat(data[key].Amount);
+
+            });
+            
+             $scope.TotalMCHCharges = TotalAmt;
+            
+
+        }
+
+        $scope.SelectTariffView = function (gDate, Index, TariffMaxID) {
+
+            $scope.HDTariffMaxID = TariffMaxID;
+
+            var Datavalue = {};
+            Datavalue.TariffChID = $scope.HDTariffMaxID;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/PortTariffIHCChargeViewRecord/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result)
+            {
+                if (result.data.length > 0)
+                {
+                    $scope.DynamicGridMUCCharges.length = 0;
+                    //alert(result.data.length);
+                    //cosole.log();
+                    $timeout(function () {
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridMUCCharges.push({
+                                'ChargeCodeID': { ID: result.data[key].ChargeCodeID },
+                                'PaymentTo': { ID: result.data[key].PaymentTo },
+                                'Amount': result.data[key].Amount
+                            });
+                        });
+                        $scope.BindTotalMSCCharges($scope.DynamicGridMUCCharges);
+                    });
+                }
+                else
+                {
+
+                    $scope.DynamicGridMUCCharges = [{ TCID: "", ChargeCodeID: "", PaymentTo: "", Amount: "" }];
+                    $scope.TotalMCHCharges = 0;
+                }
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+            //
+            $('#demoModalTariffView').modal('show');
+
+        }
+
+        $scope.DynamicGridMUCCharges = [{ TCID: "", ChargeCodeID: "", PaymentTo: "", Amount: "" }];
+
+
+        $scope.MUCChargesAdd = function (gRows) {
+
+            if (gRows.ChargeCodeID.ID == "") {
+                swal("Please enter CntrTypes");
+                return;
+            }
+
+            $scope.DynamicGridMUCCharges.push({
+                'TCID': "",
+                'ChargeCodeID': "",
+                'PaymentTo': "",
+                'Amount': ""
+
+            });
+        }
+
+
+        $scope.OnclickTariffDetailUpdate = function (data) {
+
+
+            var BussData = {};
+            var Items = [];
+            var intTCID = 0;
+            BussData.TariffChID = $scope.HDTariffMaxID;
+
+            angular.forEach(data, function (value, key) {
+
+                if (typeof data[key].TCID == "undefined") {
+                    intTCID = 0;
+                }
+                else {
+                    data[key].TCID = intTCID;
+                }
+                Items.push('Insert:' + intTCID, data[key].ChargeCodeID.ID, data[key].PaymentTo.ID, data[key].Amount);
+
+            });
+            BussData.Itemsv = Items.toString();
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/InsertPortTariffIHCChargeInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                   // $scope.BindIHCTariffSlabDetails($scope.HdIHCID);
+                    ShowPopup("Charge Details as Updated sucessfully.");
+                    $('#demoModalTariffView').modal('hide');
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+
+        $("#ddlChargeType").change(function () {
+            if ($("#ddlChargeType") == "102")
+                $scope.HidBreakup = false;
+            else
+                $scope.HidBreakup = true;
+
+        });
+
+        
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Sales/IHCHaulageTariffView" type="submit" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+
+                        <div class="card-text">
+                            <h4 class="card-title">IHC Haulage Tariff </h4>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 download" style="text-align:right;">
+                                <button type="submit" id="btnCopyTraiff" ng-click="ClickCopyTraiff();" class="btn btn-fill btn-success">
+                                    <i class="material-icons">
+                                        content_copy
+                                    </i>
+                                    Copy Tariff
+                                </button>
+
+                            </div>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>ICD Name</label>
+                                            <select id="ddlCity" ng-model="ddlCity" class="form-control my-select" ng-options="item.CityName for item in LocCity track by item.ID"></select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port</label>
+                                            <select class="form-control my-select" ng-model="ddlPort" id="ddlPort" ng-options="item.PortName for item in PortAllvalues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charge Type</label>
+                                            <select class="form-control my-select" ng-model="ddlChargeType" id="ddlChargeType" ng-options="item.GeneralName for item in ChargeTypeAllValues track by item.ID" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Charges</label>
+                                            <select class="form-control my-select" ng-model="ddlCharges" id="ddlCharges" ng-options="item.ChargeCode for item in ChargeCodeAllvalues track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Commodity Type</label>
+                                            <select class="form-control my-select" id="ddlCommodityType" ng-model="ddlCommodityType" options="{ allowClear: true }" ng-options="item.GeneralName for item in CommodityAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Container Type</label>
+                                            <select class="form-control my-select" id="ddlContainerType" ng-model="ddlContainerType" options="{ allowClear: true }" ng-options="item.CntrTypes for item in CntrTypesvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>THC Included</label>
+                                            <select class="form-control my-select" id="ddlTHCIncl" ng-model="ddlTHCIncl" options="{ allowClear: true }" ng-options="item.name for item in THCYesNoValues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Status</label>
+                                            <select class="form-control my-select" id="ddlStatus" ng-model="ddlStatus" options="{ allowClear: true }" ng-options="item.name for item in StatusBindValues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid From</label>
+                                            <input type="date" id="txtDtValidFrom" autocomplete="off" ng-model="txtDtValidFrom" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Valid Till </label>
+
+                                            <input type="date" id="txtDtValidTill" autocomplete="off" ng-model="txtDtValidTill" class="form-control">
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <h5 class="cardtitle">Tariff Details</h5>
+                            </div>
+
+
+                        </div>
+
+
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="material-datatables">
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>S.No</th>
+                                                <th>Slab From</th>
+                                                <th>Slab To</th>
+                                                <th>Currency</th>
+                                                <th>Amount</th>
+                                                <th></th>
+                                                <th class="disabled-sorting text-right actwid">Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr ng-repeat="gRow in DynamicGrid">
+                                                <td>{{$index+1}}</td>
+
+                                                <td>
+                                                    <input type="text" id="txtSlabFrom" class="form-control" ng-model="gRow.SlabFrom" />
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" id="txtSlabTo" class="form-control" ng-model="gRow.SlabTo" />
+                                                </td>
+                                                <td>
+                                                    <select class="form-control" ng-model="gRow.CurrencyID" id="ddlCurrency" ng-options="item.Currency for item in CurrencyValue track by item.ID">
+                                                    </select>
+                                                </td>
+                                                <td><input type="text" id="txtAmt" class="form-control" ng-model="gRow.Amount" /></td>
+
+                                                <td style="display:none;"><input type="hidden" id="HDID" class="form-control" ng-model="gRow.TID" /></td>
+
+                                                <td class="td-actions text-right actwid">
+                                                    <button type="button" rel="tooltip" ng-show="HidBreakup" ng-click="SelectTariffView(DynamicGrid,$index,gRow.TID)" class="btn btn-info btn-round" data-original-title="" title="">
+                                                        <i class="material-icons"></i>Breakup
+                                                    </button>
+                                                </td>
+
+                                                <td class="td-actions text-right actwid">
+                                                    <button type="button" rel="tooltip" ng-if="$last" ng-click="Add(gRow,$index)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">add</i>
+                                                    </button>
+                                                    <button type="button" rel="tooltip" ng-if="!$last" ng-click="RemoveIHCDtls(DynamicGrid,$index,gRow.TID,gRow)" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                        <i class="material-icons">delete</i>
+                                                    </button>
+                                                    <input type="hidden" ng-model="HdTID" id="HdTID" />
+                                                </td>
+                                            </tr>
+                                         
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="ml-auto">
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="HaulageSave(DynamicGrid);">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+
+                                <input type="hidden" id="HdIHCID" ng-model="HdIHCID" />
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal fade" id="demoModalTariffView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="width:1020px;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12" style="text-align:center;">
+                                        <div class="card-header card-header-primary card-header-text" style=" margin-bottom: 20px;">
+                                            <div class="card-text">
+                                                <h4 class="card-title">IFC CHARGES</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="material-datatables">
+
+                                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>SNo</th>
+                                                            <th>Charges</th>
+                                                            <th>Payment To</th>
+                                                            <th>Amount</th>
+
+                                                            <th class="disabled-sorting text-right actwid">Actions</th>
+                                                        </tr>
+                                                    </thead>
+
+                                                    <tbody>
+                                                        <tr ng-repeat="gRow in DynamicGridMUCCharges">
+                                                            <td>{{$index+1}}</td>
+
+
+                                                            <td>
+                                                                <select class="form-control" id="ddlchargeCode" ng-model="gRow.ChargeCodeID" ng-options="item.ChargeCode for item in ChargeDescription track by item.ID"></select>
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-control" id="ddlPaymentTo" ng-model="gRow.PaymentTo" ng-options="item.GeneralName for item in FillPaymentTypes track by item.ID"></select>
+                                                            </td>
+
+                                                            <td><input type="text" id="txtReqRate" autocomplete="off" class="form-control" ng-model="gRow.Amount"  ng-change="BindTotalMSCCharges(DynamicGridMUCCharges);" /></td>
+
+                                                            <td class="td-actions text-right actwid">
+                                                                <button type="button" rel="tooltip" ng-if="$last" ng-click="MUCChargesAdd(gRow)" class="btn btn-primary btn-round" data-original-title="" title="">
+                                                                    <i class="material-icons">add</i>
+                                                                </button>
+                                                                <button type="button" rel="tooltip" ng-if="!$last" class="btn btn-danger btn-round" data-original-title="" title="">
+                                                                    <i class="material-icons">delete</i>
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3" style="text-align:right;">Total</td>
+                                                            <td style="text-align:right;"><span ng-bind="TotalMCHCharges"> </span> </td>
+                                                            <td></td>
+
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+
+                                            </div>
+
+
+
+                                        </div>
+
+                                        <div class="col-md-12">
+
+                                            <button type="submit" id="btnudate" ng-click="OnclickTariffDetailUpdate(DynamicGridMUCCharges);" class="btn btn-fill btn-primary btnupdate btntop">
+                                                <i class="material-icons"></i>
+                                                Update
+                                            </button>
+
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+

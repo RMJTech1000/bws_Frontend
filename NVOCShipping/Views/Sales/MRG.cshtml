@@ -1,0 +1,614 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.CntrTypesvalues = null;
+        $scope.fillCntrTypeValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CntrTypeValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrTypesvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCntrTypeValues();
+
+        $scope.CommodityValue = null;
+        $scope.fillCommodityValues = function () {
+            var Datavalue = {};
+            Datavalue.ID = "2"; //GeneralMaster Table seqNo
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ModuleValues/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+                $timeout(function ()
+                {
+                    $scope.CommodityValue = result.data;
+                    
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCommodityValues();
+
+
+
+
+        $scope.ServiceTypesValue = null;
+        $scope.fillServiceTypesValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/ServiceTypesValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.ServiceTypesValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillServiceTypesValues();
+
+        $scope.CurrencyValue = null;
+        $scope.fillCurrencyValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CurrencyValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CurrencyValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCurrencyValues();
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+
+
+        $scope.RecordSave = function () {
+
+            var validation = "";
+            var txtFromDate = $('#txtFromDate').val();
+
+            if (txtFromDate.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter FromDate</span></br>"
+            }
+            var txtToDate = $('#txtToDate').val();
+            if (txtToDate.length == 0) {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter ToDate</span></br>"
+            }
+            //var ddlPortOfOrg = $('#ddlPortOfOrg').val();
+            //if (ddlPortOfOrg == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Port Of Origin</span></br>"
+            //}
+          
+            var ddlPortofLoading = $('#ddlPortofLoading').val();
+            if (ddlPortofLoading == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Port Of Loading</span></br>"
+            }
+
+            var ddlPortofDischarge = $('#ddlPortofDischarge').val();
+            if (ddlPortofDischarge == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Port Of Discharge</span></br>"
+            }
+
+            //var ddlPortofFinalPOD = $('#ddlPortofFinalPOD').val();
+            //if (ddlPortofFinalPOD == "?") {
+            //    validation += "<span style='color:red;'>*</span> <span>Please Select Port Of Final POD</span></br>"
+            //}
+            var ddlCntrTypes = $('#ddlCntrTypes').val();
+            if (ddlCntrTypes == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Container Type</span></br>"
+            }
+
+            var ddlCommodityType = $('#ddlCommodityType').val();
+            if (ddlCommodityType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Commodity Type</span></br>"
+            }
+            var ddlServiceType = $('#ddlServiceType').val();
+            if (ddlServiceType == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Service Types</span></br>"
+            }
+
+            var ddlCurrency = $('#ddlCurrency').val();
+            if (ddlCurrency == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Freight Currency</span></br>"
+            }
+
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+            var BussData = {}
+            if ($scope.RegId != "")
+                BussData.ID = $scope.RegId;
+            else
+                BussData.ID = 0;
+
+            BussData.MRGNo = $scope.txtMRGRate;
+            BussData.FDate = $("#txtFromDate").val();
+            BussData.TDate = $('#txtToDate').val()
+            if ($("#ddlPortOfOrg").val() != null)
+                BussData.IntPOfOrigin = $("#ddlPortOfOrg").val();
+            else
+                BussData.IntPOfOrigin = 0;
+
+            BussData.IntPOfLoading = $("#ddlPortofLoading").val();
+            BussData.IntPOfDischarge = $("#ddlPortofDischarge").val();
+            if ($("#ddlPortofFinalPOD").val() != null)
+                BussData.IntFinalPOD = $("#ddlPortofFinalPOD").val();
+            else
+                BussData.IntFinalPOD = 0;
+
+            BussData.intCntrTypes = $("#ddlCntrTypes").val();
+            BussData.intCommodity = $("#ddlCommodityType").val();
+            BussData.intServiceTypes = $("#ddlServiceType").val();
+            BussData.intCurrency = $("#ddlCurrency").val();
+            BussData.Amount = $scope.txtFrRate1;
+            BussData.Remarks = $scope.txtRemark;
+            BussData.UserID = "1";
+            BussData.AgentId = "1";
+            BussData.SessionFinYear = "2021";
+            BussData.AgentCode = "NS";
+
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/SalesMRGInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RegId = result.data[0].ID;
+                    if (result.data[0].ID != "0")
+                    {
+                        $scope.txtMRGRate = result.data[0].SlotRef;
+                        ShowPopup("MRG Rate Saved Successfully");
+                        var url = "/Sales/MRGView";
+                        window.location.href = url;
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["MRRegNo"] != null) {
+
+                $scope.RegId = queryString["MRRegNo"].toString();
+                $scope.FilMRGExsitingMaster(queryString["MRRegNo"].toString());
+            }
+        });
+
+
+
+        $scope.FilMRGExsitingMaster = function (SLRegID) {
+
+            var Datavalue = {};
+            Datavalue.ID = SLRegID;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/MRGExistingMasterRecord',
+                data: JSON.stringify(Datavalue),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RegId = result.data[0].ID;
+                    $scope.txtMRGRate = result.data[0].MRGNo;
+                    $scope.txtFromDate = result.data[0].FDate;
+                    $scope.txtToDate = result.data[0].TDate;
+                    $scope.ddlPortOfOrg = { ID: result.data[0].IntPOfOrigin };
+                    $scope.ddlPortofLoading = { ID: result.data[0].IntPOfLoading };
+                    $scope.ddlPortofDischarge = { ID: result.data[0].IntPOfDischarge };
+                    $scope.ddlPortofFinalPOD = { ID: result.data[0].IntFinalPOD };
+                    $scope.ddlCntrTypes = { ID: result.data[0].intCntrTypes };
+                    $scope.ddlCommodityType = { ID: result.data[0].intCommodity };
+                    $scope.ddlServiceType = { ID: result.data[0].IntServiceTypes };
+                    $scope.ddlCurrency = { ID: result.data[0].intCurrency };
+                    $scope.txtFrRate1 = result.data[0].Amount;
+                    $scope.txtRemark = result.data[0].Remarks;
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+    });
+
+
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Sales/MRGView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<a href="#" class="btn btn-fill btn-warning btnedit btn-round btntop">
+                    <i class="material-icons">edit</i>
+
+                </a>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">MRG Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12 download" style="text-align:right;">
+                                <button type="submit" class="btn btn-fill btn-success btntop">
+                                    <i class="material-icons">upload</i>
+                                    Upload MRG
+                                </button>
+                                <button type="submit" class="btn btn-fill btn-danger btntop">
+                                    <i class="material-icons">download</i>
+                                    Download in Excel
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>MRG Rate</label>
+                                            <input type="text" readonly id="txtMRGRate" ng-model="txtMRGRate" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>From Date</label>
+                                            <input type="text" autocomplete="off" id="txtFromDate" class="form-control datepicker" ng-model="txtFromDate" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>To Date</label>
+                                            <input type="text" autocomplete="off" id="txtToDate" class="form-control datepicker" ng-model="txtToDate" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port Of Origin</label>
+                                            <select class="form-control my-select" id="ddlPortOfOrg" ng-model="ddlPortOfOrg" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port Of Loading</label>
+
+                                            <select class="form-control my-select" id="ddlPortofLoading" ng-model="ddlPortofLoading" ng-options="item.PortName for item in PortAllvalues track by item.ID"></select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Port Of Discharge</label>
+                                            <select class="form-control my-select" id="ddlPortofDischarge" ng-model="ddlPortofDischarge" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                            </select>
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Final POD</label>
+                                            <select class="form-control my-select" id="ddlPortofFinalPOD" ng-model="ddlPortofFinalPOD" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Container Type</label>
+
+                                            <select class="form-control my-select" id="ddlCntrTypes" ng-model="ddlCntrTypes" ng-options="item.CntrTypes for item in CntrTypesvalues track by item.ID">
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Commodity Type</label>
+                                            <select class="form-control my-select" id="ddlCommodityType" ng-model="ddlCommodityType" ng-options="item.GeneralName for item in CommodityValue track by item.ID">
+                                            </select>
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Freight Rate</label>
+                                            <div class="row">
+
+                                                <div class="col-md-6">
+                                                    <input type="text" autocomplete="off" id="txtFrRate1" ng-model="txtFrRate1" class="form-control">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <select class="form-control my-select" id="ddlCurrency" ng-model="ddlCurrency" ng-options="item.Currency for item in CurrencyValue track by item.ID">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Service Type</label>
+
+                                            <select class="form-control my-select" id="ddlServiceType" ng-model="ddlServiceType" ng-options="item.ServiceTypesName for item in ServiceTypesValue track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Remark</label>
+                                            <textarea id="txtRemark" ng-model="txtRemark" class="form-control" rows="5"></textarea>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="card-footer ">
+                        <div class="col-md-12" style="text-align:right;">
+                            <button type="submit" ng-click="RecordSave();" class="btn btn-fill btn-success">                            
+                            Submit</button>
+                            <input type="hidden" id="RegId" name="RegId" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+
+

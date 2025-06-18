@@ -1,0 +1,383 @@
+﻿@{
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = Request.IsAjaxRequest() ? null : "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $(document).ready(function () {
+            $('.my-selectPOL').select2({
+                placeholder: "POL", allowClear: true, width: '100%'
+            });
+            $('.my-selectPOD').select2({
+                placeholder: "POD", allowClear: true, width: '100%'
+            });
+            $('.my-selectST').select2({
+                placeholder: "Slot Term", allowClear: true, width: '100%'
+            });
+
+            $('.my-selectSO').select2({
+                placeholder: "Slot Operator", allowClear: true, width: '100%'
+            });
+        });
+
+        $scope.SlotOperatorValue = null;
+        $scope.fillSlotOperatorValues = function () {
+
+
+            var Datavalue = {};
+            Datavalue.BussTypes = "7,8,13";
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerBussTypesMaster/',
+                data: JSON.stringify(Datavalue)
+            }).then(function (result) {
+
+                $timeout(function () {
+
+                    $scope.SlotOperatorValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSlotOperatorValues();
+
+        $scope.SLOTRateview = null;
+        $scope.fillSLOTRateview = function () {
+              var BussData = {};
+            BussData.POLStr = $('#ddlPOL').val();
+            BussData.PODStr = $('#ddlPOD').val();
+            BussData.SlotOperator = $('#ddlSlotOperator').val();
+            BussData.StrSlotTerms = $('#ddlSlotTerms').val();
+            BussData.SlotRef = $scope.txtSLOTRef;
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/SLOTViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SLOTRateview = result.data;
+                    $scope.totalItems = $scope.SLOTRateview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.SLOTRateview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSLOTRateview();
+
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/BindMainPorts/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+
+        $scope.SlotTermsValue = null;
+        $scope.fillSlotTermsValues = function () {
+
+
+            var Datavalue = {};
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/SlotTremsValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.SlotTermsValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillSlotTermsValues();
+
+
+        $scope.LoadingSLOTPage = function (urlv) {
+
+            //var url = "/Sales/Slot?SLRegNo=" + encodeURIComponent(urlv);
+            //window.location.href = url;
+            var ParameterValue = "SLRegNo=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Sales/Slot?" + ciphertext;
+
+            window.location.href = url;
+        }
+
+        $scope.FileUploadingWindows = function () {
+
+            var left = (screen.width / 2) - (400 / 2);
+            var top = (screen.height / 2) - (300 / 2);
+            return window.open("../SLOTfileUpload.aspx", 'window', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=400, height=300, top=' + top + ', left=' + left);
+        }
+
+        $scope.btnPrint = function () {
+            var SlotRef = $scope.txtSLOTRef;
+            var SlotOperator = $('#ddlSlotOperator').val();
+             var SlotTerms = $('#ddlSlotTerms').val();
+             var POL = $('#ddlPOL').val();
+             var POD = $('#ddlPOD').val();
+              var User = localStorage.getItem("UserName");
+
+            window.location.href = '@Url.Action("SlotExcel", "MastersExcel")?SlotOperator=' + SlotOperator + '&SlotRef=' + SlotRef + '&SlotTerms=' + SlotTerms + '&POL=' + POL + '&POD=' + POD + '&User=' + User;
+        }
+
+        $scope.ClearRecords = function () {
+            $scope.txtSLOTRef = "";
+            $("#ddlSlotTerms").val(null).trigger("change");
+            $("#ddlPOL").val(null).trigger("change");
+            $("#ddlPOD").val(null).trigger("change");
+            $("#ddlSlotOperator").val(null).trigger("change");
+            $scope.fillSLOTRateview();
+        }
+
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+    function AddNew() {
+
+        window.location = "/Sales/Slot"
+    }
+
+</script>
+<style>
+    .table > tbody > tr > td
+    {
+        font-size:11px!important;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            <a href="/Sales/Slot" class="btn btn-fill btn-success btn-round btnadd btntop">
+                <i class="material-icons">add</i> Create New
+
+            </a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card-icon">
+                                Slot Contract
+
+                            </div>
+                        </div>
+                        <div class="col-md-6 padlr0" style="margin-top:-38px;text-align:right;">
+                            <a href="#" ng-click="FileUploadingWindows();" class="btn btn-fill btn-success btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">upload</i> Upload
+                            </a>
+                            <a href="#" ng-click="btnPrint();" class="btn btn-fill btn-danger btnuploadfile btnadd btntop" style="margin-right:0;">
+                                <i class="material-icons">download</i> Download Excel
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables" style="overflow: auto;">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Slot Contract</th>
+                                    <th>Slot Operator</th>
+                                    <th>Port Of Loading</th>
+                                    <th>Port Of Discharge</th>
+                                    <th>Effective Date</th>
+                                    <th>Status</th>
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                <tr ng-repeat="i in SLOTRateview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td style="white-space:nowrap;">{{i.SlotRef}}</td>
+                                    <td style="white-space:nowrap;">{{i.SlotOperator}}</td>
+                                    <td style="white-space:nowrap;">{{i.POLStr}}</td>
+                                    <td style="white-space:nowrap;">{{i.PODStr}}</td>
+                                    <td style="white-space:nowrap;">{{i.ValidFrom}}</td>
+                                    <td style="white-space:nowrap;">{{i.Status}}</td>
+
+
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingSLOTPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+           
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+
+                            <input type="text" id="txtSLOTRef" ng-model="txtSLOTRef" class="form-control" placeholder="Slot Ref">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectSO" id="ddlSlotOperator" ng-model="ddlSlotOperator" options="{ allowClear: true }" ng-options="item.CustomerName for item in SlotOperatorValue track by item.ID">
+                                <option value="" disabled selected>Slot Operator</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select id="ddlSlotTerms" ng-model="ddlSlotTerms" class="form-control my-selectST" placeholder="ddlSlotTerms" ng-options="item.SlotTerm for item in SlotTermsValue track by item.ID">
+                                <option value="" disabled selected>Slot Term</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select id="ddlPOL" ng-model="ddlPOL" class="form-control my-selectPOL" placeholder="POL" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                <option value="" disabled selected>POL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select id="ddlPOD" ng-model="ddlPOD" class="form-control my-selectPOD" placeholder="POD" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                                <option value="" disabled selected>POD</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="fillSLOTRateview();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

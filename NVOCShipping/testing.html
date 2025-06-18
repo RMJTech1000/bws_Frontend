@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bootstrap Case</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="parsley.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            validate();
+            $('#first_name, #last_name').change(validate);
+        });
+
+        function validate() {
+            if ($('#first_name').val().length > 0 &&
+                $('#last_name').val().length > 0) {
+                $("#second").prop("disabled", false);
+                $("#li_second_tab").prop("disabled", false);
+            } else {
+                $("#second").prop("disabled", true);
+                $("#li_second_tab").prop("disabled", true);
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div class="container">
+        <div class="" role="tabpanel" data-example-id="togglable-tabs">
+
+            <ul class="nav nav-tabs bar_tabs tabs" role="tablist" id="mytabs">
+                <li role="presentation">
+                    <a href="#first" id="li_first_tab" role="tab" data-toggle="tab">First tab</a>
+                </li>
+                <li role="presentation">
+                    <a href="#second" id="li_second_tab" role="tab" data-toggle="tab">Second tab</a>
+                </li>
+
+            </ul>
+            <div id="myTabContent" class="tab-content">
+                <div class="tab-pane fade active in " id="first">
+                    <form id="tab_form" enctype="multipart/form-data" method="POST" data-parsley-validate class="form-horizontal form-label-left">
+                        <div class="form-group">
+                            <label for="first_name" class="control-label col-md-12 col-sm-12 col-xs-12">First Name<span class="required">*</span></label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input required="required" id="first_name" class="form-control col-md-7 col-xs-12" type="text" name="first_name" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="last_name" class="control-label col-md-12 col-sm-12 col-xs-12">Last Name</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input id="last_name" class="form-control col-md-7 col-xs-12" type="text" name="last_name" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <input type="button" name="editBtn" value="Save" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane fade" id="second">
+                    <form id="tab_form" enctype="multipart/form-data" method="POST" data-parsley-validate class="form-horizontal form-label-left">
+                        <div class="form-group">
+                            <label for="email" class="control-label col-md-12 col-sm-12 col-xs-12">Email<span class="required">*</span></label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input required="required" id="email" class="form-control col-md-7 col-xs-12" type="text" name="email" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="pnone" class="control-label col-md-12 col-sm-12 col-xs-12">Phone</label>
+                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                <input id="phone" class="form-control col-md-7 col-xs-12" type="text" name="phone" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                <input type="button" name="editBtn" value="Save" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

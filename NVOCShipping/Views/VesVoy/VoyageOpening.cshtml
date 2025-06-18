@@ -1,0 +1,565 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $scope.TerminalValue = null;
+        $scope.fillTerminalValues = function () {
+            $scope.TerminalValue = null;
+            var Datavalue = {};
+            Datavalue.ID = localStorage.getItem("GeoLocationID");
+            $http({
+                method: 'POST',
+                url: '/api/Home/TerminalDropDownByPortGeoLoc/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.TerminalValue = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillTerminalValues();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+                var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+                var bytes = CryptoJS.AES.decrypt(window.location.search.split('?')[1].toString(), secret_key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                var params = bytes.toString(CryptoJS.enc.Utf8).split('&');
+                //alert(params);
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+
+                }
+            }
+            if (queryString["VoyID"] != null) {
+                $scope.HdRegId = queryString["VoyID"].toString();
+                document.getElementById("txtVsl").disabled = true;
+                document.getElementById("txtVoyNo").disabled = true;
+                $scope.BindVoyageOpening(queryString["VoyID"].toString());
+                $scope.BindUnOpenedBLGrid(queryString["VoyID"].toString());
+                $scope.BindVoyageOpenedBLRecords(queryString["VoyID"].toString());
+
+            }
+        });
+        $scope.BindVoyageOpening = function (VoyID) {
+
+            var Datavalue = {}
+            var id = VoyID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = VoyID;
+            $http({
+                method: 'POST',
+                url: '/api/Home/VoyageOpeningEdit/',
+                data: JSON.stringify(Datavalue),
+                //  routeTemplate: "/api/Home/VoyageOpeningEdit/{id}",
+            }).then(function (result) {
+                $timeout(function () {
+
+
+                    if (Datavalue.ID != "") {
+                        $scope.HDVslId = result.data[0].VesselID;
+                        $scope.txtVsl = result.data[0].VesselName;
+                        $scope.txtVoyNo = result.data[0].VoyageNo;
+                        /* alert(result.data[0].OpenID);*/
+                        if (result.data[0].OpenID != 0) {
+
+                            $scope.HdOpenVoyId = result.data[0].OpenedVoyID;
+                            $scope.txtDisVoyNo = result.data[0].DisChargeVoyNo;
+                            document.getElementById('txtETA').value = result.data[0].OpenedETA;
+                            $scope.ddlDiscTerminal = { ID: result.data[0].DiscTerminalID };
+                            //$scope.BindVoyageOpenedBLRecords($scope.HdOpenVoyId);
+
+                        }
+
+                    }
+                    else {
+                        $scope.txtVsl = "";
+                        $scope.txtVoyNo = "";
+                        $scope.txtDisVoyNo = "";
+                        $scope.txtETA = "";
+                        $scope.ddlDiscTerminal = "";
+                        $scope.txtStatus = "";
+
+                    }
+                });
+            });
+
+
+        }
+
+        $scope.BindVoyageOpenedBLRecords = function (VoyID) {
+
+            var BussData = {}
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+            BussData.ID = VoyID;
+            $http({
+                method: 'POST',
+                url: "/api/Home/VoyageOpeningEditBLDetails",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+
+                $scope.VoyOpenCntrBLRec = result.data;
+
+            });
+
+        };
+
+        $scope.BindUnOpenedBLGrid = function (VoyageID) {
+
+            var Datavalue = {};
+            Datavalue.ID = VoyageID;
+            Datavalue.AgencyID = localStorage.getItem("AgencyID");
+
+            $http({
+
+                method: 'POST',
+                url: "/api/Home/VoyageUnOpenedBLDetails",
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+
+                    if (result.data.length > 0) {
+
+                        $scope.DynamicGrid2BLDetails = result.data;
+
+
+                    }
+                    if (result.data.length == 0) {
+                        $scope.txtStatus = "Opened";
+                        document.getElementById("BtnSubmit").style.display = "none";
+                    } else {
+                        $scope.txtStatus = "Partially Opened";
+                    }
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.RecordSave = function (data) {
+
+            var validation = "";
+
+            if (typeof $scope.HdOpenVoyId == 'undefined') {
+
+                var txtDisVoyNo = $('#txtDisVoyNo').val();
+                if (txtDisVoyNo.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter Discharge Voyage No </span></br>"
+
+                }
+
+                var txtETA = $('#txtETA').val();
+                if (txtETA.length == 0) {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Enter ETA </span></br>"
+
+                }
+                var ddlDiscTerminal = $('#ddlDiscTerminal').val();
+                if (ddlDiscTerminal == "?") {
+
+                    validation += "<span style='color:red;'>*</span> <span>Please Select Discharge Terminal</span></br>"
+                }
+            }
+            var IntRow = 0;
+            for (var i = 0; i < $scope.DynamicGrid2BLDetails.length; i++) {
+
+                if ($scope.DynamicGrid2BLDetails[i].ChkFlag == 1) {
+                    IntRow = true;
+                    break;
+
+                }
+                else {
+
+                    IntRow = false;
+                }
+
+            }
+            if (IntRow == false) {
+                validation += "<span style='color:red;'>*</span> <span>Please Check Atleast One BL </span></br>"
+            }
+            var IntRowv = 0;
+            for (var i = 0; i < $scope.DynamicGrid2BLDetails.length; i++) {
+
+                if ($scope.DynamicGrid2BLDetails[i].ChkFlag == 1) {
+                    var Statuscodev = $scope.DynamicGrid2BLDetails[i].CntrStatusCode.split(',');
+                    console.log(Statuscodev);
+                    for (var x = 0; x < Statuscodev.length; x++) {
+
+                        if (Statuscodev[x].toString() != "FB" && Statuscodev[x].toString() != "TZFB") {
+                            validation += "<span style='color:red;'>*</span> <span>Kindly update POL Moves till FB and then retry</span></br>"
+                            ShowPopup(validation);
+                            return false;
+                        }
+                    }
+                }
+            }
+
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HdRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdRegId;
+            BussData.OpenedVoyID = $scope.HdOpenVoyId;
+            BussData.VesselID = $scope.HDVslId;
+            BussData.ETA = $('#txtETA').val();
+            BussData.VoyageNo = $('#txtDisVoyNo').val();
+            BussData.TerminalID = $('#ddlDiscTerminal').val();
+            BussData.UserID = localStorage.getItem("UserID");
+            BussData.GeoLocID = localStorage.getItem("GeoLocationID");
+            BussData.AgencyID = localStorage.getItem("AgencyID");
+
+            var Items = []
+
+
+            angular.forEach(data, function (value, key) {
+                var TsPortv = 0;
+                if (data[key].TSPort != "")
+                    TsPortv = data[key].TSPort;
+
+                if (data[key].ChkFlag == true) {
+                    Items.push('Insert:' + data[key].ID, data[key].BkgID, TsPortv);
+                }
+            });
+
+            BussData.Itemsv = Items.toString();
+            $http({
+                method: 'POST',
+                url: "/api/Home/InsertVoyageOpening",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        ShowPopup("Voyage/BL Opened Saved Successfully");
+
+                        setTimeout(function () { location.href = "/VesVoy/VoyageDetailsNewView" }, 1000);
+                    }
+                    else {
+
+                        ShowPopup("BL Opened Successfully");
+
+                        setTimeout(function () { location.href = "/VesVoy/VoyageOpeningView" }, 1000);
+                    }
+
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+        $scope.CheckBoxHeadChecked = function (checked) {
+
+            for (var i = 0; i < $scope.DynamicGrid2BLDetails.length; i++) {
+
+                $scope.DynamicGrid2BLDetails[i].ChkFlag = checked;
+
+            }
+        };
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/VesVoy/VoyageOpeningView" class="btn btn-fill btnback btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+                @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-warning btn-round btntop">
+                        <i class="material-icons">edit</i>
+
+                    </button>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Voyage Opening</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Vessel</label>
+                                            <input type="text" autocomplete="off" id="txtVsl" ng-model="txtVsl" class="form-control">
+                                            <input type="hidden" id="HDVslId" ng-model="HDVslId" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Load Voyage No</label>
+                                            <input type="text" autocomplete="off" id="txtVoyNo" ng-model="txtVoyNo" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label> Discharge Voyage No</label>
+                                            <input type="text" autocomplete="off" id="txtDisVoyNo" ng-model="txtDisVoyNo" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>ETA</label>
+                                            <input type="date" autocomplete="off" id="txtETA" ng-model="txtETA" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Discharge Terminal</label>
+                                            <select id="ddlDiscTerminal" ng-model="ddlDiscTerminal" class="form-control my-select" ng-options="item.Terminal for item in TerminalValue  track by item.ID">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="lable-fond">Status</label>
+                                            <input disabled type="text" id="txtStatus" ng-model="txtStatus" class="form-control" />
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Un Opened BL'S</h4>
+                            </div>
+
+                            <div class="col-md-12">
+
+
+                                <div class="material-datatables" id="IsVisbleGrid2" style="border: 1px solid #ccc; padding: 5px; overflow:scroll;height:200px;">
+
+                                    <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+
+
+                                        <thead>
+                                            <tr>
+                                                <th><input type="checkbox" ng-change="CheckBoxHeadChecked(BLHDCheck);" ng-true-value="1" ng-false-value="0" ng-model="BLHDCheck" id="BLHDCheck" />  </th>
+                                                <th>BL Number</th>
+                                                <th>POL</th>
+                                                <th>T/S PORT</th>
+                                                <th>POD</th>
+                                                <th>Container No</th>
+                                                <th>Status Code</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+                                            <tr ng-repeat="i in DynamicGrid2BLDetails">
+
+
+                                                <td> <input type="checkbox" id="ChkFlag" value="{{i.BLID}}" ng-model="i.ChkFlag" ng-true-value="1" ng-false-value="0" /></td>
+                                                <td>
+                                                    {{i.BLNumber}}
+
+                                                    <input type="hidden" id="HDBLID" class="form-control" ng-model="i.BLID" />
+                                                    <input type="hidden" id="HDBkgID" class="form-control" ng-model="i.BkgID" />
+                                                </td>
+
+                                                <td>{{i.POL}}</td>
+                                                <td>{{i.TSPort}}</td>
+                                                <td>{{i.POD}}</td>
+
+
+                                                <td style="width:0;">{{i.CntrNo}}                                </td>
+                                                <td>{{i.CntrStatusCode}} </td>
+
+
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+                                    <div id="notFoundDiv1" ng-show="(DynamicGrid2BLDetails|filter:BLNumber).length==0" style="color: red; font-weight: bold">Note :  No Records Found </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row">
+
+                                    <div class="col-md-12">
+                                        <h4 style="color: #12759a;font-size:14px;font-weight:bold;">Opened BL'S</h4>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="material-datatables" style="border: 1px solid #ccc; padding: 5px; overflow:scroll;height:200px;">
+
+                                            <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No</th>
+                                                        <th>BL Number</th>
+                                                        <th>POL</th>
+                                                        <th>T/S Port</th>
+                                                        <th>POD</th>
+                                                        <th>Container No </th>
+                                                        <th> Status Code</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <tr ng-repeat="i in VoyOpenCntrBLRec | filter : paginate | orderBy:'-Statusv'">
+                                                        <td>
+                                                            {{$index+1}}
+                                                        </td>
+                                                        <td>
+                                                            {{i.BLNumber}}
+                                                            <input type="hidden" id="HDBLID" class="form-control" ng-model="i.ID" />
+                                                        </td>
+                                                        <td>{{i.POL}}</td>
+                                                        <td>{{i.TSPort}}</td>
+                                                        <td>{{i.POD}}</td>
+                                                        <td style="width:0;">{{i.CntrNo}}                                </td>
+                                                        <td>{{i.CntrStatusCode}} </td>
+
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <div id="notFoundDiv" ng-show="(VoyOpenCntrBLRec|filter:BLNumber).length==0" style="color: red; font-weight: bold">Note :  No Records Found </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="card-footer ">
+                    <div class="col-md-12" style="text-align:right;">
+                        <button type="submit" id="BtnSubmit" ng-click="RecordSave(DynamicGrid2BLDetails);" class="btn btn-fill btn-success">Submit</button>
+                        <input type="hidden" id="HdOpenVoyId" ng-model="HdOpenVoyId" />
+                        <input type="hidden" id="HdRegId" ng-model="HdRegId" />
+                    </div>
+                    @*<div class="col-md-12" style="text-align:right;">
+                            <button type="submit" id="BtnMove" ng-click="MoveToOpenedVoy(DynamicGrid2BLDetails);" class="btn btn-fill btn-success">Move</button>
+
+                        </div>*@
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>

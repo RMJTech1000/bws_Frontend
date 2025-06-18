@@ -1,0 +1,264 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+       
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["ID"] != null)
+            {
+                $scope.RegIDv = queryString["ID"].toString();
+                $scope.ExistingValues(queryString["ID"]);
+                $("#overlay").hide();
+            }
+        });
+
+        $scope.RecordSave = function()
+        {
+            var BussData = {}
+
+            var validation = "";
+
+            var CertificateType = $('#CertificateType').val();
+            if (CertificateType == "") {
+                validation += "<span style='color:red;'>*</span> <span>Enter Certificate Type</span></br>"
+            }
+
+            var CertificateTitle = $('#CertificateTitle').val();
+            if (CertificateTitle == "") {
+                validation += "<span style='color:red;'>*</span> <span>Enter Certificate Title</span></br>"
+            }
+
+            var txtSubject = $('#txtSubject').val();
+            if (txtSubject == "") {
+                validation += "<span style='color:red;'>*</span> <span>Enter Subject</span></br>"
+            }
+
+
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            if ($scope.RegIDv != 0)
+                BussData.ID = $scope.RegIDv;
+
+            BussData.CertificateType = $("#CertificateType").val();
+            BussData.CertificateTitle = $("#CertificateTitle").val();
+            BussData.Subject = $scope.txtSubject;
+            $http({
+
+                method: 'POST',
+                url: '/api/OnBard_shipment/CertificateInsert/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $scope.RegIDv = result.data[0].ID;
+                ShowPopup(result.data[0].AlertMessage);
+                return;
+
+            });
+        }
+
+        $scope.ExistingValues = function (IDv) {
+
+            var BussData = {}
+            BussData.ID = IDv;
+            $http({
+
+                method: 'POST',
+                url: '/api/OnBard_shipment/ExistingCertificate/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $scope.CertificateType = result.data[0].CertificateType;
+                $scope.CertificateTitle = result.data[0].CertificateTitle;
+                $scope.txtSubject = result.data[0].Subject;
+            });
+        }
+
+      
+
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+
+
+</script>
+<style>
+    .modal-header {
+        display: block !important;
+    }
+
+    .modal-dialog .modal-header .close {
+        color: #fff !important;
+        padding-right: 0px !important;
+        top: -8px !important;
+    }
+
+    .btn-warning {
+        padding: 8px 25px;
+        margin: 0;
+    }
+
+    .btn {
+        padding: 6px 20px;
+    }
+
+    .card .pickupdiv .table tr td {
+        font-size: 11px;
+        white-space: nowrap !important;
+        border: 1px solid #ccc;
+        padding-top: 1px;
+        padding-bottom: 1px;
+        /* font-weight: 600;*/
+        background-color: #f0f8ff78;
+        font-weight: 500;
+    }
+
+    .card .pickupdiv .table tr th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: #21277a;
+    }
+
+    .modal-dialog .modal-header .modal-title {
+        margin-top: -13px !important;
+        color: #fff !important;
+        font-size: 18px;
+    }
+
+    .modal-dialog .modal-header {
+        background-color: #1e4383 !important;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Masters/Certifitcateview" type="submit" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </a>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+
+                        <div class="card-text">
+                            <h4 class="card-title">Certificate</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group" style="margin-top:0;">
+                                            <div class="row">
+                                              
+                                                <div class="col-md-6" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <span style="color:red">Certificate Type </span>
+
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <input id="CertificateType" class="form-control" ng-model="CertificateType" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-md-6" style="border: 1px solid #ccc; background-color: #eeeeee59; border-top: 5px solid #ebc354; ">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <span style="color:red">Certificate Title </span>
+
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <input id="CertificateTitle" class="form-control" ng-model="CertificateTitle" />
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="row" style="border: 1px solid #ccc; margin-top:15px;">
+                            <div class="col-md-12 padlr0" style="padding:7px;">
+                                <div class="material-datatables">
+                                    <textarea class="form-control" style="height:200px!important;" ng-model="txtSubject"></textarea>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="hidden" id="RegIDv" ng-model="RegIDv" />
+                              
+                                <button type="submit" ng-click="RecordSave();" class="btn btn-fill btn-success">Save</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+    </div>
+
+   
+</div>

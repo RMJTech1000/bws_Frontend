@@ -1,0 +1,670 @@
+﻿@model  NVOCShipping.Models.MasterModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $scope.CntrNoList = null;
+        $scope.FillCntrNo = function () {
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindCntrNos/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrNoList = result.data;
+
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected. Please reconnect and try again.");
+                }
+            });
+
+        };
+        $scope.FillCntrNo();
+
+   
+        $("#ddlCntrNo").change(function () {
+            $scope.CntrSizeTypes = null;
+            $scope.PickUpRefNoList = null;
+            $scope.LeaseTermList = null;
+            $scope.LeasingPartnerList = null;
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlCntrNo").val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindOffHireCntrValues/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+                    $scope.PickUpRefNoList = result.data;
+                    $scope.LeaseTermList = result.data;
+                    $scope.LeasingPartnerList = result.data;
+                    
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $("#ddlPickUpRefNo").change(function () {
+            $scope.DropOffCurrList = null;
+          
+            var Datavalue = {};
+
+            Datavalue.ID = $("#ddlPickUpRefNo").val();
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindDropOffCurrAmtFromLease/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DropOffCurrList = result.data;
+                    $scope.txtDropoffTariff = result.data[0].DropOffTariff;
+                   
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.BindOffHireCntrValues = function (CntrID) {
+            $scope.CntrSizeTypes = null;
+            $scope.PickUpRefNoList = null;
+            $scope.LeaseTermList = null;
+            $scope.LeasingPartnerList = null;
+            var Datavalue = {};
+            Datavalue.ID = CntrID;
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindOffHireCntrValues/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CntrSizeTypes = result.data;
+                    $scope.PickUpRefNoList = result.data;
+                    $scope.LeaseTermList = result.data;
+                    $scope.LeasingPartnerList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.BindOffHireCntrValues();
+
+        $scope.BindDropOffCurrAmtFromLease = function (PickupRefID) {
+            $scope.DropOffCurrList = null;
+
+            var Datavalue = {};
+
+            Datavalue.ID = PickupRefID;
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/BindDropOffCurrAmtFromLease/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DropOffCurrList = result.data;
+                    $scope.txtDropoffTariff = result.data[0].DropOffTariff;
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        }
+        $scope.BindDropOffCurrAmtFromLease();
+
+
+
+        $scope.DepotValue = null;
+        $scope.fillDepotValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/DepotMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.DepotValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillDepotValues();
+
+        $scope.PortValue = null;
+        $scope.fillPortValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortValue = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortValues();
+
+        $scope.AgencyList = null;
+        $scope.fillAgencyValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/AgencyMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillAgencyValues();
+
+
+       
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["OffHireID"] != null) {
+                $scope.HdoffhireId = queryString["OffHireID"].toString();
+                $scope.BindOffHireEdit(queryString["OffHireID"].toString());
+
+            }
+        });
+
+        $scope.BindOffHireEdit = function (OffHireID) {
+
+            var Datavalue = {}
+            var id = OffHireID;
+           
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = OffHireID;
+            //alert(Datavalue.ID);
+            $http({
+                method: 'POST',
+                url: '/api/ContainerApi/OffHireEdit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+
+                        $scope.ddlCntrNo = { ID: result.data[0].CntrID };
+                        $scope.ddlSizeType = { SizeTypeID: result.data[0].SizeTypeID };
+                        $scope.ddlPickUpRefNo = { PickUpRefID: result.data[0].PickUpRefID };
+                        $scope.ddlLeaseTerm = { LeasingTermID: result.data[0].LeasingTermID };
+                        $scope.ddlLeasePartner = { LeasingPartnerID: result.data[0].LeasingPartnerID }; 
+                        $scope.txtDropoffTariff = result.data[0].DropOffTariffAmt;
+                        $scope.ddlDropCurr = { DropOffTariffCurrID: result.data[0].DropOffTariffCurrID };
+                        $scope.ddlOffHirePort = { ID: result.data[0].OffHirePortID };
+                        $scope.ddlOffHireDepot = { ID: result.data[0].OffHireDepotID };
+                        $scope.ddlAgency = { ID: result.data[0].ResponseAgencyID };
+                        $scope.txtDtOffhire = result.data[0].DtOffHire;
+                        $scope.txtRemarks = result.data[0].Remarks;
+                        $scope.BindOffHireCntrValues(result.data[0].CntrID);
+                        $scope.BindDropOffCurrAmtFromLease(result.data[0].PickUpRefID);
+                    }
+                    else {
+                        $scope.ddlCntrNo = "";
+                        $scope.ddlSizeType = "";
+                        $scope.ddlPickUpRefNo = "";
+                        $scope.ddlLeaseTerm = "";
+                        $scope.ddlLeasePartner = "";
+                        $scope.txtDropoffTariff = "";
+                        $scope.ddlDropCurr = "";
+                        $scope.ddlOffHirePort = "";
+                        $scope.ddlOffHireDepot = "";
+                        $scope.ddlAgency = "";
+                        $scope.txtDtOffhire = "";
+                        $scope.txtRemarks = "";
+                        
+                    }
+                });
+            });
+            $scope.back = function () {
+
+                window.location = "/Container/OffHireRequestView";
+            }
+        }
+
+        $scope.SaveOffHireRequest = function (data) {
+            var validation = "";
+            var ddlCntrNo = $('#ddlCntrNo').val();
+            if (ddlCntrNo == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select CntrNo </span></br>"
+            }
+
+
+            var ddlPickUpRefNo = $('#ddlPickUpRefNo').val();
+            if (ddlPickUpRefNo == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select PickUp Reference</span></br>"
+            }
+
+            var ddlLeasePartner = $('#ddlLeasePartner').val();
+            if (ddlLeasePartner == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Leasing Partner</span></br>"
+            }
+
+           
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+            $('#overlay').fadeIn().delay(100).fadeOut();
+
+      
+            var BussData = {}
+
+            var id = $scope.HdoffhireId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HdoffhireId;
+
+            BussData.CntrID = $("#ddlCntrNo").val();
+            BussData.SizeTypeID = $("#ddlSizeType").val();
+            BussData.PickupRefID = $("#ddlPickUpRefNo").val();
+            BussData.LeasingTermID = $("#ddlLeaseTerm").val();
+            BussData.LeasingPartnerID = $("#ddlLeasePartner").val();
+            BussData.DropOffTariff = $scope.txtDropoffTariff;
+            BussData.DropOffTariffCurrID = $("#ddlDropCurr").val();
+            BussData.OffHirePortID = $("#ddlOffHirePort").val();
+            BussData.OffHireDepotID = $("#ddlOffHireDepot").val();
+            BussData.DtOffHire = $("#txtDtOffhire").val();
+            BussData.Remarks = $scope.txtRemarks;
+            BussData.ResponseAgencyID = $("#ddlAgency").val();
+
+
+            $http({
+                method: 'POST',
+                url: "/api/ContainerApi/InsertOffHireRequest",
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.HdoffhireId = result.data[0].ID;
+                    if (result.data[0].ID != "0") {
+                        ShowPopup("Off-Hire Details Saved Successfully");
+                    }
+                    else {
+
+                        ShowPopup("Error Not saved");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+         $scope.back = function () {
+
+            window.location = "/Container/OffHireRequestView";
+        }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <button type="submit" ng-click="back();" class="btn btn-fill btn-success btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+                </button>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">Off-Hire Request</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Container Number</label>
+                                            <select class="form-control my-select" ng-model="ddlCntrNo" id="ddlCntrNo" ng-options="item.CntrNo for item in CntrNoList track by item.ID" >
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Container Size Type</label>
+                                            <select class="form-control my-select" ng-model="ddlSizeType" id="ddlSizeType" ng-options="item.Size for item in CntrSizeTypes track by item.SizeTypeID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>PickUp Reference</label>
+                                            <select class="form-control my-select" ng-model="ddlPickUpRefNo" id="ddlPickUpRefNo" ng-options="item.ContractRefNo for item in PickUpRefNoList track by item.PickUpRefID" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Leasing Partner </label>
+                                            <select class="form-control my-select" ng-model="ddlLeasePartner" id="ddlLeasePartner" ng-options="item.LeasingPartner for item in LeasingPartnerList track by item.LeasingPartnerID" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Leasing Term </label>
+
+                                            <select class="form-control my-select" ng-model="ddlLeaseTerm" id="ddlLeaseTerm" ng-options="item.LeasingTerm for item in LeaseTermList track by item.LeasingTermID" required>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Drop-Off Tariff </label>
+
+                                            <input type="text" id="txtDropoffTariff" autocomplete="off" ng-model="txtDropoffTariff" class="form-control ">
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Drop-Off Currency </label>
+
+                                            <select class="form-control my-select" ng-model="ddlDropCurr" id="ddlDropCurr" ng-options="item.CurrencyCode for item in DropOffCurrList track by item.DropOffTariffCurrID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Off-Hire Port </label>
+
+                                            <select class="form-control my-select" ng-model="ddlOffHirePort" id="ddlOffHirePort" ng-options="item.PortName for item in PortValue track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Off-Hire Depot </label>
+
+                                            <select class="form-control my-select" ng-model="ddlOffHireDepot" id="ddlOffHireDepot" ng-options="item.DepName for item in DepotValue track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Off-hire Date </label>
+
+                                            <input type="text" id="txtDtOffhire" autocomplete="off" ng-model="txtDtOffhire" class="form-control datepicker">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Responsible Agency </label>
+
+                                            <select class="form-control my-select" ng-model="ddlAgency" id="ddlAgency" ng-options="item.AgencyName for item in AgencyList track by item.ID" required>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label>Remarks </label>
+
+                                            <input type="text" id="txtRemarks" autocomplete="off" ng-model="txtRemarks" class="form-control">
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="ml-auto">
+                                <button type="submit" class="btn btn-fill btn-success" ng-click="SaveOffHireRequest();">
+                                    <i class="material-icons">save</i>
+                                    Save
+                                </button>
+                                <input type="hidden" id="HdoffhireId" ng-model="HdoffhireId" />
+
+                            </div>
+
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        // initialise Datetimepicker and Sliders
+        $('.datepicker').datetimepicker({
+            format: 'DD/MM/YYYY',
+
+        });
+    });
+</script>
+
+

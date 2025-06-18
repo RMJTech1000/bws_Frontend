@@ -1,0 +1,311 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $('#overlay').fadeIn().delay(300).fadeOut();
+
+        $(document).ready(function () {
+
+            $('.my-selectCtry').select2({
+                placeholder: "Country", allowClear: true, width: '100%'
+            });
+            $('.my-selectCity').select2({
+                placeholder: "City", allowClear: true, width: '100%'
+            });
+            $('.my-selectStatus').select2({
+                placeholder: "Status", allowClear: true, width: '100%'
+            });
+
+
+        });
+
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID': 2 }
+        ];
+
+        $scope.Country = null;
+        $scope.fillCountry = function () {
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindCountries/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.Country = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+        $scope.fillCountry();
+
+        $("#ddlCountry").change(function () {
+            $scope.City = null;
+            var Datavalue = {};
+
+            Datavalue.CountryID = $("#ddlCountry").val();
+            $http({
+                method: 'POST',
+                url: '/api/Home/BindCities/',
+                data: JSON.stringify(Datavalue),
+                // data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.City = result.data;
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+        $scope.DepotRecords = null;
+        $scope.DepotRecords = function () {
+
+            var BussData = {}
+            BussData.DepName = $scope.txtDepotName;
+            BussData.DepCountry = $('#ddlCountry').val();
+            BussData.DepCity = $('#ddlCity').val();
+            BussData.Status = $('#ddlStatus').val();
+            $http({
+
+                method: 'POST',
+                url: "/api/Home/Depotview",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $scope.CustomerRec = result.data;
+
+                $scope.totalItems = $scope.CustomerRec.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 8;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.CustomerRec.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+        $scope.DepotViewRecords = function () {
+
+            $scope.DepotRecords();
+        }
+        $scope.ClearRecords = function () {
+            $scope.txtDepotName = "";
+            $("#ddlCountry").val(null).trigger("change");
+            $("#ddlCity").val(null).trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $scope.DepotRecords();
+        }
+        $scope.DepotRecords();
+        $scope.DepotUpdate = function (urlv) {
+
+            //var url = "/Home/Depot?DepotID=" + encodeURIComponent(url);
+            //window.location.href = url;
+            var ParameterValue = "DepotID=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/Home/Depot?" + ciphertext;
+
+            window.location.href = url;
+        }
+        $scope.AddNew = function () {
+
+            window.location = "/Home/Depot"
+        }
+
+         $scope.btnPrint = function () {
+             var DepotName = $('#txtDepotName').val();
+             var Country = $('#ddlCountry').val();
+             var City = $('#ddlCity').val();
+             var Status = $('#ddlStatus').val();
+            var User = localStorage.getItem("UserName");
+
+             window.location.href = '@Url.Action("DepotExcel", "MastersExcel")?DepotName=' + DepotName + '&Country=' + Country + '&City=' + City + '&Status=' + Status + '&User=' + User;
+        }
+    }
+
+    );
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            
+            <button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        Depot Master
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="col-md-12 padr0" style="text-align:right;">
+                        <a class="button" ng-click="btnPrint();"><span>Download <i class="fa fa-file-excel-o"></i> </span></a>
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>Depot Name</th>
+                                    <th>Country</th>
+                                    <th>City</th>
+                                    <th>Status</th>
+
+
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in CustomerRec | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.DepName}}</td>
+                                    <td>{{i.DepCountryName}}</td>
+                                    <td>{{i.DepCityName}}</td>
+                                    <td>{{i.StatusName}}</td>
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="DepotUpdate(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(CustomerRec|filter:DepName).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtDepotName" ng-model="txtDepotName" class="form-control" placeholder="Depot">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectCtry" ng-model="ddlCountry" id="ddlCountry" ng-options="item.CountryName for item in Country track by item.CountryID" required>
+                                <option value="" disabled selected>Country</option>
+                            </select>
+                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectCity" id="ddlCity" ng-model="ddlCity" ng-options="item.CityName for item in City track by item.CityID" required>
+                                <option value="" disabled selected>City</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <select class="form-control my-selectStatus" id="ddlStatus" ng-model="ddlStatus" ng-options="item.name for item in StatusValues track by item.ID">
+                                <option value="" disabled selected>Status</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="DepotViewRecords();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

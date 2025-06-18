@@ -1,0 +1,248 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+       
+
+
+        $("#overlay").show();
+        $(document).ready(function () {
+
+            $('.my-selectPOL').select2({
+                placeholder: "POL", allowClear: true, width: '100%'
+            });
+            $('.my-selectPOD').select2({
+                placeholder: "POD", allowClear: true, width: '100%'
+            });
+
+
+
+        });
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+        $scope.Bookingview = null;
+        $scope.fillBookingview = function ()
+        {
+
+            var BussData = {};
+            BussData.POL = $('#ddlPOL').val();
+            BussData.POD = $('#ddlPOD').val();
+            BussData.BookingNo = $scope.txtBookingNo;
+            BussData.RRNo = $scope.txtRRNumber;
+            BussData.BkgParty = $scope.txtBookingParty;
+
+            $http({
+                method: 'POST',
+                url: '/api/DocumentApi/BookingViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result)
+            {
+                $('#overlay').hide();
+                $timeout(function () {
+                    $scope.Bookingview = result.data;
+                    $scope.totalItems = $scope.Bookingview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.Bookingview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillBookingview();
+
+        $scope.LoadingBookingPage = function (urlv)
+        {
+            var url = "/Document/ContainerPickup?BkgRegID=" + encodeURIComponent(urlv);
+            window.location.href = url;
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+   
+
+  
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnShow").click(function () {
+            $('#demoModal').modal('show');
+        });
+    });
+</script>
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        ContainerPickup View
+
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+                    <div class="toolbar">
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>BookingNo</th>
+                                    <th>Date</th>
+                                    <th>Booking Party</th>
+                                    <th>ShipmentType</th>
+                                    <th>Status</th>
+
+
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in Bookingview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.BookingNo}}</td>
+                                    <td>{{i.BkgDatev}}</td>
+                                    <td>{{i.BkgParty}}</td>
+                                    <td>{{i.ShipmentType}}</td>
+                                    <td>{{i.Status}}</td>
+
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingBookingPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtRRNumber" ng-model="txtRRNumber" class="form-control" placeholder="RR Number">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtBookingNo" ng-model="txtBookingNo" class="form-control" placeholder="Booking No">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtBookingParty" ng-model="txtBookingParty" class="form-control" placeholder="Booking Party">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <select id="ddlPOL" ng-model="ddlPOL" class="form-control my-selectPOL" placeholder="POL" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                            <option value="" disabled selected>POL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="ddlPOD" ng-model="ddlPOD" class="form-control my-selectPOD" placeholder="POD" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                            <option value="" disabled selected>POD</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="fillBookingview();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

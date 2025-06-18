@@ -1,0 +1,683 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+
+        $("#overlay").show();
+        $(document).ready(function () {
+
+            $('.my-selectPOL').select2({
+                placeholder: "POL", allowClear: true, width: '100%'
+            });
+            $('.my-selectPOD').select2({
+                placeholder: "POD", allowClear: true, width: '100%'
+            });
+            $('.my-selectStatus').select2({
+                placeholder: "Status", allowClear: true, width: '100%'
+            });
+            $('.my-selectBP').select2({
+                placeholder: "Booking Party", allowClear: true, width: '100%'
+            });
+
+        });
+
+        $scope.RRStatusValueAll = [
+
+            { 'Status': 'PENDING', 'ID': 1 },
+            { 'Status': 'REJECTED', 'ID': 2 },
+            { 'Status': 'RE-QUOTE', 'ID': 3 },
+            { 'Status': 'APPROVED', 'ID': 4 }
+        ];
+
+        $scope.CustomerMasterAllvalues = null;
+        $scope.fillCustomerMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/CustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerMasterAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCustomerMasterValues();
+
+        $scope.PortAllvalues = null;
+        $scope.fillPortsValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/PortValues/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.PortAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillPortsValues();
+
+        $scope.RateRequetRateview = null;
+        $scope.fillRateRequetRateview = function () {
+
+
+            var BussData = {};
+            BussData.PortofLoading = $('#ddlPOL').val();
+            BussData.PortofDischarge = $('#ddlPOD').val();
+            BussData.RRNumber = $scope.txtRRNumber;
+            BussData.BookingParty = $('#ddlbookingParty').val();
+            BussData.Status = $('#ddlStatus').val();
+            BussData.AgentId = localStorage.getItem("AgencyID");
+            BussData.GeoLocationID = localStorage.getItem("GeoLocationID")
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/RateSheetViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RateRequetRateview = result.data;
+                    $scope.totalItems = $scope.RateRequetRateview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.RateRequetRateview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+         $scope.fillRateRequetRateview();
+
+        $scope.fillViewDtlsRRviewDtlsButton = function (status) {
+
+
+            var BussData = {};
+            BussData.PortofLoading = $('#ddlPOL').val();
+            BussData.PODStr = $('#ddlPOD').val();
+            BussData.RRNumber = $scope.txtRRNumber;
+            BussData.BookingParty = $('#ddlbookingParty').val();
+            BussData.Status = status;
+            BussData.AgentId = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/RateSheetViewRecord/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.RateRequetRateview = result.data;
+                    $scope.totalItems = $scope.RateRequetRateview.length;
+                    $scope.currentPage = 1;
+                    $scope.numPerPage = 8;
+                    $scope.paginate = function (value) {
+                        var begin, end, index;
+                        begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                        end = begin + $scope.numPerPage;
+                        index = $scope.RateRequetRateview.indexOf(value);
+                        return (begin <= index && index < end);
+                    };
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillRRStatusCount = function () {
+            var BussData = {};
+
+            BussData.AgentId = localStorage.getItem("AgencyID");
+            $http({
+                method: 'POST',
+                url: '/api/SalesApi/RRDashBordCount/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $scope.Pending = result.data[0].Pending;
+                    $scope.Rejected = result.data[0].Rejected;
+                    $scope.REQuote = result.data[0].REQuote;
+                    $scope.Approved = result.data[0].Approved;
+                    $('#overlay').hide();
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+
+        $scope.fillRRStatusCount();
+
+        $scope.LoadingRatesheetPage = function (urlv) {
+
+
+            //var url = "/Sales/RRForm?RQRegNo=" + encodeURIComponent(urlv);
+            //window.location.href = url;
+
+            var ParameterValue = "RQRegNo=" + urlv.toString();
+            var message = CryptoJS.enc.Utf8.parse(ParameterValue);
+            var secret_key = CryptoJS.enc.Utf8.parse(localStorage.getItem("SessionKey"));
+            var iv = CryptoJS.enc.Utf8.parse(localStorage.getItem("Sessioniv"));
+            var ciphertext = CryptoJS.AES.encrypt(message, secret_key, {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7
+            });
+            var url = "/RRCorrection/RRCorrection?" + ciphertext;
+
+            window.location.href = url;
+
+        }
+        $scope.PendingView = function () {
+            $scope.HdPending= 1;
+            var status = 1;
+            $scope.fillViewDtlsRRviewDtlsButton(status);
+        }
+        $scope.ApprovedView = function () {
+            $scope.HdApproved= 4;
+            var status = 4;
+            $scope.fillViewDtlsRRviewDtlsButton(status);
+        }
+        $scope.RequotedView = function () {
+            $scope.HdRequoted = 3;
+            var status = 3;
+            $scope.fillViewDtlsRRviewDtlsButton(status);
+        }
+        $scope.RejectedView = function () {
+            $scope.HdRejected = 2;
+            var status = 2;
+            $scope.fillViewDtlsRRviewDtlsButton(status);
+        }
+
+        $scope.ClearRecords = function () {
+            $("#ddlPOL").val(null).trigger("change");
+            $("#ddlPOD").val(null).trigger("change");
+            $scope.txtRRNumber = "";
+            $("#ddlbookingParty").val(null).trigger("change");
+            $("#ddlStatus").val(null).trigger("change");
+            $scope.fillRateRequetRateview();
+            $scope.HdPending = null;
+            $scope.HdApproved = null;
+            $scope.HdRequoted = null;
+            $scope.HdRejected = null;
+        }
+
+           $scope.btnExcel = function () {
+
+               var POL = $('#ddlPOL').val();
+               var POD = $('#ddlPOD').val();
+               var RRNumber = $scope.txtRRNumber;
+               var BookingParty = $('#ddlbookingParty').val();
+               var Status = $('#ddlStatus').val();
+               var User = localStorage.getItem("UserName");
+               var AgencyID = localStorage.getItem("AgencyID");
+
+               @*if ($scope.HdPending != "" || $scope.HdApproved != "" || $scope.HdRejected != "" || $scope.HdRequoted != "") {
+                   if ($scope.HdPending != "" && $scope.HdPending != undefined) {
+
+                       window.location.href = '@Url.Action("CreateRRExcel", "RRExcel")?POL=' + POL + "&RRNumber=" + RRNumber
+                           + "&POD=" + POD + "&BookingParty=" + BookingParty + "&Status=" + $scope.HdPending + "&User=" + User;
+               }
+                   if ($scope.HdApproved != "" && $scope.HdApproved != undefined) {
+
+                       window.location.href = '@Url.Action("CreateRRExcel", "RRExcel")?POL=' + POL + "&RRNumber=" + RRNumber
+                           + "&POD=" + POD + "&BookingParty=" + BookingParty + "&Status=" + $scope.HdApproved + "&User=" + User;
+              }
+                   if ($scope.HdRejected != "" && $scope.HdRejected != undefined) {
+
+                       window.location.href = '@Url.Action("CreateRRExcel", "RRExcel")?POL=' + POL + "&RRNumber=" + RRNumber
+                           + "&POD=" + POD + "&BookingParty=" + BookingParty + "&Status=" + $scope.HdRejected + "&User=" + User;
+              }
+                   if ($scope.HdRequoted != "" && $scope.HdRequoted != undefined) {
+
+                       window.location.href = '@Url.Action("CreateRRExcel", "RRExcel")?POL=' + POL + "&RRNumber=" + RRNumber
+                           + "&POD=" + POD + "&BookingParty=" + BookingParty + "&Status=" + $scope.HdRequoted + "&User=" + User;
+                   }
+               }*@
+
+               //else  {
+
+                    window.location.href = '@Url.Action("CreateRRExcel", "RRExcel")?POL=' + POL + "&RRNumber=" + RRNumber
+                        + "&POD=" + POD + "&BookingParty=" + BookingParty + "&Status=" + Status + "&User=" + User + "&AgencyID=" + AgencyID;
+              // }
+        }
+
+        $scope.AddNew = function () {
+            window.location = "/Sales/RRForm"
+        }
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+
+</script>
+<style>
+    .bg-gradient-info, .bg-gradient-success, .bg-gradient-danger, .bg-gradient-warning {
+        height: 127px !important;
+    }
+
+    .viewdiv {
+        background-color: #fff;
+        margin-top: -10px;
+        height: 22px;
+        position: absolute;
+        left: 0;
+        top: 115px;
+    }
+
+        .viewdiv h5 {
+            color: #00172a;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 2px;
+            margin-left: 4px;
+        }
+
+        .viewdiv .fa-arrow-right {
+            color: #000;
+        }
+
+        .viewdiv .col-md-4 {
+            text-align: right;
+            padding-right: 6px;
+            margin-top: -2px;
+        }
+
+    .exceldownload .fa-file-excel-o {
+        color: #4caf50;
+        font-weight: 400;
+        font-size: 20px;
+    }
+
+    .exceldownload a {
+        color: #000;
+    }
+</style>
+<div ng-app="MyApp" ng-controller="MyController">
+
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 addbtn" style="text-align:right;">
+            @*<button type="submit" ng-click="AddNew();" class="btn btn-fill btn-success btn-round btntop">
+                <i class="material-icons">add</i> Create New
+
+            </button>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                        RR CORRECTION
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-3 col-sm-6">
+                            <div class="card bg-gradient-info card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Pending
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Pending"></span></h2></div>
+                                        <div class="col-md-6"><h2><i class="material-icons">file_copy</i></h2></div>
+
+                                    </div>
+                                    <div class="col-md-12 viewdiv">
+                                        <a style="cursor: pointer!important;">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="PendingView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6">
+                            <div class="card bg-gradient-success card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Approved
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Approved"></span></h2></div>
+                                        <div class="col-md-6"><h2><i class="material-icons">task_alt</i></h2></div>
+                                    </div>
+                                    <div class="col-md-12 viewdiv">
+                                        <a style="cursor: pointer!important;">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="ApprovedView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6">
+                            <div class="card bg-gradient-danger card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Requoted
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="REQuote"></span></h2></div>
+                                        <div class="col-md-6"><h2><i class="material-icons">restore_page</i></h2></div>
+                                    </div>
+                                    <div class="col-md-12 viewdiv">
+                                        <a style="cursor: pointer!important;">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="RequotedView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6">
+                            <div class="card bg-gradient-warning card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://www.bootstrapdash.com/demo/purple-admin-free/assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image">
+                                    <h4 class="font-weight-normal">
+                                        Rejected
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-md-6"><h2><span ng-bind="Rejected"></span></h2></div>
+                                        <div class="col-md-6"><h2><i class="material-icons">clear</i></h2></div>
+                                    </div>
+
+                                    <div class="col-md-12 viewdiv">
+                                        <a style="cursor: pointer!important;">
+                                            <div class="row">
+                                                <div class="col-md-8 padlr0"><h5 ng-click="RejectedView();">View Details</h5></div>
+                                                <div class="col-md-4"><i class="fa fa-arrow-right"></i></div>
+                                            </div>
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-lg-3 col-md-3 col-sm-6">
+
+                                                <div class="card card-stats card-pending">
+                                                    <div class="card-header card-header-warning card-header-icon">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <i class="material-icons">file_copy</i>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <p class="card-category">Principal</p>
+                                                                <p class="card-category">Approval Pending</p>
+                                                                <h3 class="card-title">( <span ng-bind="Pending"></span> )</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-6">
+
+                                                <div class="card card-stats card-approved">
+                                <div class="card-header card-header-warning card-header-icon">
+                                    <div class="row">
+                                        <div class="col-md-3">
+
+                                            <i class="material-icons">task_alt</i>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <p class="card-category">Approved</p>
+                                            <h3 class="card-title">( <span ng-bind="Approved"></span> )</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-6">
+                                                <div class="card card-stats card-requoted">
+                                                    <div class="card-header card-header-warning card-header-icon">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <i class="material-icons">task_alt</i>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <p class="card-category">Requoted</p>
+                                                                <h3 class="card-title">( <span ng-bind="REQuote"></span> )</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 col-md-3 col-sm-6">
+                                                <div class="card card-stats card-rejected">
+                                                    <div class="card-header card-header-warning card-header-icon">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <i class="material-icons">clear</i>
+                                                            </div>
+                                                            <div class="col-md-9">
+                                                                <p class="card-category">Rejected</p>
+                                                                <h3 class="card-title">( <span ng-bind="Rejected"></span> )</h3>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>*@
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 exceldownload" style="text-align:right;">
+                            <a ng-click="btnExcel();">Download <i class="fa fa-file-excel-o"></i></a>
+                        </div>
+                    </div>
+                    <div class="material-datatables">
+
+                        <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>S.No</th>
+                                    <th>RR Number</th>
+                                    <th>Date</th>
+                                    <th>Booking Party</th>
+                                    <th>POL</th>
+                                    <th>POD</th>
+                                    <th>Status</th>
+
+
+                                    <th class="disabled-sorting text-right">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="i in RateRequetRateview | filter : paginate | orderBy:'-Statusv'">
+                                    <td>{{numPerPage *(currentPage-1)+$index+1}}</td>
+                                    <td>{{i.RatesheetNo}}</td>
+                                    <td>{{i.Date}}</td>
+                                    <td>{{i.BookingParty}}</td>
+                                    <td>{{i.PortofLoading}}</td>
+                                    <td>{{i.PortofDischarge}}</td>
+                                    <td>{{i.Status}}</td>
+
+
+
+
+                                    <td class="td-actions text-right">
+
+                                        <button type="button" ng-click="LoadingRatesheetPage(i.ID);" rel="tooltip" class="btn btn-success btn-round" data-original-title="" title="">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="notFoundDiv" ng-show="(RateRequetRateview|filter:RatesheetNo).length==0" style="color: red; font-weight: bold">No Records Found</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <p>Showing <span style="padding-left:5px; padding-right:3px;">1</span>to<span style="padding-left:3px; padding-right:3px;">10</span>of<span style="padding-left:3px; padding-right:3px;">40</span>entries</p>
+                            </div>
+                            <div class="col-md-7" style="text-align:right;">
+                                <pagination total-items="totalItems" ng-model="currentPage"
+                                            max-size="10" boundary-links="true" items-per-page="numPerPage" class="pagination-sm">
+                                </pagination>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <input type="text" id="txtRRNumber" ng-model="txtRRNumber" class="form-control" placeholder="RR Number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <select id="ddlPOL" ng-model="ddlPOL" class="form-control my-selectPOL" placeholder="POL" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                            <option value="" disabled selected>POL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="ddlPOD" ng-model="ddlPOD" class="form-control my-selectPOD" placeholder="POD" ng-options="item.PortName for item in PortAllvalues track by item.ID">
+                            <option value="" disabled selected>POD</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control my-selectBP" id="ddlbookingParty" ng-model="ddlbookingParty" ng-options="item.CustomerName for item in CustomerMasterAllvalues track by item.ID">
+
+                            <option value="" disabled selected>Booking Party</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <select id="ddlStatus" ng-model="ddlStatus" class="form-control my-selectStatus" placeholder="Status" ng-options="item.Status for item in RRStatusValueAll track by item.ID">
+                            <option value="" disabled selected>Status</option>
+                        </select>
+                        <input type="hidden" id="HdPending" class="form-control" ng-model="HdPending" />
+                        <input type="hidden" id="HdRejected" class="form-control" ng-model="HdRejected" />
+                        <input type="hidden" id="HdRequote" class="form-control" ng-model="HdRequote" />
+                        <input type="hidden" id="HdApproved" class="form-control" ng-model="HdApproved" />
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-12 padlr0">
+                            <button type="submit" ng-click="ClearRecords();" class="btn btn-fill btn-danger searchbtn">Clear</button>
+                            <button type="submit" ng-click="fillRateRequetRateview();" class="btn btn-fill btn-rose searchbtn">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

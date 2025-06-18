@@ -1,0 +1,385 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
+<style>
+
+    ul.autocomplete-content.dropdown-content {
+        background-color: #eee;
+        box-shadow: 0px 0px 5px #ccc;
+        top: 30px !important;
+        left: 15px !important;
+        position: absolute !important;
+        z-index: 100;
+    }
+
+        ul.autocomplete-content.dropdown-content li {
+            list-style-type: none;
+            margin-left: -40px;
+            padding-left: 10px;
+            padding-top: 8px;
+            font-size: 14px;
+            color: #040f96 !important;
+            border-bottom: 1px solid #ccc;
+        }
+
+            ul.autocomplete-content.dropdown-content li:hover {
+                background-color: #f4f4f4;
+            }
+
+    .section-search input {
+        padding: 5px !important;
+        font-size: 18px !important;
+        width: 90% !important;
+        border: #f4f4f4 3px solid !important;
+        background-color: #808080 !important;
+        float: right;
+    }
+
+    .section-search i {
+        display: block;
+    }
+
+    .section-search input.autocomplete {
+        color: #040f96;
+    }
+
+    .input-field .prefix.active {
+        color: #040f96 !important;
+    }
+
+    .dropdown-content li > a, .dropdown-content li > span {
+        color: #040f96 !important;
+    }
+
+    .autocomplete-content li .highlight {
+        color: #040f96 !important;
+    }
+
+    .bootstrap-select .btn.dropdown-toggle.select-with-transition {
+        background-image: none;
+        border: 1px solid #ccc !important;
+        margin-top: 0;
+        height: 32px;
+    }
+
+    .bootstrap-select .dropdown-toggle .filter-option {
+        padding-top: 9px;
+        padding-left: 4px;
+        padding-right: 0px;
+    }
+    /*.dropdown-toggle:after
+    {
+        margin-left: 8.255em!important;
+    }*/
+
+    .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+        max-width: 100%;
+    }
+    /*.form-control.txtarea
+    {
+        width:765px;
+    }*/
+    .bmd-form-group .form-control, .bmd-form-group input::placeholder, .bmd-form-group label {
+        padding-left: 6px;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $('#overlay').fadeIn().delay(300).fadeOut();
+        $scope.SelectedFiles = null;
+
+        $scope.StatusValues = [
+            { 'name': 'ACTIVE', 'ID': 1 },
+            { 'name': 'INACTIVE ', 'ID':2 }
+        ];
+
+    
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+
+        });
+
+
+        $scope.Recordsave = function () {
+
+            var validation = "";
+            var txtRefCode = $('#txtRefCode').val();
+            if (txtRefCode.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter Ref Code</span></br>"
+
+            }
+            var txtGeneralName = $('#txtGeneralName').val();
+            if (txtGeneralName.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter General Name</span></br>"
+            }
+
+            var ddlStatus = $('#ddlStatus').val();
+            if (ddlStatus == "?") {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Select Status</span></br>"
+            }
+
+            var txtSeqNo = $('#txtSeqNo').val();
+            if (txtSeqNo.length == 0) {
+
+                validation += "<span style='color:red;'>*</span> <span>Please Enter SeqNo</span></br>"
+            }
+
+            if (validation != "") {
+
+                ShowPopup(validation);
+                return false;
+            }
+
+            $('#overlay').fadeIn().delay(100).fadeOut();
+            var BussData = {}
+            var id = $scope.HDRegId;
+
+            if (id == "" || id == null)
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.HDRegId;
+            BussData.RefCode = $scope.txtRefCode;
+            BussData.GeneralName = $scope.txtGeneralName;
+            BussData.Status = $("#ddlStatus").val();
+            BussData.SeqNo = $scope.txtSeqNo;
+
+            //alert(BussData.CountryID);
+            $http({
+                method: 'POST',
+                url: "/api/MastersApi/GeneralMasterInsert",
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+
+                $timeout(function () {
+                    // BussData.ID = result.data[0].ID;
+                    //alert(result.data[0].ID);
+                    if (BussData.ID != "") {
+                        ShowPopup("General Master Updated");
+                    }
+                    else {
+
+                        ShowPopup("General Master Saved Successfully");
+                    }
+
+                    setTimeOut(function () {
+                        window.location = "/";
+                    }, 3000);
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    // $(".modal").hide();
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                // This is set in the event of an error.
+                console.log(result);
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        }
+
+
+
+
+       // $scope.BindCity();
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["GLRegID"] != null) {
+                $scope.HDRegId = queryString["GLRegID"].toString();
+                $scope.BindGeneralMaster(queryString["GLRegID"].toString());
+
+            }
+        });
+
+        //existing value bind
+
+        $scope.BindGeneralMaster = function (GLRegID) {
+
+            var Datavalue = {}
+            var id = GLRegID;
+
+            if (id == "" || id == null)
+                Datavalue.ID = 0;
+            else
+                Datavalue.ID = GLRegID;
+           
+            $http({
+                method: 'POST',
+                url: '/api/MastersApi/GeneralMasteredit/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (Datavalue.ID != "") {
+                       
+                        $scope.txtRefCode = result.data[0].RefCode;
+                        $scope.txtGeneralName = result.data[0].GeneralName;
+                        $scope.txtSeqNo = result.data[0].SeqNo;
+                        $scope.ddlStatus = { ID: result.data[0].StatusN };
+                       
+                    }
+                    else {
+                        $scope.txtRefCode = "";
+                        $scope.txtGeneralName = "";
+                        $scope.txtSeqNo = "";
+                        $scope.ddlStatus = 0;
+                    }
+                });
+            });
+
+        }
+
+    });
+
+    function ShowPopup(message) {
+        swal(message);
+    };
+
+</script>
+
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 backbtn" style="text-align:right;">
+                <a href="/Masters/GeneralMasterView" class="btn btn-fill btn-success btnback btn-round btntop">
+                    <i class="material-icons">reply</i> Back
+
+                </a>
+           
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card ">
+                    <div class="card-header card-header-primary card-header-text">
+                        <div class="card-text">
+                            <h4 class="card-title">General Master</h4>
+                        </div>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Ref Code</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" autocomplete="off" id="txtRefCode" ng-model="txtRefCode" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>General Name</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtGeneralName" autocomplete="off" ng-model="txtGeneralName" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Status</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <select id="ddlStatus" ng-model="ddlStatus" class="form-control my-select" ng-options="item.name for item in StatusValues track by item.ID"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label>Seq No</label>
+                                        </div>
+                                        <div class="col-md-1">:</div>
+                                        <div class="col-md-7">
+                                            <input type="text" id="txtSeqNo" class="form-control" ng-model="txtSeqNo" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    
+
+                    </div>
+
+
+                </div>
+                <div class="card-footer ">
+                    <div class="col-md-12" style="text-align:right;">
+                        <button type="submit" ng-click="Recordsave();" class="btn btn-fill btn-rose">Submit</button>
+                    </div>
+                    <input type="hidden" id="HDRegId" ng-model="HDRegId" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('.my-select').select2({
+            placeholder: "--Select--",
+            allowClear: true,
+            width: '100%'
+        });
+
+    });
+</script>
+

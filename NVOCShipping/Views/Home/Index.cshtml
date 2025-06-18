@@ -1,0 +1,823 @@
+﻿@{
+    Layout = null;
+}
+
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+<link rel="stylesheet" href="../../../../maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+<link href="~/assets/css/material-dashboard.min6c54.css" rel="stylesheet" />
+<link href="~/assets/demo/demo.css" rel="stylesheet" />
+
+<style>
+    #overlay {
+        background: #ffffff;
+        color: #666666;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        z-index: 5000;
+        top: 0;
+        left: 0;
+        float: left;
+        text-align: center;
+        padding-top: 25%;
+        opacity: .80;
+    }
+
+    button {
+        margin: 40px;
+        padding: 5px 20px;
+        cursor: pointer;
+    }
+
+    .spinner {
+        margin: 0 auto;
+        height: 64px;
+        width: 64px;
+        animation: rotate 0.8s infinite linear;
+        border: 5px solid firebrick;
+        border-right-color: transparent;
+        border-radius: 50%;
+    }
+
+    @@keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .header-filter:before {
+        background: rgb(0 0 0 / 0%) !important
+    }
+
+
+    .btn.btn-rose.btn-link, .btn.btn-rose.btn-link:active, .btn.btn-rose.btn-link:focus, .btn.btn-rose.btn-link:hover {
+        background-color: transparent;
+        color: #00adef;
+    }
+    .btn.btn-rose
+    {
+        box-shadow:none;
+    }
+
+    .form-control, .is-focused .form-control {
+        background-image: none !important;
+    }
+
+    .card {
+        margin-top: 140px;
+        background-color: #ffffffc2;
+    }
+
+    .login-page .card-login .card-body .form-control {
+        border: 1px solid #ccc;
+        /*border-radius: 25px;*/
+        padding-left: 10px;
+        height: 40px;
+        color: #000;
+        background-color: #F1F1F3;
+        /*width:320px!important;*/
+    }
+
+    .login-page .card-login .card-body .input-group .form-control:focus {
+        background-color: #fff;
+    }
+
+    .input-group-prepend {
+        margin-right: 0px;
+    }
+
+    #spinner {
+        float: left;
+        width: 100%;
+    }
+
+        #spinner img {
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            position: absolute;
+        }
+
+    .spanner {
+        position: absolute;
+        top: 50%;
+        margin: 0 auto;
+        /*left: 50%;*/
+        background: #2a2a2a55;
+        width: 253px;
+        display: block;
+        text-align: center;
+        height: 100px;
+        color: #292929;
+        transform: translateY(-50%);
+        z-index: 1000;
+        visibility: hidden;
+    }
+
+    .loader {
+        color: #797474;
+        font-size: 10px;
+        margin: 8px auto;
+        position: relative;
+        text-indent: -9999em;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+    /*.spanner {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        background: #2a2a2a55;
+        width: 100%;
+        display: block;
+        text-align: center;
+        height: 100%;
+        color: #FFF;
+        transform: translateY(-50%);
+        z-index: 1000;
+        visibility: hidden;
+    }*/
+
+    .overlay {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background: #fff;
+        visibility: hidden;
+    }
+
+    .loader,
+    .loader:before,
+    .loader:after {
+        border-radius: 50%;
+        width: 2.5em;
+        height: 2.5em;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+        -webkit-animation: load7 1.8s infinite ease-in-out;
+        animation: load7 1.8s infinite ease-in-out;
+    }
+
+        /*.loader {
+        background-color:#000000;
+        color: #ffffff;
+        font-size: 10px;
+        margin: 80px auto;
+        position: relative;
+        text-indent: -9999em;
+        -webkit-transform: translateZ(0);
+        -ms-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }*/
+
+        .loader:before,
+        .loader:after {
+            content: '';
+            position: absolute;
+            top: 0;
+        }
+
+        .loader:before {
+            left: -3.5em;
+            -webkit-animation-delay: -0.32s;
+            animation-delay: -0.32s;
+        }
+
+        .loader:after {
+            left: 3.5em;
+        }
+
+
+    .show {
+        visibility: visible;
+    }
+
+    .hide {
+        visibility: hidden;
+    }
+
+    .spanner, .overlay {
+        opacity: 0;
+        -webkit-transition: all 0.3s;
+        -moz-transition: all 0.3s;
+        transition: all 0.3s;
+    }
+
+        .spanner.show, .overlay.show {
+            opacity: 1;
+        }
+
+    .swal2-popup .swal2-title {
+        font-size: 18px !important;
+    }
+
+    .leftbg {
+       
+        background: url(../../assets/img/loginbgnew.jpg);
+        background-size: cover;
+    }
+
+    .login-page .card-login .card-body {
+        padding: 0 13px 0px 15px;
+    }
+
+    .leftbg img {
+        width: 364px;
+        padding: 35px 40px;
+    }
+
+    .card {
+        background-color: #fffffff5;
+    }
+
+    .h1title {
+        font-size: 17px;
+        color: #337dc1;
+        font-weight: bold;
+        /*padding-top: 5px;*/
+        margin-bottom: 0;
+    }
+
+    .login-page .footer .copyright, .login-page .footer a {
+        color: #000;
+    }
+    .footer .copyright {
+        padding: 10px 0;
+    }
+    .footer {
+        padding: 0;
+    }
+    .login-page .card-login .card-header {
+        margin-top: 0 !important;
+        margin-bottom: 9px !important;
+    }
+
+    .btn.loginbtn {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 20px;
+        background-color: #1f69ad;
+        border-color: #1f69ad;
+        color: #fbfbfb;
+        font-weight: bold;
+    }
+
+    .ng-touched::-webkit-input-placeholder {
+        color: #ccc !important;
+    }
+
+
+    .card {
+        box-shadow: 0 1px 13px 6px rgb(0 0 0 / 14%);
+    }
+
+    .login-page .card-login {
+        transform: none !important;
+    }
+</style>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="~/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+
+
+<script type="text/javascript">
+
+    angular.module('MyApp', []).controller('MyController', function ($scope, $http, $timeout) {
+   
+
+        $scope.GeoLocationList = null;
+        $scope.fillGeoLocations = function (UserID)
+        {
+            var BussData = {}
+            BussData.UserID = UserID;
+            $http({
+                method: 'POST',
+                url: '/api/Home/GeoLocationsUser/',
+                data: JSON.stringify(BussData),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.GeoLocationList = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+
+        };
+       
+
+        $("#ddlAgency").change(function ()
+        {
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlAgency").val();
+            $http({
+                method: 'POST',
+                url: '/api/Home/AgencyDocumentSuffix/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                   
+                    if (result.data.length != 0) {
+
+                        localStorage.setItem("AgencyID", $("#ddlAgency").val());
+                        localStorage.setItem("GeoLocationID", $("#ddlGeoLoc").val());
+                        localStorage.setItem("GeoLocation", $("#ddlGeoLoc option:selected").text());
+                        localStorage.setItem("CountryID", result.data[0].CountryID);
+                        localStorage.setItem("Country", result.data[0].Country);
+                        localStorage.setItem("Agency", $("#ddlAgency option:selected").text());  
+                        localStorage.setItem("DocumentSuffix", result.data[0].DocumentSuffix);
+                        localStorage.setItem("SessionFinYear", new Date().getFullYear());
+                        localStorage.setItem("SessionKey", "1234567890123456");
+                        localStorage.setItem("Sessioniv", "0000000000000000");
+                        localStorage.setItem("MainCompanyID", "1");
+                        localStorage.setItem("MainCompanyName", "GNL");
+                        localStorage.setItem("TaxGST", result.data[0].TaxGST);
+                        window.location = "/Home/Dashboard";
+
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+           
+        });
+ 
+      
+        $("#ddlGeoLoc").change(function ()
+        {
+            $scope.AgencyList = null;
+            var Datavalue = {};
+            Datavalue.ID = $("#ddlGeoLoc").val();
+            Datavalue.UserID = localStorage.getItem("UserID");
+            $http({
+                method: 'POST',
+                url: '/api/Home/AgencyMasterByGeoLocUser/',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.AgencyList = result.data;
+             
+
+                    if ($scope.AgencyList.length == 0) {
+                        $scope.IsShowAgency = false;
+                        //localStorage.setItem("GeoLocationID", $("#ddlGeoLoc").val());
+                        //localStorage.setItem("GeoLocation", $("#ddlGeoLoc option:selected").text());
+                        //window.location = "/Home/Dashboard";
+                       
+                    }
+                    else {
+                       
+                       
+                        $scope.IsShowAgency = true;
+                        
+                    }
+                  
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        });
+
+        $scope.LogIn = function ()
+        {
+            var validation = "";
+           
+
+            var user = $('#user').val();
+            if (user.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Enter UserName</span></br></n>"
+            }
+
+            var password = $('#password').val();
+            if (password.length == "") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Password</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+            //var ipAddress;
+            //fetch('https://api.ipify.org?format=json')
+            //    .then(response => response.json())
+            //    .then(data =>
+            //    {
+            //        ipAddress = data.ip;
+            //    })
+            //    .catch(error => {
+            //        console.error('Error fetching IP address:', error);
+            //    });
+
+            //fetch('https://ipapi.co/json/')
+            //    .then(response => response.json())
+            //    .then(data => {
+            //        console.log('Country:', data.country_name);
+            //        console.log('City:', data.city);
+            //        console.log('Latitude:', data.latitude);
+            //        console.log('Longitude:', data.longitude);
+            //    })
+            //    .catch(error => {
+            //        console.error('Error fetching IP information:', error);
+            //    });
+
+            $('#overlay').show();
+            var LogData = {}
+            LogData.username = $scope.user;
+            LogData.password = $scope.password;
+            //LogData.IPAddress = ipAddress;
+           
+            $http({
+                method: 'POST',
+                url: "/api/Home/Login",
+                data: JSON.stringify(LogData),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    $('#overlay').hide();
+                    if (result.data.length > 0)
+                    {
+                        $('#overlay').hide();
+                        if (result.data[0].LocationIDv == "") {
+
+                            ShowPopup("please contact administrator");
+                        }
+                        else
+                        {
+
+                        }
+                            localStorage.setItem("UserID", result.data[0].ID);
+                            localStorage.setItem("UserName", result.data[0].UserName);
+
+                            //localStorage.setItem("LocationID", result.data[0].LocationID);
+                            //localStorage.setItem("Location", result.data[0].LocationName);
+                            localStorage.setItem("MenuBussTypes", 1);
+                        
+                      
+                        $("div.spanner").addClass("show");
+                        $("div.overlay").addClass("show");
+                        setInterval(function ()
+                        {
+                        }, 7000);
+                    
+                        if ($scope.password != "")
+                        {
+                            $scope.IsShowGeoLoc = true;
+                            $scope.fillGeoLocations(result.data[0].ID);
+                        }
+                        else {
+                            $scope.IsShowGeoLoc = false;
+                        }
+                            //$scope.IsShowGeoLoc = true;
+                            //$scope.IsShowAgency = false;
+                            // window.location = "/Home/Dashboard";
+
+                    }
+                    else
+                    {
+                        ShowPopup("Incorrect Username Or Password");
+                        return false;
+                    }
+                   
+                });
+            });
+        }
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .form-check {
+        display: contents;
+    }
+
+        .form-check .form-check-input {
+            opacity: initial;
+            height: initial;
+            width: auto;
+            float: left;
+            overflow: hidden;
+        }
+    #VideoPlayer {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        min-width: 100%;
+        min-height: 100%;
+    }
+    body {
+        margin: 0;
+        font-family: Arial;
+        font-size: 17px;
+    }
+    .video-background-holder {
+        position: relative;
+        background-color: black;
+        height: calc(100vh - 72px);
+        min-height: 18rem;
+        width: 100%;
+        overflow: hidden;
+    }
+
+        .video-background-holder video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: 0;
+            -ms-transform: translateX(-50%) translateY(-50%);
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+    .video-background-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .video-background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: #000000cf;
+        opacity: 0.5;
+        z-index: 1;
+    }
+</style>
+<div id="overlay" style="display:none;">
+    <div class="spinner"></div>
+    <br />
+    Loading...
+</div>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
+    <div class="container">
+        <div class="navbar-wrapper">
+            <a class="navbar-brand" href="javascript:;">@*<img src="~/assets/img/logo.png" />*@</a>
+        </div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+            <span class="navbar-toggler-icon icon-bar"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                @*<li class="nav-item">
+                        <a href="../dashboard.html" class="nav-link">
+                            <i class="material-icons">dashboard</i>
+                            Dashboard
+                        </a>
+                    </li>*@
+                @*<li class="nav-item ">
+                        <a href="register.html" class="nav-link">
+                            <i class="material-icons">person_add</i>
+                            Register
+                        </a>
+                    </li>*@
+                @*<li class="nav-item  active ">
+                        <a href="login.html" class="nav-link">
+                            <i class="material-icons">fingerprint</i>
+                            Login
+                        </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a href="lock.html" class="nav-link">
+                            <i class="material-icons">lock_open</i>
+                            Lock
+                        </a>
+                    </li>*@
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- End Navbar -->
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="wrapper wrapper-full-page">
+        <div class="page-header login-page header-filter" filter-color="black" style="background-image: url('../../assets/img/bgwork12.jpg'); background-size: cover; background-position: top center;">
+            <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
+
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 ml-auto mr-auto" style="margin-right:80px!important;">
+
+                        <div class="card card-login" style="background-color:#fff; margin-top:150px;">
+                            @*<div class="card-header card-header-primary text-center">
+                                    <h4 class="card-title">Login</h4>
+
+                                </div>*@
+                            <div class="card-header" style="background-color:transparent;">
+                                <div class="col-lg-12" style="text-align:center; padding-top:12px;">
+                                    <p style="font-size: 17px;margin-bottom: 3px; font-weight:bold;color:#0e5d98;">Welcome To</p>
+                                    <img src="~/assets/img/gnllogo.png" style="width:70px;" />
+                                </div>
+                                <div class="col-lg-12" style="text-align:center;">
+                                    <h1 class="h1title">Blue Wave Shipping</h1>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <div class="row">
+                                    <div class="col-md-12" style="padding-top:30px;padding-bottom:30px;">
+                                        <div class="bmd-form-group" style="padding-left:10px; padding-right:10px;">
+                                            <!--<div class="form-check">
+                                                <label class="form-check-label" for="radio1">
+                                                    <input type="radio" class="form-check-input" id="radio1" name="optradio" checked>Agency
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="form-check-label" for="radio2">-->
+                                            @*<input type="radio" class="form-check-input" id="radio2" name="optradio">Vendor*@
+                                            <!--</label>
+                                            </div>-->
+
+                                        </div>
+                                        <div class="bmd-form-group" style="padding-left:10px; padding-right:10px;">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+
+                                                </div>
+                                                <input type="text" autocomplete="off" class="form-control ng-touched" name="name" id="user" ng-model="user" placeholder="Enter your Name" />
+
+                                            </div>
+                                        </div>
+                                        <div class="bmd-form-group" style="padding-left:10px; padding-right:10px;">
+                                            <div class="input-group">
+                                                @*<div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <i class="material-icons" style="color:#f7f4f3;">lock_outline</i>
+                                                        </div>
+                                                    </div>*@
+                                                <input type="password" autocomplete="off" class="form-control ng-touched" name="password" id="password" ng-model="password" placeholder="Password" />
+                                            </div>
+                                        </div>
+                                        <div class="bmd-form-group" style="padding-left:10px; padding-right:10px;">
+                                            <div class="input-group" ng-show="IsShowGeoLoc">
+                                                @*<div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <i class="material-icons" style="color:#f7f4f3;">supervised_user_circle</i>
+                                                        </div>
+                                                    </div>*@
+                                                <select class="form-control my-select" ng-model="ddlGeoLoc" id="ddlGeoLoc" ng-options="item.GeoLocation for item in GeoLocationList track by item.ID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="bmd-form-group" style="padding-left:10px; padding-right:10px;">
+                                            <div class="input-group" ng-show="IsShowAgency">
+                                                @*<div class="input-group-prepend">
+                                                        <div class="input-group-text">
+                                                            <i class="material-icons" style="color:#f7f4f3;">supervised_user_circle</i>
+                                                        </div>
+                                                    </div>*@
+                                                <select class="form-control my-select" ng-model="ddlAgency" id="ddlAgency" ng-options="item.AgencyName for item in AgencyList track by item.ID" required>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="bmd-form-group" style="padding-top:15px;padding-left:10px; padding-right:10px;">
+                                            <div class="row">
+                                                @*<div class="col-lg-6">
+                                                        <a class="btn btn-rose btn-link btn-lg">Forgot Password?</a>
+                                                    </div>*@
+                                                <div class="col-lg-12">
+                                                    <button type="submit" ng-click="LogIn();" class="btn btn-fill btn-rose loginbtn">Login</button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container">
+                    <div class="copyright float-center" style="text-align:right;">
+                        &copy;
+                        All Rights Reserved.Blue Wave Shipping
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+  
+
+</div>
+
+<!--   Core JS Files   -->
+<script src="~/assets/js/core/jquery.min.js"></script>
+<script src="~/assets/js/core/popper.min.js"></script>
+<script src="~/assets/js/core/bootstrap-material-design.min.js"></script>
+<script src="~/assets/js/plugins/perfect-scrollbar.min.js"></script>
+<!-- Plugin for the momentJs  -->
+<script src="~/assets/js/plugins/moment.min.js"></script>
+<!--  Plugin for Sweet Alert -->
+<script src="~/assets/js/plugins/sweetalert2.js"></script>
+<!-- Forms Validations Plugin -->
+<script src="~/assets/js/plugins/jquery.validate.min.js"></script>
+<!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+<script src="~/assets/js/plugins/jquery.bootstrap-wizard.js"></script>
+<!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+<script src="~/assets/js/plugins/bootstrap-selectpicker.js"></script>
+<!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+<script src="~/assets/js/plugins/bootstrap-datetimepicker.min.js"></script>
+<!--  DataTables.net Plugin, full documentation here: https://datatables.net/  -->
+<script src="~/assets/js/plugins/jquery.dataTables.min.js"></script>
+<!--	Plugin for Tags, full documentation here: https://github.com/bootstrap-tagsinput/bootstrap-tagsinputs  -->
+<script src="~/assets/js/plugins/bootstrap-tagsinput.js"></script>
+<!-- Plugin for Fileupload, full documentation here: http://www.jasny.net/bootstrap/javascript/#fileinput -->
+<script src="~/assets/js/plugins/jasny-bootstrap.min.js"></script>
+<!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
+<script src="~/assets/js/plugins/fullcalendar.min.js"></script>
+<!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
+<script src="~/assets/js/plugins/jquery-jvectormap.js"></script>
+<!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+<script src="~/assets/js/plugins/nouislider.min.js"></script>
+<!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
+<script src="../../../cdnjs.cloudflare.com/ajax/libs/core-js/2.4.1/core.js"></script>
+<!-- Library for adding dinamically elements -->
+<script src="~/assets/js/plugins/arrive.min.js"></script>
+<!--  Google Maps Plugin    -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Yno10-YTnLjjn_Vtk0V8cdcY5lC4plU"></script>
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="../../../buttons.github.io/buttons.js"></script>
+<!-- Chartist JS -->
+<script src="~/assets/js/plugins/chartist.min.js"></script>
+<!--  Notifications Plugin    -->
+<script src="~/assets/js/plugins/bootstrap-notify.js"></script>
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="~/assets/js/material-dashboard.min6c54.js?v=2.2.2" type="text/javascript"></script>
+
+<!-- Sharrre libray -->
+<script src="../../assets/demo/jquery.sharrre.js"></script>
+<script>
+    $(document).ready(function () {
+        md.checkFullPageBackgroundImage();
+        setTimeout(function () {
+            // after 1000 ms we add the class animated to the login/register card
+            $('.card').removeClass('card-hidden');
+        }, 700);
+    });
+</script>

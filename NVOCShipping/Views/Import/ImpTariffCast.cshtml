@@ -1,0 +1,772 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+
+<script type="text/javascript">
+
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+        $scope.DynamicGridSlot = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "", VendorName: "", VendorID:"" }];
+        $scope.DynamicGridTermainal = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "", VendorName: "", VendorID:"" }];
+        $scope.DynamicGridLocalCost = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "", VendorName: "", VendorID:"" }];
+        $scope.DynamicGridCommission = [{ RCID: "", CntrTypes: "", ChargeCodeID: "", CurrencyID: "", PaymentModeID: "", ReqRate: "", ManifRate: "", CustomerRate: "", RateDiff: "", VendorName: "", VendorID:"" }];
+
+
+        $(document).ready(function () {
+
+            var queryString = new Array();
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            if (queryString["BkgID"] != null) {
+
+                $scope.HDBkgID = queryString["BkgID"].toString();
+                $scope.HDBLId = queryString["ImpReg"].toString();
+                $scope.FillExistingSlotTraiffCharges();
+                $scope.FillExistingTerminalTraiffCharges();
+                $scope.FillExistingLocalCostTraiffCharges();
+                $scope.FillExistingCommissionTraiffCharges();
+
+            }
+        });
+
+
+        $scope.FillExistingSlotTraiffCharges = function () {
+            var Datavalue = {};
+            Datavalue.BkgID = $scope.HDBkgID;
+            Datavalue.BLID = $scope.HDBLId;
+            $http({
+                method: 'POST',
+                url: '/api/ExpTraffView/ExpSlotCost',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridSlot.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridSlot.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+                                'Qty': result.data[key].Qty,
+                                'VendorName': result.data[key].VendorName,
+                                'VendorID': result.data[key].VendorID
+
+                            });
+
+                        });
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.FillExistingTerminalTraiffCharges = function () {
+            var Datavalue = {};
+
+            Datavalue.TraiffRegular = 136;
+            Datavalue.BkgID = $scope.HDBkgID;
+            Datavalue.BLID = $scope.HDBLId;
+            Datavalue.PaymentModeID = 19;
+            $http({
+                method: 'POST',
+                url: '/api/ExpTraffView/ExpTariffCost',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridTermainal.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridTermainal.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+                                'VendorName': result.data[key].VendorName,
+                                'VendorID': result.data[key].VendorID
+
+                            });
+
+                        });
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.FillExistingLocalCostTraiffCharges = function () {
+            var Datavalue = {};
+
+            Datavalue.TraiffRegular = 138;
+            Datavalue.BkgID = $scope.HDBkgID;
+            Datavalue.BLID = $scope.HDBLId;
+            Datavalue.PaymentModeID = 19;
+            $http({
+                method: 'POST',
+                url: '/api/ExpTraffView/ExpTariffCost',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridLocalCost.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridLocalCost.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+                                'VendorName': result.data[key].VendorName,
+                                'VendorID': result.data[key].VendorID
+
+                            });
+
+                        });
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.FillExistingCommissionTraiffCharges = function () {
+            var Datavalue = {};
+
+            Datavalue.TraiffRegular = 137;
+            Datavalue.BkgID = $scope.HDBkgID;
+            Datavalue.BLID = $scope.HDBLId;
+            Datavalue.PaymentModeID = 19;
+            $http({
+                method: 'POST',
+                url: '/api/ExpTraffView/ExpTariffCommisionCost',
+                data: JSON.stringify(Datavalue),
+            }).then(function (result) {
+                $timeout(function () {
+
+                    if (result.data.length > 0) {
+
+                        if (result.data[0].ChargeCodeID != "") {
+                            $scope.DynamicGridCommission.splice(0, 1);
+                        }
+
+                        angular.forEach(result.data, function (value, key) {
+
+                            $scope.DynamicGridCommission.push({
+                                'RCID': result.data[key].RCID,
+                                'CntrTypes': result.data[key].CntrTypes,
+                                'ChargeCodeID': result.data[key].ChargeCodeID,
+                                'CurrencyID': result.data[key].CurrencyID,
+                                'PaymentModeID': result.data[key].PaymentModeID,
+                                'ReqRate': result.data[key].ReqRate,
+                                'ManifRate': result.data[key].ManifRate,
+                                'CustomerRate': result.data[key].CustomerRate,
+                                'RateDiff': result.data[key].RateDiff,
+                                'VendorName': result.data[key].VendorName,
+                                'VendorID': result.data[key].VendorID
+
+                            });
+
+                        });
+                    }
+                });
+            }, function (result) {
+
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            });
+        }
+
+        $scope.getPaging1 = function (tab) {
+
+
+            var myp = $scope.HDBkgID;
+            var myp1 = $scope.HDBLId;
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Import/ImpTariffview?BkgID=" + encodeURIComponent(myp) + "&ImpReg=" + encodeURIComponent(myp1);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Import/ImpTariffCast?BkgID=" + encodeURIComponent(myp) + "&ImpReg=" + encodeURIComponent(myp1);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        $scope.getPaging = function (tab) {
+
+            var myp = $scope.HDBLId;
+            var BkgID = $scope.HDBkgID;
+            if (tab == 1) {
+                if (myp != "0") {
+                    var url = "/Import/ShipmentDetails?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 2) {
+                if (myp != "0") {
+                    var url = "/Import/ContainerDetails?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 3) {
+                if (myp != "0") {
+                    var url = "/Import/ImpTariffview?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 4) {
+                if (myp != "0") {
+                    var url = "/Import/CAN?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            else if (tab == 5) {
+                if (myp != "0") {
+                    var url = "/Import/DeliveryOrder?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+
+            else if (tab == 7) {
+                if (myp != "0") {
+                    var url = "/Import/DetDem?ImpReg=" + encodeURIComponent(myp) + "&BkgID=" + encodeURIComponent(BkgID);
+                    window.location.href = url;
+                }
+                else {
+                    ShowPopup("Please Create Shipment Details")
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        $scope.VendorAllvalues = null;
+        $scope.fillVendorValues = function () {
+            $http({
+                method: 'POST',
+                url: '/api/CommonAccessApi/VendorMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.VendorAllvalues = result.data;
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillVendorValues();
+
+        $scope.OnclickCheckTerminal = function (gRow)
+        {
+            if ($("#ddlVendor").val() == "?") {
+                ShowPopup("Select Vendor Details");
+                return;
+            }
+            gRow.VendorName = $("#ddlVendor option:selected").text();
+            gRow.VendorID = $("#ddlVendor").val();
+
+
+        }
+
+        $scope.OnclickCheckLocalCost = function (gRow) {
+            if ($("#ddlVendor").val() == "?") {
+                ShowPopup("Select Vendor Details");
+                return;
+            }
+            gRow.VendorName = $("#ddlVendor option:selected").text();
+            gRow.VendorID = $("#ddlVendor").val();
+
+
+        }
+
+        $scope.OnclickCheckLocalCommisionCost = function (gRow) {
+            if ($("#ddlVendor").val() == "?") {
+                ShowPopup("Select Vendor Details");
+                return;
+            }
+            gRow.VendorName = $("#ddlVendor option:selected").text();
+            gRow.VendorID = $("#ddlVendor").val();
+
+
+        }
+
+        $scope.RecordSave = function () {
+            var validation = "";
+
+            var ddlVendor = $('#ddlVendor').val();
+            if (ddlVendor == "?") {
+                validation += "<span style='color:red;'>*</span> <span>Please Select Vendor Name</span></br>"
+            }
+            if (validation != "") {
+                ShowPopup(validation);
+                return false;
+            }
+
+            $("#overlay").show();
+            var BussData = {}
+            var ItemsSlot = [];
+            var ItemsTermainal = [];
+            var ItemsLocalCost = [];
+            var ItemsCommission = [];
+            if ($scope.RegId == "")
+                BussData.ID = 0;
+            else
+                BussData.ID = $scope.RegId;
+            angular.forEach($scope.DynamicGridSlot, function (value, key) {
+                ItemsSlot.push('Insert:' + $scope.DynamicGridSlot[key].RCID, $scope.DynamicGridSlot[key].VendorID, $scope.DynamicGridSlot[key].VendorName);
+            });
+
+            angular.forEach($scope.DynamicGridTermainal, function (value, key) {
+                ItemsTermainal.push('Insert:' + $scope.DynamicGridTermainal[key].RCID, $scope.DynamicGridTermainal[key].VendorID, $scope.DynamicGridTermainal[key].VendorName);
+            });
+
+            angular.forEach($scope.DynamicGridLocalCost, function (value, key) {
+                ItemsLocalCost.push('Insert:' + $scope.DynamicGridLocalCost[key].RCID, $scope.DynamicGridLocalCost[key].VendorID, $scope.DynamicGridLocalCost[key].VendorName);
+            });
+
+            angular.forEach($scope.DynamicGridCommission, function (value, key) {
+                ItemsCommission.push('Insert:' + $scope.DynamicGridCommission[key].RCID, $scope.DynamicGridCommission[key].VendorID, $scope.DynamicGridCommission[key].VendorName);
+            });
+
+            BussData.ItemsSlotv = ItemsSlot.toString();
+            BussData.ItemsTermainalv = ItemsTermainal.toString();
+            BussData.ItemsLocalCostv = ItemsLocalCost.toString();
+            BussData.ItemsCommissionv = ItemsCommission.toString();
+
+            $http({
+                method: 'POST',
+                url: '/api/ExpTraffView/VendorCostInsert',
+                data: JSON.stringify(BussData),
+
+            }).then(function (result) {
+                $timeout(function () {
+                    if (result.data.length > 0) {
+                        $("#overlay").hide();
+                        ShowPopup("Vendor Name as updated  Successfully");
+                    }
+                    else {
+                        $("#overlay").hide();
+                        ShowPopup("Error Not saved");
+                    }
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+
+                ShowPopup('There has been an error: ' + result);
+            });
+
+
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    .downbtn .btn {
+        padding: 6px 12px;
+    }
+
+    .modal-dialog .modal-header .modal-title {
+        margin-top: -13px !important;
+        color: #fff !important;
+        font-size: 18px;
+    }
+
+    .modal-dialog .modal-header {
+        background-color: #1e4383 !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div id="overlay" style="display:none;">
+        <div class="loadcontainer">
+            <div class="spinner"></div>
+            <p>Loading Please Wait</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="#" ng-click="BackToBOLPage();" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+            @*<a href="#" type="submit" class="btn btn-fill btnedit btn-warning btn-round btntop">
+                    <i class="material-icons">edit</i>
+                </a>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="row">
+                    <div class="col-md-12">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" ng-click="getPaging(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Shipment Details</a>
+                                <a class="nav-item nav-link" ng-click="getPaging(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Container Details</a>
+                                <a class="nav-item nav-link active" id="nav-profile-tab" ng-click="getPaging(3);" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Destination Chargges</a>
+                                <a class="nav-item nav-link" id="nav-contact-tab" ng-click="getPaging(4);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">CAN</a>
+                                <a class="nav-item nav-link" id="nav-contact-CAN" ng-click="getPaging(5);" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Delivery Order/Empty Returns</a>
+                                @*<a class="nav-item nav-link" ng-click="getPaging(6);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">Customs Report</a>*@
+                                <a class="nav-item nav-link" ng-click="getPaging(7);" data-toggle="tab" href="#nav-about" role="tab" aria-controls="nav-about" aria-selected="false">DET/DEM Calculation</a>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <nav>
+                            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                <a class="nav-item nav-link" ng-click="getPaging1(1);" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">RATE DETAILS</a>
+                                <a class="nav-item nav-link active" ng-click="getPaging1(2);" id="nav-Key-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">COST DETAILS</a>
+
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+
+                    <div class="col-md-3">
+                        <select id="ddlVendor" class="form-control my-select" ng-model="ddlVendor" options="{ allowClear: true }"
+                                ng-options="item.VendorName for item in VendorAllvalues track by item.ID"></select>
+
+                    </div>
+
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+
+
+                        <div class="col-md-12">
+                            <hl>SLOT</hl>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+
+                                            <th>SNo</th>
+                                            <th>Equip Type</th>
+                                            <th>Qty</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+
+                                            <th>Amount</th>
+                                            <td>Vendor Name</td>
+                                            <th>Invoice No</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridSlot">
+
+                                            <td>{{$index+1}}</td>
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.Qty}}</td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+
+                                            <td class="amtrgt">{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.VendorName}}</td>
+                                            <td>{{gRow.Invoice}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <hl>TERMINAL HANDLING</hl>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Flag</th>
+                                            <th>SNo</th>
+
+                                            <th>Equip Type</th>
+                                            <th>Qty</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+
+                                            <th>Amount</th>
+                                            <td>Vendor Name</td>
+                                            <th>Invoice No</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridTermainal">
+                                            <td>
+                                                <input type="checkbox" class="form-check" value="1" ng-click="OnclickCheckTerminal(gRow);" />
+                                            </td>
+                                            <td>{{$index+1}}</td>
+
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.Qty}}</td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+
+                                            <td class="amtrgt">{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.VendorName}}</td>
+                                            <td>{{gRow.Invoice}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <hl>LOCAL  COST</hl>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Flag</th>
+                                            <th>SNo</th>
+
+                                            <th>Equip Type</th>
+                                            <th>Qty</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+
+                                            <th>Amount</th>
+                                            <td>Vendor Name</td>
+                                            <th>Invoice No</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridLocalCost">
+                                            <td>
+                                                <input type="checkbox" class="form-check" ng-click="OnclickCheckLocalCost(gRow);" />
+                                            </td>
+                                            <td>{{$index+1}}</td>
+
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.Qty}} </td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+
+                                            <td class="amtrgt">{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.VendorName}}</td>
+                                            <td>{{gRow.Invoice}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-12">
+                            <hl>COMMISSIONS</hl>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="material-datatables">
+
+                                <table class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            @*<th>Flag</th>*@
+                                            <th>SNo</th>
+                                            <th>Equip Type</th>
+                                            <th>Qty</th>
+                                            <th>Charge Description</th>
+                                            <th>Currency</th>
+                                            <th>Amount</th>
+                                            <td>Vendor Name</td>
+                                            <th>Invoice No</th>
+
+
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr ng-repeat="gRow in DynamicGridCommission">
+                                            @*<td>
+                                        <input type="checkbox" class="form-check"  ng-click="OnclickCheckLocalCommisionCost(gRow);" />
+                                    </td>*@
+                                            <td>{{$index+1}}</td>
+
+                                            <td>{{gRow.CntrTypes}}</td>
+                                            <td>{{gRow.Qty}} </td>
+                                            <td>{{gRow.ChargeCodeID}}</td>
+                                            <td>{{gRow.CurrencyID}}</td>
+
+                                            <td class="amtrgt">{{gRow.CustomerRate}}</td>
+                                            <td>{{gRow.VendorName}}</td>
+                                            <td>{{gRow.Invoice}}</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" id="btnUpdate" ng-click="RecordSave();" class="btn btn-success">
+                            <i class="material-icons">save</i>
+                            Save
+                        </button>
+                        <input type="hidden" ng-model="HDBLId" id="HDBLId" />
+                        <input type="hidden" ng-model="HDBkgID" id="HDBkgID" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+

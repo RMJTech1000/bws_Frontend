@@ -1,0 +1,297 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.full.min.js"></script>
+<style>
+    .form-control {
+        width: 180px;
+        height: 24px;
+    }
+</style>
+<script type="text/javascript">
+
+    LayoutApp.controller('MyController', function ($scope, $http, $timeout) {
+        $(document).ready(function () {
+            $('.my-select').select2({
+                placeholder: "--Select--", allowClear: true, width: '100%'
+            });
+        });
+
+
+
+        $scope.CustomerMasterAllvalues = null;
+        $scope.fillCustomerMasterValues = function () {
+
+            $http({
+                method: 'POST',
+                url: '/api/InvoiceApi/InvCustomerMaster/',
+                data: {}
+            }).then(function (result) {
+                $timeout(function () {
+                    $scope.CustomerMasterAllvalues = result.data;
+
+
+
+                });
+            }, function (result) {
+                if (result.status == 500) {
+                    ShowPopup("Sorry no internet connectivity Application Error.");
+                }
+                else if (result.status == 404) {
+                    ShowPopup("Sorry no internet connectivity page not found.");
+                }
+                if (result.status > 0) {
+                    var errorMsg = result.status + ': ' + result.data;
+                    ShowPopup("Sorry no internet connectivity detected.Please reconnect and try  again.");
+                }
+            }).catch(function (result) {
+                ShowPopup('There has been an error: ' + result);
+            });
+        };
+        $scope.fillCustomerMasterValues();
+
+        $scope.OnclickSearch = function () {
+
+            var PartyID = $("#ddlParty").val();
+            var ToDate = $("#txtAsOnDate").val();
+            var ReportType = $("#ddlReportType").val();
+            var chkForeignCurrency = $('#chkForeignCurrency').prop('checked')
+            var chkCreditDays = $('#chkCreditDays').prop('checked')
+            var ChkCreditAmount = $('#ChkCreditAmount').prop('checked')
+            var chkSalesPic = $('#chkSalesPic').prop('checked')
+
+       
+            window.location.href = '@Url.Action("AccountReceivableExcelReport", "FinaceReportExcel")?PartyID=' + PartyID + "&ToDate=" + ToDate + "&ReportType=" + ReportType + "&chkForeignCurrency=" + chkForeignCurrency + "&chkCreditDays=" + chkCreditDays
+                + "&ChkCreditAmount=" + ChkCreditAmount + "&chkSalesPic=" + chkSalesPic;
+
+        }
+
+    });
+    function ShowPopup(message) {
+        swal(message);
+    };
+</script>
+<style>
+    legend {
+        background-color: #21277a;
+        color: #fff;
+        font-size: 14px;
+        padding: 4px 5px;
+        font-weight: bold;
+    }
+
+    .inventry .form-control.sundry {
+        width: 172px !important;
+    }
+
+    .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th {
+        background-color: #21277a !important;
+        color: #fff;
+    }
+
+    .nav-tabs {
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+</style>
+<link href="~/assets/css/common.css" rel="stylesheet" />
+<link href="~/assets/css/InvoiceStyle.css" rel="stylesheet" />
+<div ng-app="MyApp" ng-controller="MyController">
+    <div class="row">
+        <div class="col-md-12 backbtn" style="text-align:right;">
+            <a href="/Account/ReceiptView" type="submit" class="btn btn-fill btnback btn-success btn-round btntop">
+                <i class="material-icons">reply</i> Back
+            </a>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary card-header-icon">
+                    <div class="card-icon">
+                       Accounts Receivable
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="row inventry">
+                        <div class="col-md-12 padlr0" style="padding-top:7px; padding-bottom:7px;">
+                            <fieldset>
+                                <legend>Selections Criteria</legend>
+                            </fieldset>
+
+                            <div class="col-md-12">
+                                <div class="row">
+
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Location</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" ng-model="ddlLocation" id="ddlLocation">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl2"><label class="lable-fond">Report Type</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control" ng-model="ddlReportType" id="ddlReportType">
+                                                        <option value="0">--select--</option>
+                                                        <option value="1">Summary</option>
+                                                        <option value="2">Details</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-4 lbl3"><label class="lable-fond">Party</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <select class="form-control my-select" id="ddlParty" ng-model="ddlParty" ng-options="item.CustomerName for item in CustomerMasterAllvalues track by item.ID">
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row" style="margin-right:0">
+                                                <div class="col-md-4 lbl"><label class="lable-fond">As On Date</label></div>
+                                                <div class="col-md-1">:</div>
+                                                <div class="col-md-5">
+                                                    <input id="txtAsOnDate" type="date" ng-model="txtAsOnDate" class="form-control" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                 
+                                </div>
+
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 padlr0" style="padding-top:7px; padding-bottom:7px;">
+                            <fieldset>
+                                <legend>Addl.Selection Criteria</legend>
+                            </fieldset>
+
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <div class="row" style="margin-right:0">
+                                                        <div class="col-md-2 lbl"><label class="lable-fond">Select All</label></div>
+
+                                                        <div class="col-md-6">
+                                                            <input type="checkbox" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <div class="row" style="margin-right:0">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-4 lbl"><label class="lable-fond">Foreign Currency</label></div>
+
+                                                        <div class="col-md-6">
+                                                            <input type="checkbox" id="chkForeignCurrency" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-4 lbl"><label class="lable-fond">Credit Days</label></div>
+
+                                                        <div class="col-md-6">
+                                                            <input type="checkbox" id="chkCreditDays" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-4 lbl"><label class="lable-fond">Credit Amount</label></div>
+
+                                                        <div class="col-md-6">
+                                                            <input type="checkbox" id="ChkCreditAmount" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-4 lbl"><label class="lable-fond">Sales PIC</label></div>
+
+                                                        <div class="col-md-6">
+                                                            <input type="checkbox" id="chkSalesPic" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                              
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                 
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+
+
+
+                <div class="row">
+                    <div class="col-md-12" style="text-align:right; margin-top:20px;">
+
+                        <button type="submit" ng-click="OnclickSearch();" class="btn btn-fill btn-success">
+                            <i class="material-icons">file_download</i>
+                            Get Report
+                        </button>
+
+                        <input type="hidden" id="RecId" ng-model="RecId" />
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
